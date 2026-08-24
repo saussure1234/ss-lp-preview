@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>SHARE Security ─ FV A_v06（ベンチ100 ZettaJoule型）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   A_v06 ── ベンチマーク：100 ZettaJoule（zetta-joule.com）
+   ★見たのは ref/bench/100_zetta-joule_com.png のみ。コードは読んでいない
+
+   ── v05 の何がベンチと違ったか（実測して比較した）──────────
+     v05                          ベンチ100
+     ヘッダーが青いバーで独立     → 帯なし。地がそのまま続く
+     巨大英字が薄くて見出しと衝突 → 巨大文字が主役。機材と交差する
+     機材が右で矩形に切れて白帯   → 機材が中央、上下フルブリード
+     下部の帯でCTAと訴求が【重なって読めない】→ 左下に小さい説明だけ
+     見出しが左下の小さい塊       → 文字が画面を支配する
+
+   ── ベンチ100の実測値（PNGから数値で出したもの）──────────
+     地        縦グラデ。上 RGB(115,149,210) → 下 RGB(251,237,225)
+     巨大文字  cap約150px → font-size 約200px、行送り約205px（比1.0）
+     機材      x=271〜1341（画面の74%）。中央やや右、上下フルブリード
+     左下説明  3行、1行24px
+     ヘッダー  帯なし（y=20とy=95の地の色がほぼ同じ）
+
+   ── ★借りられなかったもの（正直に書く）──────────────
+   ベンチ100は【機材が文字の手前】にあり、文字の一部を隠している。
+   あちらの機材は背景が抜けた切り抜き素材だから成立する。
+   こちらのフレームは【背景つきの矩形写真】240枚のシーケンスで、
+   切り抜きではない。手前に置くと文字が全部隠れる。
+   → 文字を機材にかけない配置にする。
+     frame_000 を実測：ラックは x=53〜89%。左の x=0〜47% は
+     平均輝度0.63〜0.69で、墨の文字とのコントラスト比は10.7〜11.6。
+     ここに巨大文字を置けば読める。
+     最長行は「AIを動かす。」の7字 → 使える幅766px ÷ 7 ＝ 109px
+
+   ── ★禁止事項 ──────────────────────────────
+     × 黒すぎるトーンにしない（ユーザー指摘）
+     × 派手なグラデーション・3D演出を入れない
+     × 機材の中央に大きな文字やカードを重ねない
+     × sticky の親に overflow:hidden を入れない（v05でヒーローが消えた）
+     × カードを使わない・影を使わない（ベンチ100にどちらも無い）
+     × 数字バッジ・顧客ロゴに依存しない（素材が無い＝捏造になる）
+     × 同じ高さに要素を2つ置かない（v05の重なりバグの原因）
+
+   ── ★v05から直したもの ────────────────────────
+     1 下部でCTAと訴求が重なって読めなかった
+       → CTAを見出しブロックの中に入れ、訴求は最下部の1本の帯だけにした
+     2 ヘッダーの青い帯を撤去（ベンチ100は帯なし）
+     3 巨大タイポを主役に。薄い飾りではなく、画面を支配する大きさへ
+     4 機材の右に出ていた白帯を撤去（cover で全面に）
+     5 地を縦グラデにして、機材の縁となじませた
+     6 ★1440x720の低い画面で【見出しとリードが53,506px²重なっていた】。
+       絶対配置(top:14vh と bottom:150px)は、画面の高さが変わると必ずぶつかる。
+       → 縦に積むフロー（flex column）にした。どの高さでも重ならない
+     7 ★endで【見出しと進行ラベルが7,386px²重なっていた】
+       → 進行ラベルもフローの中（見出しの上）に入れた
+     8 ★フローにした後も2件残った。原因はどちらも「動かす／詰める」こと：
+       (a) 見出しを -110px 上へ動かす transform が、進行ラベルにぶつかった
+           → フローに入れた時点で上へ動かす必要が無い。transform を外した
+       (b) 1440x720 で上余白が74pxまで詰まり、ヘッダー(高さ74px)と接触
+           → 上余白の下限を 88px に上げた
+       (c) endで リードを -46px 上へ動かす transform が見出しにぶつかった
+           → 同じ理由で外した。フローでは「動かす」が必ず衝突を生む
+   ══════════════════════════════════════════════════════════ */
+:root{
+  --ink:#12202C;
+  --ink2:#4A5B68;
+  --line:rgba(18,32,44,.20);
+  --gold:#B4802F;
+  --pad:clamp(20px, 4.2vw, 60px);
+  --progress:0;
+  --intro-opacity:1;
+  --intro-y:0px;
+  --type-opacity:1;
+  --type-y:0px;
+  --rail-opacity:1;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;
+  color:var(--ink);
+  /* ★地：ベンチ100の実測グラデ（上が青、下がベージュ）を、
+     素材のフレーム（淡い水色の室内）となじむ範囲に寄せた */
+  background:linear-gradient(180deg,#8FB0CE 0%,#AFC5D6 26%,#CBD8DE 52%,#E3E9E6 76%,#F6EFE6 100%);
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+/* ★sticky の親に overflow:hidden を入れない。v05でヒーローが消えた */
+.page{overflow-x:clip}
+
+/* ── ヘッダー：★帯なし。地がそのまま続く（ベンチ100と同じ）── */
+.header{
+  position:absolute;top:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;gap:22px;
+  padding:22px var(--pad);
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:17px;letter-spacing:.01em}
+.brand-mark{
+  display:grid;place-content:center;width:30px;height:30px;
+  border:1.5px solid rgba(18,32,44,.42);border-radius:5px;
+  font-family:Inter,sans-serif;font-size:11px;font-weight:900;letter-spacing:.06em;
+}
+.nav{display:flex;gap:26px;margin-left:auto;font-size:14px;font-weight:700}
+.header-cta{
+  font-size:13px;font-weight:900;padding:11px 22px;border-radius:5px;
+  background:var(--ink);color:#fff;white-space:nowrap;
+}
+
+/* ── ヒーロー ── */
+.sequence-scene{position:relative;height:340vh}
+.hero{
+  position:sticky;top:0;height:100vh;min-height:560px;overflow:hidden;
+  display:grid;grid-template-rows:1fr auto;
+}
+/* ★中身は縦に積む。絶対配置にすると画面の高さが変わったとき必ずぶつかる
+   （v06の最初の版は1440x720で見出しとリードが53,506px²重なった） */
+.hero-body{
+  position:relative;z-index:3;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(14px,3.4vh,40px);
+  padding:clamp(88px,10vh,104px) var(--pad) clamp(10px,2vh,26px);
+}
+/* 機材：★全面。右に白帯を出さない */
+.sequence-frame{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:58% 46%;z-index:1;
+}
+/* 縁を地になじませる（ベンチ100は切り抜きなので縁が無い） */
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(180,203,216,.92) 0%,rgba(180,203,216,.42) 16%,rgba(180,203,216,0) 34%),
+    linear-gradient(180deg,rgba(158,186,205,.72) 0%,rgba(158,186,205,0) 22%);
+}
+
+/* ★巨大タイポ＝主役。ベンチ100の位置。機材にはかけない */
+.hero-type{
+  margin:0;flex:none;
+  /* ★上へ動かさない。フローに入れたので、動かすと進行ラベルにぶつかる */
+  opacity:var(--type-opacity);
+  transition:opacity .12s linear;
+  font-size:clamp(34px,6.9vw,100px);
+  font-weight:900;line-height:1.06;letter-spacing:-.005em;
+  color:var(--ink);
+  max-width:53%;
+}
+.hero-type span{display:block}
+
+/* リードとCTA：★巨大タイポの下。下部の帯とは高さを分ける */
+.intro{
+  flex:none;max-width:min(560px,48%);
+  /* ★上へ動かさない。フローでは動かすと必ず衝突する */
+  opacity:var(--intro-opacity);
+  transition:opacity .12s linear;
+}
+.kicker{
+  margin:0 0 10px;font-family:Inter,sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+}
+.lead{margin:0;font-size:15px;font-weight:500;line-height:1.95;color:var(--ink)}
+.actions{display:flex;align-items:center;gap:13px;margin:22px 0 0;flex-wrap:wrap}
+.button{
+  display:inline-flex;align-items:center;justify-content:center;height:50px;
+  padding:0 24px;border-radius:5px;font-size:14px;font-weight:900;white-space:nowrap;
+}
+.button.primary{background:var(--ink);color:#fff}
+.button.secondary{border:1.5px solid var(--line);color:var(--ink)}
+
+/* ★下部の訴求帯：ここには【これしか置かない】。v05はCTAと重なっていた */
+.callouts{
+  position:relative;z-index:6;align-self:end;
+  margin:0 var(--pad) 30px;padding-top:15px;
+  border-top:1px solid var(--line);min-height:54px;pointer-events:none;
+}
+.callout{
+  position:absolute;inset:15px 0 auto 0;
+  display:grid;grid-template-columns:172px minmax(0,1fr);gap:24px;align-items:baseline;
+  opacity:0;transform:translate3d(0,8px,0);
+  transition:opacity .16s linear,transform .16s linear;
+}
+.callout.is-visible{opacity:1;transform:none}
+.callout b{
+  font-family:Inter,sans-serif;font-size:11px;font-weight:900;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);
+}
+.callout p{margin:0;font-size:19px;font-weight:900;line-height:1.5}
+
+.progress{
+  flex:none;display:flex;gap:26px;opacity:var(--rail-opacity);
+  font-family:Inter,sans-serif;font-size:10px;font-weight:900;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink2);transition:opacity .12s linear;
+}
+
+/* ── 次セクション ── */
+.protocol{background:#F6EFE6;padding:104px 0}
+.protocol-inner{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+.protocol h2{
+  margin:0 0 46px;font-size:clamp(24px,3vw,42px);font-weight:900;line-height:1.5;
+  max-width:20em;
+}
+.steps{display:grid;gap:34px}
+.step{display:grid;grid-template-columns:150px minmax(0,1fr);gap:26px;
+  padding-top:24px;border-top:1px solid var(--line)}
+.step small{font-family:Inter,sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.step strong{display:block;font-size:19px;font-weight:900;line-height:1.6}
+.step p{margin:9px 0 0;font-size:14.5px;line-height:2;color:var(--ink2)}
+
+@media(max-width:900px){
+  :root{--pad:20px}
+  .nav{display:none}
+  .sequence-scene{height:300vh}
+  .hero{min-height:0}
+  .hero-type{max-width:none;font-size:32px;line-height:1.26}
+  .sequence-frame{object-position:62% 46%}
+  .intro{max-width:none}
+  .lead{font-size:13.5px;line-height:1.9}
+  .actions{gap:9px}
+  .button{width:100%;height:48px}
+  .callout{grid-template-columns:1fr;gap:5px}
+  .callout p{font-size:15px}
+  .progress{display:none}
+  .hero-body{gap:16px;padding:74px var(--pad) 14px}
+  .step{grid-template-columns:1fr;gap:8px}
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="header" aria-label="SHARE Security">
+      <a class="brand" href="#"><span class="brand-mark">SS</span><span>SHARE Security</span></a>
+      <nav class="nav" aria-label="主要ナビゲーション">
+        <a href="#concept">Concept</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#security">Security</a>
+      </nav>
+      <a class="header-cta" href="#">相談する</a>
+    </header>
+
+    <main>
+      <section class="sequence-scene" id="concept" aria-label="スクロール連動のファーストビュー">
+        <div class="hero">
+          <img id="sequenceFrame" class="sequence-frame" alt="ローカルAI基盤のサーバーラックが開き、内部へ入っていく映像フレーム">
+
+          <!-- ★縦に積む。絶対配置にすると画面の高さが変わったとき必ずぶつかる -->
+          <div class="hero-body">
+          <div class="progress" aria-hidden="true">
+            <span>Local LLM</span><span>Private Network</span><span>Physical Security</span>
+          </div>
+
+          <!-- ★主役。ベンチ100の巨大タイポ。機材にはかけない -->
+          <h1 class="hero-type">
+            <span>機密データを</span>
+            <span>外に出さず、</span>
+            <span>AIを動かす。</span>
+          </h1>
+
+          <div class="intro">
+            <p class="kicker">Local LLM / Closed Environment</p>
+            <p class="lead">自社管理の計算資源、ローカルLLM、閉じた接続経路。SaaS・金融・製薬と向き合うCTOのために、AIを使う場所そのものから設計します。</p>
+            <div class="actions" aria-label="お問い合わせ">
+              <a class="button primary" href="#">構成を相談する</a>
+              <a class="button secondary" href="#">思想を読む</a>
+            </div>
+          </div>
+          </div>
+
+          <!-- ★ここには訴求だけ。CTAは上の intro に入れた（v05の重なりバグ対策） -->
+          <aside class="callouts">
+            <div class="callout is-visible" data-from="0" data-to=".26">
+              <b>Secure Room</b><p>AIを動かす場所を、外部サービスの外側に置く。</p>
+            </div>
+            <div class="callout" data-from=".24" data-to=".62">
+              <b>Engineered Reveal</b><p>ラックの構造を開き、計算資源の実体を見せる。</p>
+            </div>
+            <div class="callout" data-from=".58" data-to="1">
+              <b>Inside The Rack</b><p>推論・ログ・接続経路を、物理的に管理できる単位まで閉じる。</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="protocol" id="architecture" aria-label="閉じたAI環境の設計">
+        <div class="protocol-inner">
+          <h2>診断するだけで終わらせず、情報が外へ出ない構造まで落とし込む。</h2>
+          <div class="steps">
+            <div class="step"><small>Route</small><div>
+              <strong>外部AIサービスへ送らない経路を先に決める。</strong>
+              <p>社内データ、ログ、推論結果がどの経路を通るかを整理し、閉じた運用に必要な境界を定義します。</p></div></div>
+            <div class="step"><small>Runtime</small><div>
+              <strong>ローカルLLMの実行環境を、現実の運用に合わせる。</strong>
+              <p>モデル、GPU、保管場所、監視、更新手順まで、使い続けられる構成として設計します。</p></div></div>
+            <div class="step"><small>Control</small><div>
+              <strong>物理的に管理できる場所で、AIの入口を閉じる。</strong>
+              <p>機材とネットワークを自社管理下に置き、CTOが説明責任を持てるAI基盤にします。</p></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+    const frameCount = 240;
+    const root = document.documentElement;
+    const frame = document.getElementById('sequenceFrame');
+    const scene = document.querySelector('.sequence-scene');
+    const callouts = Array.from(document.querySelectorAll('.callout'));
+    const params = new URLSearchParams(location.search);
+    const lockedProgress = params.get('qa') === 'mid'
+      ? 0.52
+      : params.get('qa') === 'end'
+        ? 0.92
+        : null;
+
+    const isOutputPreview = location.pathname.includes('/outputs/')
+      || location.pathname.endsWith('/sharesec_fv_A_v06.html');
+    const frameBase = isOutputPreview
+      ? 'sharesec_v05_frames/'
+      : 'img/sharesec-v05-frames/';
+
+    const pad = (n) => String(n).padStart(3, '0');
+    const frameSrc = (index) => `${frameBase}frame_${pad(index)}.webp`;
+    let targetIndex = -1;
+    let displayedIndex = -1;
+    const frameCache = new Map();
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function progressForScene() {
+      if (lockedProgress !== null) return lockedProgress;
+      const range = Math.max(1, scene.offsetHeight - window.innerHeight);
+      return clamp(-scene.getBoundingClientRect().top / range, 0, 1);
+    }
+
+    function displayFrame(index) {
+      if (displayedIndex === index) return;
+      displayedIndex = index;
+      frame.src = frameSrc(index);
+    }
+
+    function primeFrame(index) {
+      if (frameCache.has(index)) return;
+      const img = new Image();
+      frameCache.set(index, img);
+      img.onload = () => {
+        frameCache.set(index, 'loaded');
+        if (index === targetIndex || displayedIndex === -1) {
+          displayFrame(index);
+        }
+      };
+      img.src = frameSrc(index);
+    }
+
+    function setFrame(progress) {
+      const nextIndex = Math.round(progress * (frameCount - 1));
+      if (nextIndex === targetIndex) return;
+      targetIndex = nextIndex;
+
+      const cached = frameCache.get(nextIndex);
+      if (cached === 'loaded') {
+        displayFrame(nextIndex);
+        return;
+      }
+
+      primeFrame(nextIndex);
+    }
+
+    function updateSurface(progress) {
+      // ★ベンチ100は巨大タイポが消えない。スクロールで薄くするが、0にはしない
+      const introOpacity = progress < .20 ? 1 : clamp(1 - (progress - .20) / .22, 0, 1);
+      const typeOpacity = clamp(1 - progress * 2.6, 0, 1);
+      const shadeOpacity = progress < .2 ? clamp(.7 - progress * 2.6, .12, .7) : 0;
+      const railOpacity = progress < .36 ? clamp(1 - progress * 2.2, .2, 1) : .12;
+      root.style.setProperty('--progress', progress.toFixed(4));
+      root.style.setProperty('--intro-opacity', introOpacity.toFixed(3));
+      root.style.setProperty('--intro-y', `${Math.round(lerp(0, -46, progress))}px`);
+      root.style.setProperty('--type-opacity', typeOpacity.toFixed(3));
+      root.style.setProperty('--type-y', `${Math.round(lerp(0, -110, progress))}px`);
+      root.style.setProperty('--shade-opacity', shadeOpacity.toFixed(3));
+      root.style.setProperty('--rail-opacity', railOpacity.toFixed(3));
+    }
+
+    function updateCallouts(progress) {
+      callouts.forEach((item) => {
+        const from = Number(item.dataset.from);
+        const to = Number(item.dataset.to);
+        item.classList.toggle('is-visible', progress >= from && progress <= to);
+      });
+    }
+
+    function update() {
+      const progress = progressForScene();
+      setFrame(progress);
+      updateSurface(progress);
+      updateCallouts(progress);
+    }
+
+    function preloadFrames() {
+      const important = [0, 32, 72, 120, 176, 239];
+      important.forEach(primeFrame);
+
+      let i = 0;
+      const preloadChunk = () => {
+        const end = Math.min(frameCount, i + 12);
+        for (; i < end; i += 1) {
+          primeFrame(i);
+        }
+        if (i < frameCount) {
+          setTimeout(preloadChunk, 80);
+        }
+      };
+      setTimeout(preloadChunk, 120);
+    }
+
+    let ticking = false;
+    function requestUpdate() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    update();
+    preloadFrames();
+  </script>
+</body>
+</html>
