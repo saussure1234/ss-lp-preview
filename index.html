@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════
-   A_v06 ── ベンチマーク：100 ZettaJoule（zetta-joule.com）
+   A_v07 ── ベンチマーク：100 ZettaJoule（zetta-joule.com）
    ★見たのは ref/bench/100_zetta-joule_com.png のみ。コードは読んでいない
 
    ── v05 の何がベンチと違ったか（実測して比較した）──────────
@@ -70,6 +70,15 @@
          白(1.0)で比4.5を満たすには、最悪ケース(0.83)で
          黒の不透明度 0.79 以上が必要。逆算してグラデを引いた。
        → 級数も 19px → 最大36px に上げ、帯の高さを確保した
+    11 ★FVの下が【テキストだけで画像ゼロ】だった（ユーザー指摘）。
+       実測：ページ全高3788px・2セクション・画像1枚（シーケンスのみ）。
+       → protocol を「3ステップ＋画像」に作り直した。
+       ★使う写真は【実写2枚】を優先した。理由：
+         img/ には実写2枚とAI生成3種があるが、このLPの主張は
+         「自分でやっている実物」。CG生成の絵はその主張と逆をやる。
+         server-rack.jpg / rack-detail.jpg（どちらも実写・縦位置）を
+         1000px幅のJPGに落として使う（3963KB→175KB / 2711KB→278KB）
+       ※この2枚の出どころは未確認。宮田さんの実物かストックかを要確認
     10 ★訴求帯を厚くしたら、1440x720で縦が詰まって中身が押し上がり
        ヘッダーと接触した。justify-content:center は、中身が入り切らないと
        余白の外へはみ出す。→ 画面が低いときだけ級数と間隔を落とす
@@ -231,22 +240,36 @@ a{color:inherit;text-decoration:none}
   text-transform:uppercase;color:var(--ink2);transition:opacity .12s linear;
 }
 
-/* ── 次セクション ── */
-.protocol{background:#F6EFE6;padding:104px 0}
+/* ── 次セクション：★3ステップ＋画像。v06はテキストだけで画像ゼロだった ── */
+.protocol{background:#F6EFE6;padding:clamp(72px,9vw,116px) 0}
 .protocol-inner{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
 .protocol h2{
-  margin:0 0 46px;font-size:clamp(24px,3vw,42px);font-weight:900;line-height:1.5;
-  max-width:20em;
+  margin:0 0 clamp(44px,5.4vw,72px);
+  font-size:clamp(24px,3vw,42px);font-weight:900;line-height:1.5;max-width:20em;
 }
-.steps{display:grid;gap:34px}
-.step{display:grid;grid-template-columns:150px minmax(0,1fr);gap:26px;
-  padding-top:24px;border-top:1px solid var(--line)}
-.step small{font-family:Inter,sans-serif;font-size:11px;font-weight:900;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
-.step strong{display:block;font-size:19px;font-weight:900;line-height:1.6}
-.step p{margin:9px 0 0;font-size:14.5px;line-height:2;color:var(--ink2)}
+.steps{display:grid;gap:clamp(48px,6vw,84px)}
+/* 画像と文字を左右に。奇数番は画像が左、偶数番は右（交互） */
+.step{
+  display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);
+  gap:clamp(26px,3.4vw,52px);align-items:center;
+}
+.step:nth-child(even) .step-ph{order:2}
+.step-ph{position:relative;margin:0;overflow:hidden;border-radius:3px;aspect-ratio:4/3}
+.step-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.step-ph figcaption{
+  position:absolute;left:0;bottom:0;right:0;
+  padding:26px 16px 12px;color:#fff;
+  font-family:Inter,sans-serif;font-size:10px;font-weight:900;letter-spacing:.2em;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,rgba(6,14,20,0),rgba(6,14,20,.72));
+}
+.step-tx small{
+  display:block;font-family:Inter,sans-serif;font-size:11px;font-weight:900;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 12px;
+}
+.step-tx strong{display:block;font-size:clamp(19px,2.1vw,27px);font-weight:900;line-height:1.55}
+.step-tx p{margin:14px 0 0;font-size:15px;line-height:2.05;color:var(--ink2)}
 
-/* ★画面が低いとき：中身が入り切らないと center は上へはみ出す */
 @media(min-width:901px) and (max-height:800px){
   .hero-type{font-size:clamp(34px,5.4vw,74px)}
   .hero-body{gap:clamp(10px,1.8vh,20px);padding-top:92px}
@@ -275,7 +298,10 @@ a{color:inherit;text-decoration:none}
   .callout p{font-size:19px;line-height:1.5}
   .progress{display:none}
   .hero-body{gap:16px;padding:74px var(--pad) 14px}
-  .step{grid-template-columns:1fr;gap:8px}
+  .step{grid-template-columns:1fr;gap:16px}
+  .step:nth-child(even) .step-ph{order:0}
+  .step-ph{aspect-ratio:3/2}
+  .step-tx p{font-size:14px;line-height:1.95}
 }
 </style>
 </head>
@@ -338,15 +364,39 @@ a{color:inherit;text-decoration:none}
         <div class="protocol-inner">
           <h2>診断するだけで終わらせず、情報が外へ出ない構造まで落とし込む。</h2>
           <div class="steps">
-            <div class="step"><small>Route</small><div>
-              <strong>外部AIサービスへ送らない経路を先に決める。</strong>
-              <p>社内データ、ログ、推論結果がどの経路を通るかを整理し、閉じた運用に必要な境界を定義します。</p></div></div>
-            <div class="step"><small>Runtime</small><div>
-              <strong>ローカルLLMの実行環境を、現実の運用に合わせる。</strong>
-              <p>モデル、GPU、保管場所、監視、更新手順まで、使い続けられる構成として設計します。</p></div></div>
-            <div class="step"><small>Control</small><div>
-              <strong>物理的に管理できる場所で、AIの入口を閉じる。</strong>
-              <p>機材とネットワークを自社管理下に置き、CTOが説明責任を持てるAI基盤にします。</p></div></div>
+            <div class="step">
+              <figure class="step-ph">
+                <img src="img/photo-rack-full.jpg" alt="自社管理下に置かれたサーバーラックと管理端末" loading="lazy">
+                <figcaption>Owned Hardware</figcaption>
+              </figure>
+              <div class="step-tx">
+                <small>Route</small>
+                <strong>外部AIサービスへ送らない経路を先に決める。</strong>
+                <p>社内データ、ログ、推論結果がどの経路を通るかを整理し、閉じた運用に必要な境界を定義します。</p>
+              </div>
+            </div>
+            <div class="step">
+              <figure class="step-ph">
+                <img src="img/photo-inside.jpg" alt="ラック内部の計算資源と配線" loading="lazy">
+                <figcaption>Local Runtime</figcaption>
+              </figure>
+              <div class="step-tx">
+                <small>Runtime</small>
+                <strong>ローカルLLMの実行環境を、現実の運用に合わせる。</strong>
+                <p>モデル、GPU、保管場所、監視、更新手順まで、使い続けられる構成として設計します。</p>
+              </div>
+            </div>
+            <div class="step">
+              <figure class="step-ph">
+                <img src="img/photo-rack-cable.jpg" alt="ラック内で束ねられた配線" loading="lazy">
+                <figcaption>Physical Control</figcaption>
+              </figure>
+              <div class="step-tx">
+                <small>Control</small>
+                <strong>物理的に管理できる場所で、AIの入口を閉じる。</strong>
+                <p>機材とネットワークを自社管理下に置き、CTOが説明責任を持てるAI基盤にします。</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
