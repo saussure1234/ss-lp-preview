@@ -97,10 +97,9 @@ a{text-decoration:none; color:inherit}
 .hero{
   position:relative;
   min-height:calc(100svh - var(--head-h));
-  overflow:hidden;
   display:grid;
   grid-template-rows:1fr var(--band-h);
-  background:var(--paper);
+  background:transparent;      /* 背景は position:fixed の .hero__bg が受け持つ */
 }
 .hero > *:not(.hero__bg){position:relative; z-index:1}
 
@@ -210,8 +209,6 @@ a{text-decoration:none; color:inherit}
 }
 
 /* ---------------- 下の3点 ---------------- */
-.pillars{display:flex; align-items:center}
-.pillars .wrap{display:flex; align-items:center; gap:clamp(20px,2.8vw,44px)}
 .pillar{display:flex; align-items:flex-start; gap:clamp(11px,1.2vw,18px)}
 .pillar__ico{
   flex:0 0 auto; width:clamp(27px,2.4vw,36px); height:auto;
@@ -271,9 +268,7 @@ a{text-decoration:none; color:inherit}
   .cta{width:100%; height:54px; margin-top:22px}
   .cta__txt{padding-left:0}
 
-  .pillars{order:3; display:block; padding-bottom:30px}
-  .pillars .wrap{flex-direction:column; gap:20px}
-  .pillar__ico,.pillar--2 .pillar__ico,.pillar--3 .pillar__ico{width:32px}
+      .pillar__ico,.pillar--2 .pillar__ico,.pillar--3 .pillar__ico{width:32px}
 }
 
 /* ================================================================
@@ -2064,7 +2059,19 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
    ヒーロー背景：支給画像をコードに起こしたもの（画像ファイルなし）
    viewBox 1672x941 ／ preserveAspectRatio="slice" で画面を覆う
    ================================================================ */
-.hero__bg{background:#0a1730}
+/* 背景は画面に貼り付けたまま。スクロールしても動かず、
+   後続セクションの不透明な地が上から覆っていく。
+   z-index:-1 だと body の地に隠れるので 0 にして、後続を 1 で上に置く。 */
+.hero__bg{
+  position:fixed; top:0; left:0; width:100%; height:100svh;
+  z-index:0; overflow:hidden; background:#01050e;
+}
+.hero > *:not(.hero__bg){z-index:2}
+section:not(.hero),footer{position:relative; z-index:1}
+@media (max-width:900px){
+  /* スマホは上のバナーとして流れに戻す */
+  .hero__bg{position:relative; height:auto; z-index:auto}
+}
 .fx{will-change:transform}
 .fx g{transform-box:view-box; transform-origin:center}
 
@@ -2091,8 +2098,6 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
                     fxDriftB 26s ease-in-out 1.3s infinite}
 .fx .fx-c{animation:fxInC 1.15s cubic-bezier(.22,.61,.36,1) .16s both,
                     fxDriftC 30s ease-in-out 1.4s infinite}
-.fx .fx-prism{animation:fxPrismIn 1.3s cubic-bezier(.22,.61,.36,1) .3s both,
-                       fxBreath 13s ease-in-out 1.6s infinite}
 .fx .fx-grid{animation:fxInUp 1.1s ease .42s both, fxGridWave 17s ease-in-out 1.6s infinite}
 .fx .fx-dots{animation:fxInUp 1.1s ease .52s both, fxDotPulse 9s ease-in-out 1.7s infinite}
 .fx .fx-beams path{stroke-dasharray:var(--len); animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both}
@@ -2100,26 +2105,15 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
 .fx .fx-beams .b2{--len:710;  animation-delay:.44s}
 .fx .fx-beams .b3{--len:1222; animation-delay:.56s}
 .fx .fx-beams .b4{--len:1163; animation-delay:.66s}
-.fx .fx-sweep{animation:fxSweep 11s linear 2s infinite}
 
 /* 下帯：背景の明暗が横で変わるので、白い床を1枚敷いて文字を読ませる */
-.pillars{
-  background:linear-gradient(180deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.72) 34%,
-    rgba(255,255,255,.93) 62%,
-    rgba(255,255,255,.96) 100%);
-  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
-}
 
 @media (prefers-reduced-motion:reduce){
   .fx *{animation:none !important}
   .fx .fx-beams path{stroke-dasharray:none}
 }
 @media (max-width:900px){
-  .fx .fx-sweep{display:none}
-  .pillars{background:none; -webkit-backdrop-filter:none; backdrop-filter:none}
-}
+    }
 /* ---------------- 地→箱の明暗を交互にする（配色指示書 §4-1） ----------------
    同じ明度が2段続くと箱の輪郭が地に溶ける。実測すると
    強み(地100→箱98) / サービスフロー(地100→箱100) / FAQ(地淡→箱なし)
@@ -2130,54 +2124,86 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
 .faq__item[open]{background:var(--pale2)}       /*        開いた行だけ一段沈める */
 .gai__item{background:#fff}                     /* 淡地 → 白い箱 */
 .news__list .nitem{background:transparent}      /* 一覧は箱にしない（休符） */
-/* ---------------- ダークになったヒーローの文字（配色指示書 §2・§4-3） ----------------
-   濃色地の上は白のアルファだけで作る。第2の色は足さない。 */
-.hero .eyebrow{color:rgba(255,255,255,.82)}
-.hero .h1{color:#ffffff}
-.hero .lead{color:rgba(255,255,255,.78)}
-.hero .cta{background:#ffffff; color:#0b2b57; box-shadow:0 6px 22px rgba(4,12,28,.34)}
-.hero .cta:hover{background:#eaf0f8}
-.hero .cta__ico{stroke:#0b2b57}
-.hero .cta__arw{stroke:#0b2b57}
-.hero .cta__txt{color:#0b2b57}
-/* 3点セット：白い床はやめ、そのまま暗い地に白抜きで置く */
-.pillars{background:none; -webkit-backdrop-filter:none; backdrop-filter:none}
-.pillars .wrap{border-top:1px solid rgba(255,255,255,.16); padding-top:clamp(16px,2vw,28px)}
-.pillar h3{color:rgba(255,255,255,.94)}
-.pillar__ico{stroke:rgba(255,255,255,.86)}
-.pillar__ico--m{background:rgba(255,255,255,.88)}
-/* ヘッダーはヒーローの上に乗るので、最上部では暗い地に合わせる */
-.head:not(.is-stuck){
-  background:rgba(9,20,40,.42); border-bottom-color:rgba(255,255,255,.10);
-}
-.head:not(.is-stuck) .logo-1,.head:not(.is-stuck) .logo-2{color:#fff}
-.head:not(.is-stuck) .head__tag{color:rgba(255,255,255,.74)}
-.head:not(.is-stuck) .head__sep{background:rgba(255,255,255,.28)}
-.head:not(.is-stuck) .gnav a{color:rgba(255,255,255,.88)}
-.head:not(.is-stuck) .gnav a:hover{color:#fff; border-bottom-color:#fff}
-.head:not(.is-stuck) .gnav__cta{background:#fff; color:#0b2b57 !important}
-.head:not(.is-stuck) .gnav__cta:hover{background:#eaf0f8}
-.head:not(.is-stuck) .head__burger span{background:#fff}
-
+/* ---------------- ヒーロー：左は白ブレンド、右だけ深い暗 ----------------
+   文字は左の明るい側に乗るので黒。3点セットは明暗をまたぐので白い床を敷く。 */
+/* 3点セットは半透明のブレンドではなく、白のベタ帯として置く。
+   背景の明暗が横で変わるので、ぼかしで馴染ませると不自然に見えた。 */
 @media (max-width:900px){
-  /* スマホは背景が上のバナーになるので、文字は明るい地の上に戻る */
-  .hero .eyebrow{color:var(--ink-eyebrow)}
-  .hero .h1{color:var(--ink)}
-  .hero .lead{color:var(--ink-lead)}
-  .hero .cta{background:var(--navy); color:#fff; box-shadow:0 2px 7px rgba(10,22,40,.16)}
-  .hero .cta__ico,.hero .cta__arw{stroke:#fff}
-  .hero .cta__txt{color:#fff}
-  .pillars .wrap{border-top:0; padding-top:0}
-  .pillar h3{color:var(--ink-h3)}
-  .pillar__ico{stroke:var(--icon)}
-  .pillar__ico--m{background:var(--icon)}
-  .head:not(.is-stuck){background:#fff; border-bottom-color:var(--rule)}
-  .head:not(.is-stuck) .logo-1,.head:not(.is-stuck) .logo-2{color:var(--ink-logo)}
-  .head:not(.is-stuck) .head__tag{color:var(--ink-tag)}
-  .head:not(.is-stuck) .head__sep{background:var(--rule)}
-  .head:not(.is-stuck) .gnav a{color:#22262c}
-  .head:not(.is-stuck) .gnav__cta{background:var(--navy); color:#fff !important}
-  .head:not(.is-stuck) .head__burger span{background:#16161a}
+  }
+/* ================================================================
+   メリハリ：ブランドの濃色を「地」と「箱」に入れる（配色指示書 §4-4）
+   ・重い強調（地ごと濃色）… エンジニア紹介 ／ 今すぐ無料相談
+   ・軽い強調（箱だけ濃色）… 強み03
+   濃色の上は白のアルファだけで作る（§2）。第2の色は足さない。
+   ================================================================ */
+:root{
+  --ground-dark:#0b2b57;
+  --d-face-1:rgba(255,255,255,.06);  --d-line-1:rgba(255,255,255,.16);
+  --d-face-2:rgba(255,255,255,.12);  --d-line-2:rgba(255,255,255,.28);
+  --d-face-3:rgba(255,255,255,.14);  --d-line-3:rgba(255,255,255,.42);
+  --d-text-sub:rgba(255,255,255,.75); --d-text:rgba(255,255,255,.86);
+  --d-head:#ffffff; --d-num:rgba(255,255,255,.30);
+}
+.is-dark{
+  background:linear-gradient(180deg,
+    var(--ground-dark) 0%,
+    color-mix(in srgb, var(--ground-dark) 76%, #000) 26%,
+    color-mix(in srgb, var(--ground-dark) 48%, #000) 100%);
+}
+
+/* ---- 重い強調①：エンジニア紹介 ---- */
+.exp.is-dark{
+  --eInk:var(--d-head); --eSub:var(--d-text); --eMute:var(--d-text-sub);
+  --eNum:var(--d-num); --eLine:var(--d-line-1); --eLabel:var(--d-text-sub);
+  color:var(--d-head);
+}
+.exp.is-dark .exp__lead{color:var(--d-text)}
+.exp.is-dark .exp__row + .exp__row{border-top-color:var(--d-line-1)}
+.exp.is-dark .exp__photo{border:1px solid var(--d-line-1)}
+.exp.is-dark .exp__slash{background:var(--d-line-2)}
+/* 直書きの色が残っている箇所を上書き（§4-3 文字色は箱に従う） */
+.exp.is-dark .exp__title{color:var(--d-head)}
+.exp.is-dark .exp__role{color:var(--d-head)}
+.exp.is-dark .exp__role + p{color:var(--d-text-sub)}
+.exp.is-dark .exp__name b{color:var(--d-head)}
+.exp.is-dark .exp__hr{background:var(--d-line-1); border:0; height:1px}
+
+/* ---- 重い強調②：今すぐ無料相談（濃色地 ＋ 明るい大箱） ---- */
+.ct.is-dark{color:var(--d-head)}
+.ct.is-dark .ct__panel{background:#fff; border-color:rgba(255,255,255,.22)}
+
+/* ---- 軽い強調：強み03 の箱だけ濃色 ---- */
+.s-card--dark{
+  background:linear-gradient(180deg,
+    var(--ground-dark) 0%,
+    color-mix(in srgb, var(--ground-dark) 72%, #000) 100%) !important;
+  --sInk:var(--d-head); --sSub:var(--d-text-sub);
+  --sN:var(--d-num); --sRule:var(--d-line-2); --sRing:var(--d-line-3);
+}
+.s-card--dark .s-lead p{color:var(--d-text)}
+.s-card--dark .dot i{background:rgba(255,255,255,.92)}
+.s-card--dark .f5 .num{background:rgba(255,255,255,.92); color:var(--ground-dark)}
+.s-card--dark .f5 .ar{stroke:var(--d-line-3)}
+.s-card--dark .f5 figcaption span{color:var(--d-text-sub)}
+
+@media (prefers-contrast:more){
+  .is-dark,.s-card--dark{--d-text:rgba(255,255,255,.95); --d-text-sub:rgba(255,255,255,.88)}
+}
+/* ---------------- 3点セット：CTAの直下に置く ---------------- */
+.pillars{margin-top:clamp(20px,2.4vw,34px)}
+.prow{display:flex; flex-direction:column; gap:clamp(9px,1.05vw,15px)}
+.pillar{display:flex; align-items:center; gap:clamp(9px,1vw,14px)}
+.pillar h3{
+  font-size:clamp(12px,1.05vw,15px); line-height:1.5; font-weight:700;
+  color:var(--ink-h3); letter-spacing:.005em;
+}
+.pillar__ico,.pillar--3 .pillar__ico{width:clamp(18px,1.6vw,23px)}
+.pillar__ico--m{width:clamp(16px,1.4vw,20px)}
+@media (max-width:900px){
+  .pillars{margin-top:22px}
+  .prow{gap:12px}
+  .pillar__ico,.pillar--3 .pillar__ico,.pillar__ico--m{width:22px}
+  .pillar h3{font-size:14px}
 }
 </style>
 </head>
@@ -2214,44 +2240,33 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
   <div class="hero__bg" aria-hidden="true">
     <svg class="fx" viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" role="presentation">
       <defs>
-        <linearGradient id="fxBase" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#16294a"/><stop offset=".38" stop-color="#0f1f3c"/>
-          <stop offset=".72" stop-color="#0a1730"/><stop offset="1" stop-color="#050e21"/>
+        <linearGradient id="fxBase" x1="0" y1="0" x2="1" y2=".85">
+          <stop offset="0" stop-color="#f6f8fa"/><stop offset=".33" stop-color="#e7ecf2"/>
+          <stop offset=".50" stop-color="#b4c1d3"/><stop offset=".63" stop-color="#4a5f80"/>
+          <stop offset=".78" stop-color="#101f3c"/><stop offset="1" stop-color="#01050e"/>
         </linearGradient>
-        <radialGradient id="fxGlow" cx=".28" cy=".24" r=".72">
-          <stop offset="0" stop-color="#5f86c4" stop-opacity=".30"/>
-          <stop offset=".55" stop-color="#2b4a80" stop-opacity=".14"/>
-          <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+        <radialGradient id="fxGlow" cx=".26" cy=".24" r=".64">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".92"/>
+          <stop offset=".6" stop-color="#ffffff" stop-opacity=".34"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
         </radialGradient>
         <linearGradient id="fxNavyA" x1=".1" y1="0" x2="1" y2=".8">
-          <stop offset="0" stop-color="#ffffff" stop-opacity=".14"/>
-          <stop offset=".55" stop-color="#ffffff" stop-opacity=".07"/>
-          <stop offset="1" stop-color="#ffffff" stop-opacity=".03"/>
+          <stop offset="0" stop-color="#0e2547"/><stop offset=".55" stop-color="#05122c"/>
+          <stop offset="1" stop-color="#010510"/>
         </linearGradient>
         <linearGradient id="fxNavyB" x1=".15" y1="0" x2=".85" y2="1">
-          <stop offset="0" stop-color="#000000" stop-opacity=".22"/>
-          <stop offset=".5" stop-color="#000000" stop-opacity=".42"/>
-          <stop offset="1" stop-color="#000000" stop-opacity=".60"/>
+          <stop offset="0" stop-color="#0a1f42"/><stop offset=".5" stop-color="#030c22"/>
+          <stop offset="1" stop-color="#000208"/>
         </linearGradient>
         <linearGradient id="fxNavyC" x1="0" y1="0" x2=".4" y2="1">
-          <stop offset="0" stop-color="#000000" stop-opacity=".18"/>
-          <stop offset="1" stop-color="#000000" stop-opacity=".50"/>
-        </linearGradient>
-        <linearGradient id="fxPrism" x1=".1" y1="0" x2=".9" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity=".20"/>
-          <stop offset=".55" stop-color="#ffffff" stop-opacity=".10"/>
-          <stop offset="1" stop-color="#ffffff" stop-opacity=".02"/>
-        </linearGradient>
-        <linearGradient id="fxBeam" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-          <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          <stop offset="0" stop-color="#7e90a8" stop-opacity=".30"/>
+          <stop offset="1" stop-color="#04101f" stop-opacity=".92"/>
         </linearGradient>
         <pattern id="fxDots" width="17" height="17" patternUnits="userSpaceOnUse">
           <circle cx="2" cy="2" r="1.5" fill="#fff"/>
         </pattern>
         <pattern id="fxDotsD" width="17" height="17" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.5" fill="#ffffff"/>
+          <circle cx="2" cy="2" r="1.5" fill="#7f93b4"/>
         </pattern>
       </defs>
 
@@ -2276,11 +2291,6 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
         <path d="M1148 0V430M1176 0V446M1204 0V462M1232 0V446M1260 0V430M1288 0V414M1316 0V398M1344 0V382M1372 0V366M1400 0V350M1428 0V334M1456 0V318"/>
       </g>
 
-      <!-- 透ける三角（プリズム） -->
-      <g class="fx-prism">
-        <path d="M1013 334 L1462 330 L1146 792 Z" fill="url(#fxPrism)"/>
-      </g>
-
       <!-- 光の筋 -->
       <g class="fx-beams" stroke="#ffffff" fill="none" stroke-linecap="round">
         <path class="b1" d="M902 941 L1612 40"  stroke-width="1.4" opacity=".55"/>
@@ -2288,11 +2298,6 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
         <path class="b3" d="M0 452 L1120 941"   stroke-width="1"   opacity=".26"/>
         <path class="b4" d="M320 941 L1290 300" stroke-width="1"   opacity=".22"/>
       </g>
-      <!-- 走る光 -->
-      <g class="fx-sweep">
-        <rect x="-460" y="0" width="460" height="941" fill="url(#fxBeam)" opacity=".2"/>
-      </g>
-
       <!-- 点の網 -->
       <g class="fx-dots">
         <rect x="1486" y="378" width="150" height="185" fill="url(#fxDots)" opacity=".5"/>
@@ -2322,11 +2327,8 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
           <path d="M0 6.5h16.4M11.2 1.3l5.4 5.2-5.4 5.2"/>
         </svg>
       </a>
-    </div>
-  </div>
-
-  <div class="pillars">
-    <div class="wrap">
+      <div class="pillars">
+        <div class="prow">
 
       <div class="pillar pillar--1">
         <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg);aspect-ratio:1"></i>
@@ -2344,7 +2346,10 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
       </div>
 
     </div>
+      </div>
+    </div>
   </div>
+
 
 </section>
 
@@ -2470,7 +2475,7 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
       </div>
     </div>
 
-    <div class="s-card">
+    <div class="s-card s-card--dark">
       <div class="s-lead">
         <span class="s-no">03</span>
         <div>
@@ -2665,7 +2670,7 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
   </div>
 </section>
 
-<section class="exp" id="experts">
+<section class="exp is-dark" id="experts">
   <div class="wrap">
     <h2 class="exp__title">トップエンジニア2名が、<br>直接診断を担当します。</h2>
     <p class="exp__lead">
@@ -3241,7 +3246,7 @@ a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)
   </div>
 </section>
 
-<section class="ct" id="contact">
+<section class="ct is-dark" id="contact">
   <div class="wrap">
     <div class="ct__panel">
       <div class="ct__left">
