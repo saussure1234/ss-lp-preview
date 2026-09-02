@@ -2490,9 +2490,10 @@ section:not(.hero),footer{position:relative; z-index:1}
 }
 /* 02 も 01 と同じ形の箱にする。中は塗らず、薄いグレーの罫だけ */
 .q-col--sub{
-  /* 1px の --line-pale(#dce5ef) では地(--pale #f1f4f9)との差が小さくて見えなかった。
-     太さと濃さを1段ずつ上げる */
-  border:2px solid #b7c6da;
+  /* 枠だけ彩度が浮いていた。実測：枠 hsl(214,32%) に対し、中身は
+     番号/丸 6% ・説明 11% ・区切り線 16% と 6〜16% の範囲。枠をその族に入れる。
+     ついでに地(--pale #f1f4f9)とのコントラストは 1.56 → 1.88 で見やすくなる */
+  border:2px solid #acb5c3;   /* hsl(218,16%,72%) */
   border-radius:clamp(5px,.6vw,9px);
   padding:clamp(20px,2.6vw,38px) clamp(18px,2.4vw,34px);
   background:none;
