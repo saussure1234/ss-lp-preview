@@ -1170,7 +1170,12 @@ a{text-decoration:none; color:inherit}
 .book__cta svg{flex:0 0 auto; width:clamp(18px,1.6vw,23px); height:auto; stroke:var(--bNavy); fill:none; stroke-width:1.5; transition:stroke .18s ease}
 
 @media (max-width:900px){
+  /* スマホは書影が先頭に来ると、見出しに辿り着く前に大きな画像を見せることになる。
+     テキストを先に読ませて、書影は後ろへ回す */
+  .book{display:flex; flex-direction:column}
+  .book .wrap{order:1}
   .book__visual{
+    order:2;
     position:relative; right:auto; top:auto; bottom:auto; width:100%;
     aspect-ratio:4/3; overflow:hidden;
   }
