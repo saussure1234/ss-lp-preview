@@ -3,689 +3,3390 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>SHARE Security ─ FV A_v06（ベンチ100 ZettaJoule型）</title>
+<meta name="robots" content="noindex,nofollow">   <!-- レビュー用プレビュー。本番公開時に外す -->
+<title>最高の脆弱性診断を、最適な価格で。｜SHARE Security</title>
+<meta name="description" content="AIと手動のハイブリッド診断で、他社が見逃すシステム固有のリスクまで突き止めます。見積時のヒアリングシートは不要、大手診断会社の約50%程度の価格。CTO経験者と国際ホワイトハッカーの固定2名が全案件に直接対応します。">
+<meta name="theme-color" content="#0b2b57">
+<link rel="canonical" href="https://www.share-security.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%230b2b57'/%3E%3Cpath d='M16 5.5c3.2 2.6 7.6 4.1 11.4 4V19c0 6.7-4.8 11-11.4 12.6C9.4 30 4.6 25.7 4.6 19V9.5c3.8.1 8.2-1.4 11.4-4Z' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3Cpath d='M10.8 17.2 14.9 21 22 12.8' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="最高の脆弱性診断を、最適な価格で。｜SHARE Security">
+<meta property="og:description" content="AIと手動のハイブリッド診断で、他社が見逃すシステム固有のリスクまで突き止めます。">
+<meta property="og:image" content="img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════════════════
-   A_v08 ── ベンチマーク：100 ZettaJoule（zetta-joule.com）
-   ★見たのは ref/bench/100_zetta-joule_com.png のみ。コードは読んでいない
+/* ================================================================
+   SHARE Security ファーストビュー ─ 実サイズ版
 
-   ── v05 の何がベンチと違ったか（実測して比較した）──────────
-     v05                          ベンチ100
-     ヘッダーが青いバーで独立     → 帯なし。地がそのまま続く
-     巨大英字が薄くて見出しと衝突 → 巨大文字が主役。機材と交差する
-     機材が右で矩形に切れて白帯   → 機材が中央、上下フルブリード
-     下部の帯でCTAと訴求が【重なって読めない】→ 左下に小さい説明だけ
-     見出しが左下の小さい塊       → 文字が画面を支配する
+   支給画像は 1536x1024 のモックで、見出し70px・リード19px という
+   ポスター寸法だった。実務のLPに合わせて組み直したのがこのファイル。
+     ・高さは 100svh。1画面に収まる
+     ・文字は実務寸法（見出し46px / リード15.5px / 本文12.5px）
+     ・横は max-width 1360px の中に収め、左右に余白を取る
+   構成・配色・ブレンドはモックのまま。
 
-   ── ベンチ100の実測値（PNGから数値で出したもの）──────────
-     地        縦グラデ。上 RGB(115,149,210) → 下 RGB(251,237,225)
-     巨大文字  cap約150px → font-size 約200px、行送り約205px（比1.0）
-     機材      x=271〜1341（画面の74%）。中央やや右、上下フルブリード
-     左下説明  3行、1行24px
-     ヘッダー  帯なし（y=20とy=95の地の色がほぼ同じ）
+   支給画像の原寸そのままの再現は repro.html（検証用・触らない）。
+   ================================================================ */
 
-   ── ★借りられなかったもの（正直に書く）──────────────
-   ベンチ100は【機材が文字の手前】にあり、文字の一部を隠している。
-   あちらの機材は背景が抜けた切り抜き素材だから成立する。
-   こちらのフレームは【背景つきの矩形写真】240枚のシーケンスで、
-   切り抜きではない。手前に置くと文字が全部隠れる。
-   → 文字を機材にかけない配置にする。
-     frame_000 を実測：ラックは x=53〜89%。左の x=0〜47% は
-     平均輝度0.63〜0.69で、墨の文字とのコントラスト比は10.7〜11.6。
-     ここに巨大文字を置けば読める。
-     最長行は「AIを動かす。」の7字 → 使える幅766px ÷ 7 ＝ 109px
-
-   ── ★禁止事項 ──────────────────────────────
-     × 黒すぎるトーンにしない（ユーザー指摘）
-     × 派手なグラデーション・3D演出を入れない
-     × 機材の中央に大きな文字やカードを重ねない
-     × sticky の親に overflow:hidden を入れない（v05でヒーローが消えた）
-     × カードを使わない・影を使わない（ベンチ100にどちらも無い）
-     × 数字バッジ・顧客ロゴに依存しない（素材が無い＝捏造になる）
-     × 同じ高さに要素を2つ置かない（v05の重なりバグの原因）
-
-   ── ★v05から直したもの ────────────────────────
-     1 下部でCTAと訴求が重なって読めなかった
-       → CTAを見出しブロックの中に入れ、訴求は最下部の1本の帯だけにした
-     2 ヘッダーの青い帯を撤去（ベンチ100は帯なし）
-     3 巨大タイポを主役に。薄い飾りではなく、画面を支配する大きさへ
-     4 機材の右に出ていた白帯を撤去（cover で全面に）
-     5 地を縦グラデにして、機材の縁となじませた
-     6 ★1440x720の低い画面で【見出しとリードが53,506px²重なっていた】。
-       絶対配置(top:14vh と bottom:150px)は、画面の高さが変わると必ずぶつかる。
-       → 縦に積むフロー（flex column）にした。どの高さでも重ならない
-     7 ★endで【見出しと進行ラベルが7,386px²重なっていた】
-       → 進行ラベルもフローの中（見出しの上）に入れた
-     9 ★スクロール中の訴求が目立たない（ユーザー指摘）。実測したら
-       【どのフレームでも墨の文字が読めていなかった】：
-         frame_000 下部の輝度0.83 → 墨との比 1.03
-         frame_124            0.32 → 比 1.13
-         frame_220            0.21 → 比 1.14
-       いずれも比3.0を大きく割る。同化していた。
-       → 白抜きに変え、下部にスクリムを敷く。
-         白(1.0)で比4.5を満たすには、最悪ケース(0.83)で
-         黒の不透明度 0.79 以上が必要。逆算してグラデを引いた。
-       → 級数も 19px → 最大36px に上げ、帯の高さを確保した
-    12 ★★2026-08-25 宮田さんからの共有で【LPの前提が変わった】。
-       旧：ローカルLLM環境を企業に提案するLP（＝売り物はAI基盤）
-       新：売り物は【脆弱性診断】。ローカル完結・12台・LoRAは
-           その品質と信頼の【証明】であって、商材ではない。
-       → v07の見出し「機密データを外に出さず、AIを動かす。」は
-         売っていないものを売る文言だった。差し替えた。
-
-       新しい背骨（すべて本人の言語化が出どころ。作っていない）：
-         見出し「どこまでAIで、どこから人か。」
-           ← 検討中のCTOが最も知りたい境界線。
-              競合は「AI活用」か「熟練の技術者」のどちらかしか謳わず、
-              どこで切り替わるかは示さない。開示自体が差別化になる
-         §1 5ステップ（工程単位で人／エージェントを明示）★主役
-         §2 ローカル完結。★リスク→解決の順で書く。
-              単体では技術仕様の説明にとどまるため
-         §3 固定2名（CTO経験者・国際ホワイトハッカー）を
-              5ステップの第3・第4に接続する。分けて書くと
-              独立した強みに見えてしまう
-         §4 CTA＝ヒアリングシート不要・コピー環境から見積もり提示
-         LoRAは主線に置かない（CTOレベルでないと価値が伝わらない）
-
-       ★設計の軸（本人の情景より）：
-         このLPを見ているCTOは複数社を比較している最中。
-         最も効くのは【他社が書いていないことが書いてあること】。
-         情報量の多さより、他にはない要素をどれだけ早く目に入れるか。
-
-    11 ★FVの下が【テキストだけで画像ゼロ】だった（ユーザー指摘）。
-       実測：ページ全高3788px・2セクション・画像1枚（シーケンスのみ）。
-       → protocol を「3ステップ＋画像」に作り直した。
-       ★使う写真は【実写2枚】を優先した。理由：
-         img/ には実写2枚とAI生成3種があるが、このLPの主張は
-         「自分でやっている実物」。CG生成の絵はその主張と逆をやる。
-         server-rack.jpg / rack-detail.jpg（どちらも実写・縦位置）を
-         1000px幅のJPGに落として使う（3963KB→175KB / 2711KB→278KB）
-       ※この2枚の出どころは未確認。宮田さんの実物かストックかを要確認
-    10 ★訴求帯を厚くしたら、1440x720で縦が詰まって中身が押し上がり
-       ヘッダーと接触した。justify-content:center は、中身が入り切らないと
-       余白の外へはみ出す。→ 画面が低いときだけ級数と間隔を落とす
-     8 ★フローにした後も2件残った。原因はどちらも「動かす／詰める」こと：
-       (a) 見出しを -110px 上へ動かす transform が、進行ラベルにぶつかった
-           → フローに入れた時点で上へ動かす必要が無い。transform を外した
-       (b) 1440x720 で上余白が74pxまで詰まり、ヘッダー(高さ74px)と接触
-           → 上余白の下限を 88px に上げた
-       (c) endで リードを -46px 上へ動かす transform が見出しにぶつかった
-           → 同じ理由で外した。フローでは「動かす」が必ず衝突を生む
-   ══════════════════════════════════════════════════════════ */
 :root{
-  --ink:#12202C;
-  --ink2:#4A5B68;
-  --line:rgba(18,32,44,.20);
-  --gold:#B4802F;
-  --pad:clamp(20px, 4.2vw, 60px);
-  --progress:0;
-  --intro-opacity:1;
-  --intro-y:0px;
-  --type-opacity:1;
-  --type-y:0px;
-  --rail-opacity:1;
+  /* --- 色（原画からの実測） --- */
+  --ink:#16161a;
+  --ink-eyebrow:#0e0e13;
+  --ink-logo:#090e18;
+  --ink-tag:#33383f;
+  --ink-lead:#3b4553;
+  --ink-h3:#0f1520;
+  --ink-p:#3a3d44;
+  --navy:#062a59;
+  --navy-h:#0a3a74;
+  --icon:#123055;
+  --rule:#b9bdc2;
+  --paper:#e7e8ea;
+
+  /* --- 版面 --- */
+  --max:1360px;                        /* 中身の最大幅 */
+  --pad:clamp(20px,4vw,56px);          /* 左右の余白 */
+  --head-h:clamp(58px,7.4vh,78px);     /* ヘッダーの高さ */
+  --band-h:clamp(148px,23vh,196px);    /* 下帯＝3点セットの帯 */
+
+  /* --- 級数と余白の共通スケール（チェックリスト対応） --- */
+  --h2:clamp(23px,2.78vw,40px);         /* 節見出し。h1(46px) より必ず小さい */
+  --h2-sp:clamp(21px,5.6vw,32px);       /* 〜900px の節見出し */
+  --sec-pad:clamp(58px,7.2vw,104px);    /* 節の上下余白。全節で同じ値 */
+  /* 淡い地。中性グレーではなくブランド色相(213°)の低彩度にする。
+     配色指示書 §3-2「メリハリは彩度のV字が作る」の上端にあたる */
+  --pale:#f1f4f9;                       /* S42 L96 */
+  --pale2:#f3f7fc;                      /* S55 L97  箱に使う一段明るい面 */
+  --line-pale:#dce5ef;                  /* S37 L90 */
+  --line-mid:#c2d0e0;                   /* S32 L82 */
 }
-*{box-sizing:border-box}
-html,body{margin:0}
-html{scroll-behavior:smooth}
+:root{
+  --btn-h:clamp(50px,4.44vw,64px);      /* 主CTAの高さ */
+  --btn-h-s:clamp(44px,3.6vw,52px);     /* 副CTAの高さ */
+
+  /* --- ブレンドの調整つまみ --- */
+  --veil:1;    /* 主ベールの濃さ 0=写真だけ 1=原画どおり */
+  --band:1;    /* 下帯の濃さ */
+}
+
+*{box-sizing:border-box; margin:0; padding:0}
+html,body{background:var(--paper)}
 body{
-  font-family:"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;
-  color:var(--ink);
-  /* ★地：ベンチ100の実測グラデ（上が青、下がベージュ）を、
-     素材のフレーム（淡い水色の室内）となじむ範囲に寄せた */
-  background:linear-gradient(180deg,#8FB0CE 0%,#AFC5D6 26%,#CBD8DE 52%,#E3E9E6 76%,#F6EFE6 100%);
-  -webkit-font-smoothing:antialiased;
+  font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color:var(--ink); -webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1;
 }
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-/* ★sticky の親に overflow:hidden を入れない。v05でヒーローが消えた */
-.page{overflow-x:clip}
+img{display:block; max-width:100%}
+a{text-decoration:none; color:inherit}
 
-/* ── ヘッダー：★帯なし。地がそのまま続く（ベンチ100と同じ）── */
-.header{
-  position:absolute;top:0;left:0;right:0;z-index:40;
-  display:flex;align-items:center;gap:22px;
-  padding:22px var(--pad);
-}
-.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:17px;letter-spacing:.01em}
-.brand-mark{
-  display:grid;place-content:center;width:30px;height:30px;
-  border:1.5px solid rgba(18,32,44,.42);border-radius:5px;
-  font-family:Inter,sans-serif;font-size:11px;font-weight:900;letter-spacing:.06em;
-}
-.nav{display:flex;gap:26px;margin-left:auto;font-size:14px;font-weight:700}
-.header-cta{
-  font-size:13px;font-weight:900;padding:11px 22px;border-radius:5px;
-  background:var(--ink);color:#fff;white-space:nowrap;
+/* 版面は中央寄せ。以前は左寄せだったが、1920px で右に 560px の
+   死に領域ができていた（ヘッダーのナビも中途半端な位置で終わる）。
+   ヒーローだけは白ベールの効く範囲に文字を収める必要があるので、
+   ベールの届く範囲も合わせて右へ広げてある。 */
+.wrap{
+  width:100%; max-width:var(--max);
+  margin-inline:auto;
+  padding-left:clamp(24px,6vw,110px);
+  padding-right:var(--pad);
 }
 
-/* ── ヒーロー ── */
-.sequence-scene{position:relative;height:340vh}
+/* ---------------- 舞台：1画面に収める ---------------- */
 .hero{
-  position:sticky;top:0;height:100vh;min-height:560px;overflow:hidden;
-  display:grid;grid-template-rows:1fr auto;
+  position:relative;
+  min-height:calc(100svh - var(--head-h));
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:1fr var(--band-h);
+  background:var(--paper);
 }
-/* ★中身は縦に積む。絶対配置にすると画面の高さが変わったとき必ずぶつかる
-   （v06の最初の版は1440x720で見出しとリードが53,506px²重なった） */
-.hero-body{
-  position:relative;z-index:3;min-height:0;
-  display:flex;flex-direction:column;justify-content:center;
-  gap:clamp(14px,3.4vh,40px);
-  padding:clamp(88px,10vh,104px) var(--pad) clamp(10px,2vh,26px);
+.hero > *:not(.hero__bg){position:relative; z-index:1}
+
+/* ---------------- 背景：支給画像をコードに起こしたSVG ---------------- */
+/* 画像ファイルは使っていない。図形・線・点をすべてSVGで組み、CSSで動かしている。
+   実測した座標は末尾の「ヒーロー背景」ブロックのコメント参照。 */
+.hero__bg{position:absolute; inset:0; z-index:0; overflow:hidden}
+.hero__bg .fx{width:100%; height:100%; display:block}
+
+
+/* ---------------- ヘッダー ---------------- */
+/* ---------------- 追従ヘッダー ---------------- */
+.head{
+  position:sticky; top:0; z-index:100;
+  height:var(--head-h); display:flex; align-items:center;
+  background:rgba(255,255,255,.86); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  border-bottom:1px solid transparent;
+  transition:background .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
-/* 機材：★全面。右に白帯を出さない */
-.sequence-frame{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:58% 46%;z-index:1;
+.head.is-stuck{background:rgba(255,255,255,.96); border-bottom-color:var(--rule); box-shadow:0 1px 14px rgba(16,26,41,.06)}
+.head__in{display:flex; align-items:center; justify-content:space-between; gap:clamp(16px,2vw,28px)}
+.head__brand{display:flex; align-items:baseline; white-space:nowrap; flex:0 0 auto}
+
+.gnav{display:flex; align-items:center; gap:clamp(12px,1.7vw,25px); white-space:nowrap}
+.gnav a{
+  font-size:clamp(11px,.9vw,13px); font-weight:500; letter-spacing:.02em; color:#22262c;
+  padding:6px 2px; border-bottom:1px solid transparent; transition:color .18s ease, border-color .18s ease;
 }
-/* 縁を地になじませる（ベンチ100は切り抜きなので縁が無い） */
-.hero::before{
-  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:
-    linear-gradient(90deg,rgba(180,203,216,.92) 0%,rgba(180,203,216,.42) 16%,rgba(180,203,216,0) 34%),
-    linear-gradient(180deg,rgba(158,186,205,.72) 0%,rgba(158,186,205,0) 22%);
+.gnav a:hover{color:var(--navy); border-bottom-color:var(--navy)}
+.gnav__cta{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:clamp(32px,2.64vw,38px); padding:0 clamp(12px,1.25vw,18px) !important;
+  background:var(--navy); color:#fff !important; border-radius:2px;
+  font-weight:700 !important; border-bottom:0 !important;
+  transition:background .18s ease;
+}
+.gnav__cta:hover{background:var(--navy-h); border-bottom-color:transparent !important}
+
+.head__burger{
+  display:none; flex:0 0 auto; width:40px; height:40px; margin-right:-8px;
+  background:none; border:0; padding:9px 8px; cursor:pointer;
+}
+.head__burger span{display:block; height:2px; border-radius:2px; background:#16161a; transition:transform .25s ease, opacity .2s ease}
+.head__burger span + span{margin-top:5px}
+.head__burger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.head__burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+.head__burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.logo-1{font-size:clamp(17px,1.55vw,23px); font-weight:900; letter-spacing:.005em; color:var(--ink-logo)}
+.logo-2{font-size:clamp(13px,1.20vw,18px); font-weight:500; letter-spacing:.005em; color:var(--ink-logo); margin-left:.30em}
+.head__sep{
+  align-self:center; margin:0 clamp(10px,1.1vw,16px);
+  width:1px; height:clamp(13px,1.2vw,18px); background:var(--rule);
+}
+.head__tag{
+  font-size:clamp(10px,.83vw,12.5px); font-weight:500; color:var(--ink-tag);
+  letter-spacing:.02em; font-feature-settings:"palt" 0;
 }
 
-/* ★巨大タイポ＝主役。ベンチ100の位置。機材にはかけない */
-.hero-type{
-  margin:0;flex:none;
-  /* ★上へ動かさない。フローに入れたので、動かすと進行ラベルにぶつかる */
-  opacity:var(--type-opacity);
-  transition:opacity .12s linear;
-  font-size:clamp(34px,6.9vw,100px);
-  font-weight:900;line-height:1.06;letter-spacing:-.005em;
+/* ---------------- コピー ---------------- */
+.copy{display:flex; align-items:center}
+.copy .wrap{padding-bottom:clamp(10px,2vh,26px)}
+
+.eyebrow{
+  font-size:clamp(12.5px,1.15vw,17px);
+  font-weight:700; line-height:1.5; letter-spacing:.005em;
+  color:var(--ink-eyebrow);
+}
+.h1{
+  margin-top:clamp(10px,1.4vw,20px);
+  font-size:clamp(26px,3.2vw,46px);
+  line-height:1.42;
+  font-weight:900; letter-spacing:.004em;
+  font-feature-settings:"palt" 0;
   color:var(--ink);
-  max-width:53%;
 }
-.hero-type span{display:block}
+.lead{
+  margin-top:clamp(14px,1.6vw,23px);
+  font-size:clamp(12.5px,1.05vw,15.5px);
+  line-height:1.95;
+  font-weight:500; color:var(--ink-lead);
+}
 
-/* リードとCTA：★巨大タイポの下。下部の帯とは高さを分ける */
-.intro{
-  flex:none;max-width:min(560px,48%);
-  /* ★上へ動かさない。フローでは動かすと必ず衝突する */
-  opacity:var(--intro-opacity);
-  transition:opacity .12s linear;
+/* ---------------- CTA ---------------- */
+.cta{
+  margin-top:clamp(18px,2.2vw,32px);
+  display:flex; align-items:center;
+  width:clamp(250px,22vw,318px);
+  height:var(--btn-h);
+  background:var(--navy); color:#fff; border-radius:0;
+  box-shadow:0 2px 7px rgba(10,22,40,.16);
+  transition:background .18s ease;
 }
-.kicker{
-  margin:0 0 10px;font-family:Inter,sans-serif;font-size:11px;font-weight:900;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+.cta:hover{background:var(--navy-h)}
+.cta__ico{
+  flex:0 0 auto; width:clamp(17px,1.35vw,20px); height:auto;
+  margin-left:clamp(18px,1.8vw,26px);
+  stroke:#fff; fill:none; stroke-width:1.5;
 }
-.lead{margin:0;font-size:15px;font-weight:500;line-height:1.95;color:var(--ink)}
-.actions{display:flex;align-items:center;gap:13px;margin:22px 0 0;flex-wrap:wrap}
-.button{
-  display:inline-flex;align-items:center;justify-content:center;height:50px;
-  padding:0 24px;border-radius:5px;font-size:14px;font-weight:900;white-space:nowrap;
+.cta__txt{
+  flex:1 1 auto; text-align:center; padding-left:.5em;
+  font-size:clamp(12.5px,1.02vw,15px); font-weight:500; letter-spacing:.03em;
 }
-.button.primary{background:var(--ink);color:#fff}
-.button.secondary{border:1.5px solid var(--line);color:var(--ink)}
+.cta__arw{
+  flex:0 0 auto; width:clamp(15px,1.15vw,17px); height:auto;
+  margin-right:clamp(12px,1.2vw,17px);
+  stroke:#fff; fill:none; stroke-width:1.4;
+}
 
-/* ★下部の訴求帯：ここには【これしか置かない】。v05はCTAと重なっていた
-   色は白抜き。墨だとどのフレームでも比1.03〜1.14で読めなかった（実測） */
-.callouts{
-  position:relative;z-index:6;align-self:end;
-  padding:0 var(--pad) clamp(26px,3.4vh,40px);
-  min-height:clamp(96px,13vh,132px);pointer-events:none;
+/* ---------------- 下の3点 ---------------- */
+.pillars{display:flex; align-items:center}
+.pillars .wrap{display:flex; align-items:center; gap:clamp(20px,2.8vw,44px)}
+.pillar{display:flex; align-items:flex-start; gap:clamp(11px,1.2vw,18px)}
+.pillar__ico{
+  flex:0 0 auto; width:clamp(27px,2.4vw,36px); height:auto;
+  stroke:var(--icon); fill:none; stroke-width:2.3;
+  stroke-linecap:round; stroke-linejoin:round;
 }
-/* スクリム。白(1.0)で比4.5を満たすには最悪ケース(輝度0.83)で
-   黒の不透明度0.79以上が必要。下端で0.88まで持っていく */
-.callouts::before{
-  content:"";position:absolute;left:0;right:0;bottom:0;top:-92px;
+.pillar--3 .pillar__ico{width:clamp(30px,2.65vw,40px); stroke-width:2.5}
+/* 抜き出したマスクを使う版（1・2番目） */
+.pillar__ico--m{
+  width:clamp(21px,1.9vw,28px); height:auto; background:var(--icon);
+  -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.pillar h3{align-self:center}
+.pillar h3{
+  font-size:clamp(12.5px,1.08vw,15.5px); line-height:1.55;
+  font-weight:700; color:var(--ink-h3); letter-spacing:.005em;
+}
+.pillar p{
+  margin-top:clamp(5px,.6vw,9px);
+  font-size:clamp(10.5px,.87vw,12.5px); line-height:1.7;
+  font-weight:400; color:var(--ink-p);
+}
+
+/* ================================================================
+   〜900px：縦に流す。写真はCTAより上。
+   ================================================================ */
+@media (max-width:900px){
+  :root{--head-h:56px; --band-h:0px}   /* auto だと mask の calc が壊れるので 0px */
+  .head{background:#fff; border-bottom-color:var(--rule)}
+  .head__burger{display:block}
+  .head__brand{min-height:44px; display:flex; align-items:center}
+  .gnav{
+    position:fixed; left:0; right:0; top:var(--head-h);
+    flex-direction:column; align-items:stretch; gap:0;
+    background:#fff; border-bottom:1px solid var(--rule);
+    box-shadow:0 12px 24px rgba(16,26,41,.08);
+    max-height:0; overflow:hidden; visibility:hidden;
+    transition:max-height .28s ease, visibility .28s;
+  }
+  .gnav.is-open{max-height:min(72vh,520px); overflow:auto; visibility:visible}
+  .gnav a{
+    display:flex; align-items:center; min-height:52px;   /* タップ領域 */
+    padding:0 clamp(24px,6vw,110px); font-size:15px;
+    border-bottom:1px solid #eceef1;
+  }
+  .gnav a:hover{border-bottom-color:#eceef1}
+  .gnav__cta{
+    margin:14px clamp(24px,6vw,110px) 18px; height:50px; padding:0 !important;
+    border-bottom:0 !important;
+  }
+  .hero{min-height:0; display:flex; flex-direction:column; background:#eef0f1}
+  .hero__bg{position:relative; inset:auto; width:100%; aspect-ratio:16/10; order:1}
+  .hero__bg .fx{width:100%; height:100%}
+  .hero__veil{display:none}   /* スマホは文字が別背景なのでブレンド不要 */
+
+  .copy{order:2; display:block; padding:26px 0 30px}
+  .cta{width:100%; height:54px; margin-top:22px}
+  .cta__txt{padding-left:0}
+
+  .pillars{order:3; display:block; padding-bottom:30px}
+  .pillars .wrap{flex-direction:column; gap:20px}
+  .pillar__ico,.pillar--2 .pillar__ico,.pillar--3 .pillar__ico{width:32px}
+}
+
+/* ================================================================
+   ISSUES（課題提起）─ _ref/issues.png（1535x1024）から起こす
+   モックは見出し52px・数字97px のポスター寸法だったので、
+   FVと同じ考え方で実務寸法に落としている（見出し38px・数字62px）。
+   配色・構成・線の細さはモックの実測どおり。
+   ================================================================ */
+.issues{
+  padding-block:var(--sec-pad);
+  background:
+    radial-gradient(120% 85% at 100% 0%, #e0e2e6 0%, rgba(224,226,230,0) 55%),
+    #eceef0;
+}
+
+.sec-eyebrow{
+  font-size:clamp(10px,.78vw,11.5px);
+  font-weight:600; letter-spacing:.22em; color:#3d4a60;
+}
+.sec-title{
+  margin-top:clamp(16px,2vw,28px);
+  font-size:var(--h2);
+  line-height:1.52;                    /* 実測 行送り79px ÷ 52px */
+  font-weight:900; letter-spacing:.004em;
+  font-feature-settings:"palt" 0;
+  color:#18191d;
+}
+
+.issue-list{
+  list-style:none;
+  margin-top:clamp(40px,5.6vw,80px);
+  display:flex; flex-direction:column;
+  gap:clamp(38px,4.9vw,70px);
+}
+.issue{display:flex; align-items:flex-start; gap:clamp(20px,2.8vw,40px)}
+
+/* 数字・連結線・アイコンの3つは互いに中心を合わせる（実測でそうなっている） */
+.issue__marks{display:flex; align-items:center; flex:0 0 auto}
+
+.issue__no{
+  min-width:clamp(50px,5.2vw,74px);
+  font-size:clamp(40px,4.3vw,62px);
+  font-weight:300;                     /* 実測 線幅5〜6px / 字高68px＝Light */
+  line-height:1; letter-spacing:.02em;
+  color:#0b2c55;
+  font-variant-numeric:tabular-nums;
+}
+
+/* 連結：点線 → 点 → 縦罫。点は地色のリングで縦罫を抜く（実測どおり） */
+.issue__link{
+  position:relative; flex:0 0 auto;
+  width:clamp(30px,3.1vw,44px);
+  height:clamp(58px,5.6vw,80px);
+  margin-left:clamp(14px,1.8vw,26px);
+  margin-right:clamp(20px,2.4vw,34px);
+}
+.issue__link::before{                  /* 縦罫 */
+  content:""; position:absolute; right:0; top:0; bottom:0;
+  width:2px; background:#bec1cb;
+}
+.issue__link::after{                   /* 点線 */
+  content:""; position:absolute; right:6px; top:50%; left:0;
+  height:1px; transform:translateY(-.5px);
+  background:repeating-linear-gradient(90deg,#c6c9d2 0 3px,transparent 3px 8px);
+}
+.issue__dot{
+  position:absolute; right:1px; top:50%;
+  width:6px; height:6px; border-radius:50%;
+  background:#1c3451; transform:translate(50%,-50%);
+  box-shadow:0 0 0 4px #eceef0;        /* 縦罫を地色で抜く */
+}
+
+.issue__ico{
+  flex:0 0 auto;
+  width:clamp(56px,5.3vw,76px); aspect-ratio:1;
+  border-radius:50%; border:1.5px solid #d3d7de;
+  display:grid; place-items:center;
+}
+/* アイコンは原画から抜いた透過マスク。色はCSSで変えられる。
+   ※ 線画3点は本番ではクライアントのアイコンセットに差し替える前提。
+      自作SVGでは握手の形が出なかったので、実測どおりの形を優先した。 */
+.issue__ico i{
+  display:block; background:#12315b;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:center;  mask-position:center;
+  -webkit-mask-size:contain;     mask-size:contain;
+}
+.issue--1 .issue__ico i{width:56%; aspect-ratio:1; -webkit-mask-image:url(img/ic/rocket.svg); mask-image:url(img/ic/rocket.svg)}
+.issue--2 .issue__ico i{width:56%; aspect-ratio:1; -webkit-mask-image:url(img/ic/chart.svg);  mask-image:url(img/ic/chart.svg)}
+.issue--3 .issue__ico i{width:67%; aspect-ratio:1; -webkit-mask-image:url(img/ic/building.svg);  mask-image:url(img/ic/building.svg)}
+
+.issue__body{flex:1 1 auto; padding-top:clamp(2px,.5vw,7px); min-width:0}
+.issue__body h3{
+  font-size:clamp(15px,1.35vw,19.5px); line-height:1.5;
+  font-weight:700; color:#1a1c22; letter-spacing:.005em;
+}
+.issue__body p{
+  margin-top:clamp(9px,1.1vw,16px);
+  font-size:clamp(12px,.98vw,14px); line-height:1.9;
+  font-weight:400; color:#454d61;
+}
+
+@media (max-width:900px){
+  .issues{padding-block:52px}
+  .issue-list{margin-top:34px; gap:30px}
+  .issue{gap:14px}
+  .issue__no{min-width:40px; font-size:32px}
+  .issue__link{width:16px; height:44px; margin-left:8px; margin-right:12px}
+  .issue__ico{width:48px}
+  .issue__body h3{font-size:15px}
+  .issue__body p{margin-top:8px; font-size:12.5px; line-height:1.85}
+  .brp{display:none}   /* 原稿の改行はPC用。スマホは自然に折り返させる */
+}
+
+
+/* ================================================================
+   OUR STRENGTH（強み）─ _ref/strengths.png（1024x1536）の再現
+   ・地は白。ISSUES(#eceef0) との輝度差で面を分ける
+   ・見出しは中央揃え＋下に「へこみ付きの罫」（原画どおり）
+   ・01/02 は左に文章・右に図。03/04 は淡い面のカード
+   ・線画アイコンは原画から抜いた透過マスク（img/str/*.png）。色はCSSで変えられる
+     ※ 本番はクライアントのアイコンセットに差し替える前提
+   ================================================================ */
+.strengths{
+  --sN:#12305c;  --sNd:#0b2b57;  --sInk:#0d1117; --sSub:#565b66;
+  --sLine:#e1e5ec; --sRule:#c1c8d4; --sRing:#5b6b8f; --sCard:#f7f8fb;
+  --sBlue:#2765c6; --sGray:#97a4b4; --sRed:#cf3a2f;
+  padding-block:var(--sec-pad); background:#fff; color:var(--sInk);
+}
+
+/* ---- 見出し ---- */
+.s-head{text-align:center}
+.s-eyebrow{
+  font-size:clamp(10px,.82vw,12px); font-weight:700; letter-spacing:.24em; color:var(--sN);
+}
+.s-head hr{
+  width:clamp(34px,3.2vw,46px); height:3px; border:0; background:var(--sN);
+  margin:clamp(12px,1.3vw,19px) auto 0;
+}
+.s-title{
+  margin-top:clamp(18px,2vw,28px);
+  font-size:var(--h2); line-height:1.45; font-weight:900;
+  letter-spacing:.01em; font-feature-settings:"palt" 0; color:var(--sInk);
+}
+/* 罫の中央がV字にへこむ（原画どおり） */
+.s-notch{
+  margin-top:clamp(26px,3.2vw,46px);
+  display:flex; align-items:flex-start; color:var(--sLine);
+}
+.s-notch i{flex:1 1 auto; height:1px; background:currentColor; margin-top:1px}
+.s-notch svg{flex:0 0 auto; width:clamp(52px,5.6vw,80px); height:auto; stroke:currentColor; fill:none}
+
+/* ---- 01 / 02 の行 ---- */
+.s-row{
+  display:grid; grid-template-columns:minmax(0,42fr) minmax(0,58fr);
+  gap:clamp(20px,3vw,44px); align-items:center;
+  padding-block:clamp(28px,3.6vw,52px);
+}
+.s-row + .s-row{border-top:1px solid var(--sLine)}
+.s-row:first-of-type{padding-top:clamp(26px,3.2vw,46px)}
+
+.s-lead{display:grid; grid-template-columns:auto minmax(0,1fr); gap:0 clamp(16px,2vw,30px)}
+.s-no{
+  font-size:clamp(30px,3.2vw,46px); font-weight:300; line-height:1;
+  color:var(--sN); letter-spacing:.02em; font-variant-numeric:tabular-nums;
+  padding-right:clamp(12px,1.5vw,22px); border-right:1px solid var(--sRule);
+  align-self:stretch;
+}
+.s-lead h3{
+  font-size:clamp(16px,1.65vw,24px); line-height:1.5; font-weight:700;
+  letter-spacing:.01em; color:var(--sInk);
+}
+.s-lead h3 em{font-style:normal; font-size:1.42em; font-weight:900; letter-spacing:0}
+.s-lead p{
+  margin-top:clamp(8px,1vw,15px);
+  font-size:clamp(11.5px,.98vw,14px); line-height:1.8; color:var(--sSub);
+}
+
+/* ---- 01 の3ステップ ---- */
+.f3{list-style:none; display:flex; align-items:flex-start; justify-content:center; gap:clamp(6px,1.1vw,16px)}
+.f3 li{display:contents}
+.f3 figure{margin:0; width:clamp(78px,10.2vw,148px); text-align:center}
+.dot{
+  width:clamp(58px,7.6vw,110px); aspect-ratio:1; margin:0 auto;
+  border-radius:50%; border:1.5px solid var(--sRing);
+  display:grid; place-items:center; position:relative;
+}
+.dot--fill{background:var(--sNd); border-color:var(--sNd)}
+.dot i{display:block; background:var(--sN);
+  -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat}
+.dot--fill i{background:#fff}
+/* 「不要」を示す斜線。円からはみ出させる（原画どおり） */
+.dot--cross::after{
+  content:""; position:absolute; left:50%; top:50%; width:132%; height:3px;
+  background:var(--sBlue); transform:translate(-50%,-50%) rotate(-58deg);
+}
+.f3 figcaption{
+  margin-top:clamp(8px,1vw,15px);
+  font-size:clamp(10px,.92vw,13.5px); line-height:1.55; color:#2c3542; font-weight:500;
+}
+.f3 .ar{
+  align-self:center; margin-top:clamp(-14px,-1.6vw,-24px);
+  flex:0 0 auto; width:clamp(14px,1.5vw,22px); height:auto; stroke:var(--sInk); fill:none; stroke-width:1.6;
+}
+
+/* ---- 02 の棒グラフ ---- */
+.s-chart{display:flex; align-items:flex-end; justify-content:center; gap:clamp(28px,5vw,74px); padding-top:clamp(16px,2vw,30px)}
+.bars{position:relative; display:flex; align-items:flex-end; gap:clamp(20px,2.6vw,38px);
+      padding-bottom:9px; padding-right:clamp(72px,10vw,146px); border-bottom:1px solid #cfd4dd}
+.bars svg{position:absolute; left:0; right:0; top:0; bottom:9px; width:100%; height:auto}
+.bar--b span{max-width:none; white-space:nowrap !important; text-align:left}
+.bar{width:clamp(52px,6.7vw,96px); position:relative}
+.bar span{
+  position:absolute; left:50%; transform:translateX(-50%); bottom:calc(100% + 7px);
+  font-size:clamp(9.5px,.86vw,12.5px); font-weight:700; white-space:nowrap; color:var(--sInk);
+}
+.bar--a{height:clamp(84px,11.7vw,169px); background:var(--sGray)}
+.bar--b{height:clamp(48px,6.7vw,97px); background:var(--sNd)}
+.bar--b span{left:auto; right:0; transform:translateX(100%); bottom:calc(100% + 3px); padding-left:10px; padding-right:6px}
+.bars svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none}
+.badge{
+  flex:0 0 auto; width:clamp(96px,13.1vw,190px); aspect-ratio:1; border-radius:50%;
+  border:1.5px solid var(--sN); display:grid; place-items:center; text-align:center;
+  font-size:clamp(9px,.86vw,12.5px); line-height:1.55; color:var(--sInk); font-weight:500;
+}
+.badge b{display:block; font-size:1.05em; font-weight:700; margin-top:.25em}
+.badge b em{font-style:normal; font-size:2em; font-weight:900; letter-spacing:-.01em}
+
+/* ---- 03 / 04 のカード ---- */
+.s-card{
+  margin-top:clamp(20px,2.6vw,38px);
+  background:var(--sCard); border-radius:clamp(8px,1vw,14px);
+  padding:clamp(22px,3vw,44px) clamp(18px,2.6vw,38px) clamp(24px,3.2vw,46px);
+}
+.s-card .s-lead{margin-bottom:clamp(18px,2.4vw,34px)}
+
+/* ---- 03 の5ステップ ---- */
+.f5{list-style:none; display:flex; align-items:flex-start; justify-content:space-between; gap:clamp(2px,.6vw,10px)}
+.f5 li{display:contents}
+.f5 figure{margin:0; width:clamp(88px,12.3vw,178px); text-align:center}
+.f5 .dot{margin-top:9px}
+.f5 .num{
+  position:absolute; left:-6%; top:-14%;
+  width:clamp(22px,2.3vw,33px); aspect-ratio:1; border-radius:50%;
+  background:var(--sNd); color:#fff; display:grid; place-items:center;
+  font-size:clamp(10px,.92vw,13.5px); font-weight:700; line-height:1;
+}
+.f5 figcaption b{
+  display:block; margin-top:clamp(9px,1.1vw,16px);
+  font-size:clamp(11px,1.05vw,15.5px); line-height:1.45; font-weight:700; color:var(--sInk);
+}
+.f5 figcaption span{
+  display:block; margin-top:clamp(6px,.75vw,11px);
+  font-size:clamp(9.5px,.86vw,12.5px); line-height:1.6; color:var(--sSub);
+}
+.f5 .ar{
+  align-self:center; margin-top:clamp(4px,.4vw,8px);
+  flex:0 0 auto; width:clamp(16px,1.9vw,28px); height:auto;
+  stroke:var(--sNd); fill:none; stroke-width:2;
+}
+
+/* ---- 04 の構成図 ---- */
+.d4{display:flex; align-items:center; gap:clamp(8px,1.2vw,18px)}
+.d4 .ar{flex:0 0 auto; width:clamp(16px,1.9vw,28px); height:auto; stroke:var(--sInk); fill:none; stroke-width:2}
+.d4__src{
+  flex:0 0 auto; width:clamp(146px,18.6vw,268px);
+  background:#fff; border:1px solid #e3e6ec; border-radius:6px;
+  padding:clamp(12px,1.5vw,22px) clamp(9px,1.1vw,16px);
+}
+.d4__src h4{font-size:clamp(11px,1.05vw,15.5px); font-weight:700; text-align:center}
+.d4__src ul{list-style:none; margin-top:clamp(9px,1.1vw,16px); display:grid; gap:clamp(6px,.75vw,11px)}
+.d4__src li{
+  display:flex; align-items:center; gap:clamp(7px,.9vw,13px);
+  border:1px solid #e6e9ef; border-radius:5px; background:#fff;
+  padding:clamp(7px,.85vw,12px) clamp(7px,.9vw,13px);
+  font-size:clamp(9px,.82vw,12px); line-height:1.4; color:var(--sInk);
+}
+.d4__src i{
+  flex:0 0 auto; width:clamp(17px,1.75vw,25px); aspect-ratio:33/40;
+  background:var(--sN); -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.d4__local{
+  flex:1 1 auto; position:relative; align-self:stretch;
+  border:2px solid var(--sNd); border-radius:6px;
+  margin-top:clamp(12px,1.5vw,22px);
+  padding:clamp(22px,2.8vw,40px) clamp(12px,1.6vw,24px) clamp(14px,1.8vw,26px);
+}
+.d4__tab{
+  position:absolute; left:50%; top:0; transform:translate(-50%,-50%);
+  background:var(--sNd); color:#fff; border-radius:5px;
+  padding:clamp(5px,.62vw,9px) clamp(10px,1.2vw,18px);
+  font-size:clamp(9.5px,.9vw,13px); font-weight:700; white-space:nowrap;
+  display:flex; align-items:center; gap:.5em;
+}
+.d4__tab svg{width:1em; height:auto; fill:#fff}
+.d4__mid{display:flex; align-items:center; justify-content:center; gap:clamp(8px,1.2vw,18px)}
+/* ワークステーション→ローカルLLM の上に渡す破線。両端に下向きの矢印 */
+.d4__proc{
+  position:relative; width:min(78%,560px); margin:0 auto clamp(6px,.8vw,12px);
+  height:clamp(16px,1.9vw,28px);
+  border:1px dashed #7c8698; border-bottom:0;
+}
+.d4__proc::before,.d4__proc::after{
+  content:""; position:absolute; bottom:-6px; width:0; height:0;
+  border:solid transparent; border-width:7px 4.5px 0; border-top-color:#4a5568;
+}
+.d4__proc::before{left:-4.5px}
+.d4__proc::after{right:-4.5px}
+.d4__proc span{
+  position:absolute; left:50%; top:-.72em; transform:translateX(-50%);
+  background:var(--sCard); padding:0 .7em;
+  font-size:clamp(9.5px,.86vw,12.5px); color:var(--sInk); white-space:nowrap;
+}
+/* 設置環境の写真（強み4） */
+.s-photo{
+  margin:clamp(18px,2.4vw,34px) 0 clamp(18px,2.4vw,34px);
+  border-radius:clamp(5px,.6vw,9px); overflow:hidden;
+  background:#0e1721;
+}
+.s-photo img{width:100%; height:auto; display:block; aspect-ratio:1504/736; object-fit:cover}
+.s-photo figcaption{
+  padding:clamp(8px,.9vw,13px) clamp(12px,1.3vw,19px);
+  font-size:clamp(10px,.9vw,13px); color:rgba(255,255,255,.75); letter-spacing:.02em;
+}
+.d4__ws{text-align:center; flex:0 0 auto; width:clamp(120px,15.8vw,228px)}
+.d4__ws img{width:100%; height:auto}
+.d4__ws figcaption{margin-top:6px; font-size:clamp(9px,.83vw,12px); color:var(--sInk)}
+.d4__llm{
+  flex:0 0 auto; width:clamp(84px,11.3vw,163px);
+  background:var(--sNd); color:#fff; border-radius:5px;
+  padding:clamp(11px,1.4vw,20px) 8px clamp(9px,1.1vw,16px);
+  text-align:center;
+}
+.d4__llm i{
+  display:block; width:clamp(34px,3.9vw,56px); aspect-ratio:57/53; margin:0 auto;
+  background:#fff; -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.d4__llm b{display:block; margin-top:clamp(6px,.75vw,11px); font-size:clamp(10px,.95vw,14px); font-weight:700}
+.d4__llm span{display:block; margin-top:clamp(3px,.35vw,5px); font-size:clamp(8.5px,.76vw,11px); line-height:1.5; color:rgba(255,255,255,.72)}
+.d4__notes{
+  margin-top:clamp(10px,1.2vw,18px); text-align:center;
+  font-size:clamp(9.5px,.86vw,12.5px); line-height:1.9; color:var(--sInk);
+}
+.d4__out{flex:0 0 auto; width:clamp(96px,12.6vw,182px); text-align:center}
+.d4__cloud{
+  border:1px dashed #b7bfcc; border-radius:6px;
+  padding:clamp(12px,1.5vw,22px) 8px clamp(10px,1.2vw,18px);
+}
+.d4__cloud i{
+  display:block; width:clamp(56px,6.3vw,90px); aspect-ratio:111/66; margin:0 auto;
+  background:#cfd4dc; -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.d4__cloud span{display:block; margin-top:clamp(7px,.85vw,12px); font-size:clamp(9.5px,.86vw,12.5px)}
+.d4__chip{
+  margin-top:clamp(9px,1.1vw,16px); background:#7c8493; color:#fff; border-radius:4px;
+  padding:clamp(7px,.85vw,12px) 6px; font-size:clamp(9px,.83vw,12px); line-height:1.55; font-weight:700;
+}
+.d4__x{
+  flex:0 0 auto; color:var(--sRed); font-size:clamp(17px,1.9vw,28px); font-weight:900; line-height:1;
+}
+
+@media (max-width:900px){
+  .strengths{padding-block:52px}
+  .s-row{grid-template-columns:1fr; gap:22px; padding-block:26px}
+  .s-lead > div{min-width:0}
+  .s-lead h3{font-size:15.5px}
+  .s-lead p{font-size:12px}
+  .s-no{font-size:26px; padding-right:14px}
+  .f3{gap:2px}
+  .f3 figure{width:auto; flex:1 1 0}
+  .f3 .ar{width:12px; margin-top:-16px}
+  .s-chart{flex-direction:column; align-items:center; gap:18px}
+  .s-card{padding:22px 16px 26px}
+  .f5{flex-wrap:wrap; justify-content:flex-start; gap:14px 0}
+  .f5 figure{width:33.33%}
+  .f5 .ar{display:none}
+  .d4{flex-direction:column; align-items:stretch}
+  .d4__tab{white-space:normal; text-align:center; max-width:calc(100% - 20px); font-size:11px}
+  .d4__local{padding-top:34px}
+  .d4__proc{display:none}          /* 縦積みでは意味を成さないので出さない */
+  .d4__notes{text-align:left; font-size:11.5px}
+  .f5 figcaption b{font-size:13px}
+  .f5 figcaption span{font-size:11px}
+  .d4 .ar{transform:rotate(90deg); width:20px; margin:0 auto}
+  .d4__src,.d4__out{width:100%}
+  .d4__local{margin-top:20px; align-self:auto}
+  .d4__mid{flex-direction:column}
+  .d4__x{text-align:center}
+}
+
+/* ================================================================
+   WHY SHARE SECURITY（比較表）─ _ref/why.png（1505x1045）の再現
+   ・地は #eceef0（ISSUES と同じ）にして、白のカードと段差をつける
+   ・表は3列（項目／大手／SHARE）。SHARE列だけ紺の枠で1段持ち上げる
+   ・実測: ヘッダー帯 y219-271 ／ 本体 y272-835 ／ 行送り112px
+           列 137-494 / 495-914 / 915-1358（＝ 24% / 29% / 30% ＋左右余白）
+   ================================================================ */
+.why{
+  --wInk:#0d1117; --wSub:#5c626d; --wNavy:#0b2b57; --wNavyD:#011f54;
+  --wGrayH:#e3eaf2; --wGrayB:#f3f6fb; --wBlue:#f1f5fe; --wLine:#e6e7ea;
+  padding-block:var(--sec-pad); background:var(--pale); color:var(--wInk);
+}
+.why__head{text-align:center}
+.why__eyebrow{
+  display:flex; align-items:center; justify-content:center; gap:clamp(10px,1.2vw,18px);
+  font-size:clamp(10px,.82vw,12px); font-weight:700; letter-spacing:.22em; color:var(--wNavy);
+}
+.why__eyebrow::before,.why__eyebrow::after{
+  content:""; width:clamp(20px,2.4vw,34px); height:1px; background:#aab2c0;
+}
+.why__title{
+  margin-top:clamp(14px,1.7vw,24px);
+  font-size:var(--h2); line-height:1.4; font-weight:900;
+  letter-spacing:.01em; font-feature-settings:"palt" 0;
+}
+.why__lead{
+  margin-top:clamp(10px,1.2vw,18px);
+  font-size:clamp(12px,1.02vw,15px); line-height:1.8; color:var(--wSub);
+}
+
+/* ---- 表 ---- */
+.cmp-t{
+  margin-top:clamp(24px,3.1vw,45px);
+  display:grid;
+  grid-template-columns:minmax(0,25fr) minmax(0,29fr) minmax(0,30fr);
+  position:relative;
+}
+.cmp-t__col{min-width:0}
+
+/* 見出し帯 */
+.cmp-t__h{
+  height:clamp(38px,3.6vw,52px); display:grid; place-items:center;
+  font-size:clamp(12px,1.12vw,16px); font-weight:700; letter-spacing:.02em;
+}
+.cmp-t__h--a{background:var(--wGrayH); color:var(--wInk); border-radius:6px 6px 0 0}
+.cmp-t__h--b{background:var(--wNavyD); color:#fff; border-radius:6px 6px 0 0}
+
+/* 本体 */
+.cmp-t__body{border:1px solid var(--wLine)}
+.cmp-t__col--item .cmp-t__body{background:#fff; border-right:0; border-radius:6px 0 0 6px}
+.cmp-t__col--a    .cmp-t__body{background:var(--wGrayB); border-left:0; border-right:0}
+.cmp-t__col--b    .cmp-t__body{background:var(--wBlue); border:2px solid var(--wNavyD); border-top:0; border-radius:0 0 6px 6px}
+
+.cmp-t__cell{
+  height:clamp(74px,8.3vw,120px);
+  display:flex; align-items:center; gap:clamp(10px,1.3vw,19px);
+  padding:0 clamp(12px,1.9vw,28px);
+}
+.cmp-t__cell + .cmp-t__cell{border-top:1px solid var(--wLine)}
+.cmp-t__col--b .cmp-t__cell + .cmp-t__cell{border-top-color:#dde5f6}
+
+.cmp-t__ico{
+  flex:0 0 auto; width:clamp(24px,2.6vw,38px); aspect-ratio:1;
+  background:var(--wNavy);
+  -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.cmp-t__name{font-size:clamp(12px,1.12vw,16px); font-weight:700; line-height:1.4}
+
+.cmp-t__t{font-size:clamp(12px,1.15vw,17px); font-weight:700; line-height:1.45}
+.cmp-t__s{
+  margin-top:clamp(4px,.5vw,7px);
+  font-size:clamp(10px,.9vw,13px); line-height:1.5; color:var(--wSub);
+}
+.cmp-t__col--b .cmp-t__s{color:#4d5a72}
+.cmp-t__check{
+  flex:0 0 auto; width:clamp(20px,2.1vw,31px); aspect-ratio:1; border-radius:50%;
+  background:var(--wNavyD); display:grid; place-items:center;
+}
+.cmp-t__check svg{width:52%; height:auto; stroke:#fff; fill:none; stroke-width:2.6;
+  stroke-linecap:round; stroke-linejoin:round}
+
+/* ---- 下の帯 ---- */
+.why__foot{
+  margin-top:clamp(20px,2.4vw,35px);
+  background:#fff; border:1px solid var(--wLine); border-radius:6px;
+  padding:clamp(18px,2.2vw,32px) clamp(16px,2.2vw,32px);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:clamp(16px,2.4vw,36px);
+}
+.why__foot p{
+  border-left:3px solid var(--wNavyD);
+  padding-left:clamp(12px,1.5vw,22px);
+  font-size:clamp(14px,1.45vw,21px); line-height:1.65; font-weight:700;
+  letter-spacing:.01em;
+}
+.why__cta{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; gap:clamp(14px,2vw,30px);
+  width:clamp(240px,32vw,462px); height:var(--btn-h);
+  background:var(--wNavyD); color:#fff; border-radius:4px;
+  font-size:clamp(12px,1.12vw,16px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.why__cta:hover{background:#0a3a74}
+.why__cta svg{flex:0 0 auto; width:clamp(16px,1.4vw,20px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+
+@media (max-width:900px){
+  .why{padding-block:52px}
+  .cmp-t{grid-template-columns:1fr; gap:14px}
+  .cmp-t__col--item{display:none}          /* 項目名は各セルの中に出す */
+  .cmp-t__h--a,.cmp-t__h--b{border-radius:6px 6px 0 0}
+  .cmp-t__col--a .cmp-t__body{border:1px solid var(--wLine); border-top:0; border-radius:0 0 6px 6px}
+  .cmp-t__cell{height:auto; padding:14px 16px; align-items:flex-start}
+  .cmp-t__label{display:block !important; font-size:11px; color:var(--wSub); margin-bottom:5px}
+  .why__foot{flex-direction:column; align-items:stretch; gap:18px}
+  .why__foot p{font-size:15px}
+  .why__cta{width:100%; height:56px}
+}
+.cmp-t__label{display:none}
+
+/* ================================================================
+   EXPERTS（担当エンジニア）─ _ref/experts.png（1536x1024）の再現
+   ・写真は矩形。斜めの紺の楔と英字ラベルは写真に焼き込まれている（原画のまま）
+   ・01/02 は薄いグレーの大きな数字＋長い斜線。右（左）端に縦罫＋英字ラベル
+   ・実測: 写真1 x110-743 y262-580 ／ 写真2 x822-1431 y612-950
+   ⚠ 写真は生成画像。実在の担当者名を載せているので、本番は本人の写真に差し替える
+   ================================================================ */
+.exp{
+  --eInk:#0d1520; --eSub:#3f4756; --eMute:#8b909b; --eNum:#a8abb4;
+  --eLine:#c9ccd3; --eLabel:#9aa0aa;
+  padding-block:var(--sec-pad); background:#fff; color:var(--eInk);
+}
+.exp__eyebrow{
+  font-size:clamp(10px,.82vw,12px); font-weight:600; letter-spacing:.2em; color:#6b7280;
+}
+.exp__title{
+  margin-top:clamp(12px,1.5vw,22px);
+  font-size:var(--h2); line-height:1.42; font-weight:900;
+  letter-spacing:.01em; font-feature-settings:"palt" 0; color:#101828;
+}
+.exp__lead{
+  margin-top:clamp(12px,1.5vw,22px);
+  font-size:clamp(11.5px,.98vw,14.5px); line-height:1.85; color:#4b5563;
+}
+
+.exp__row{
+  margin-top:clamp(28px,3.6vw,52px);
+  display:grid; grid-template-columns:minmax(0,40fr) minmax(0,45fr) minmax(0,9fr);
+  gap:clamp(16px,2.6vw,38px); align-items:center;
+}
+.exp__row--rev{grid-template-columns:minmax(0,9fr) minmax(0,45fr) minmax(0,40fr)}
+.exp__row + .exp__row{border-top:1px solid #dfe2e7; padding-top:clamp(28px,3.6vw,52px)}
+
+/* 写真フレーム：本人の切り抜きを暗い地に置き、外側に紺の楔＋英字ラベル。
+   もとのモックは1枚絵だったが、実物の写真（白背景のバストアップ）に合わせて
+   地・楔・ラベルをCSSに出した。写真を差し替えても枠は崩れない。 */
+.exp__photo{
+  position:relative; margin:0; overflow:hidden;
+  aspect-ratio:633/319;
+  background:
+    radial-gradient(120% 150% at 68% 30%, #2a3644 0%, #1a2431 45%, #0e1721 100%);
+}
+.exp__row--rev .exp__photo{
+  background:radial-gradient(120% 150% at 32% 30%, #2a3644 0%, #1a2431 45%, #0e1721 100%);
+}
+.exp__photo img{
+  /* 切り抜きは頭の生え際で始まるので、126% だと上が切れる。
+     枠に収まる高さにして、上に少し余白を残す */
+  position:absolute; bottom:0; right:6%;
+  height:94%; width:auto; max-width:52%; object-fit:contain; object-position:bottom; display:block;
+  filter:saturate(.82) contrast(1.04) brightness(.96);
+}
+/* 実在の人物なので左右反転はしない */
+.exp__row--rev .exp__photo img{right:auto; left:4%}
+/* 外側の紺の楔 */
+.exp__photo::before{
+  content:""; position:absolute; inset:0; width:46%;
+  background:linear-gradient(100deg,#0b1f3d 0%,rgba(11,31,61,.86) 62%,rgba(11,31,61,0) 100%);
+  clip-path:polygon(0 0, 78% 0, 46% 100%, 0 100%);
+}
+.exp__row--rev .exp__photo::before{
+  left:auto; right:0;
+  background:linear-gradient(260deg,#0b1f3d 0%,rgba(11,31,61,.86) 62%,rgba(11,31,61,0) 100%);
+  clip-path:polygon(22% 0, 100% 0, 100% 100%, 54% 100%);
+}
+.exp__badge{
+  position:absolute; left:7%; bottom:12%;
+  font-size:clamp(8px,.72vw,10.5px); line-height:2; letter-spacing:.18em;
+  color:rgba(255,255,255,.86); white-space:nowrap;
+}
+.exp__badge::after{
+  content:""; display:block; width:34px; height:1px;
+  background:rgba(255,255,255,.5); margin-top:.9em;
+}
+.exp__row--rev .exp__badge{left:auto; right:7%; text-align:right}
+.exp__row--rev .exp__badge::after{margin-left:auto}
+
+/* 番号と斜線 */
+.exp__main{min-width:0}
+.exp__top{display:flex; align-items:flex-start; gap:clamp(10px,1.4vw,20px)}
+.exp__top > div{flex:1 1 auto; min-width:0}
+.exp__no{
+  flex:0 0 auto;
+  font-size:clamp(34px,4.2vw,61px); font-weight:300; line-height:.95;
+  color:var(--eNum); letter-spacing:.02em; font-variant-numeric:tabular-nums;
+}
+.exp__slash{
+  flex:0 0 auto; align-self:stretch; width:clamp(28px,3.4vw,50px);
+  /* 「/」の向き。to top right だと「\」になる */
+  background:linear-gradient(to bottom right,
+    transparent calc(50% - .5px), var(--eLine) calc(50% - .5px),
+    var(--eLine) calc(50% + .5px), transparent calc(50% + .5px));
+}
+.exp__name{
+  display:flex; align-items:baseline; flex-wrap:wrap; gap:0 clamp(10px,1.3vw,19px);
+}
+.exp__name b{
+  font-size:clamp(19px,2.25vw,33px); font-weight:900; letter-spacing:.03em; line-height:1.2;
+}
+.exp__name span{font-size:clamp(11px,1.12vw,16.5px); color:var(--eMute); letter-spacing:.02em}
+/* 名前が長い方は一回り小さく（原画もそうなっている） */
+.exp__row--rev .exp__name b{font-size:clamp(17px,1.98vw,29px)}
+.exp__role{
+  margin-top:clamp(12px,1.6vw,23px);
+  font-size:clamp(12px,1.15vw,17px); font-weight:700; line-height:1.5; color:#16202e;
+}
+.exp__role + p{
+  margin-top:clamp(7px,.9vw,13px);
+  font-size:clamp(11.5px,1.08vw,16px); line-height:1.5; color:#3a4250;
+}
+.exp__bio{
+  margin-top:clamp(14px,1.9vw,28px);
+  font-size:clamp(11px,1.02vw,15px); line-height:1.9; color:var(--eSub);
+}
+.exp__hr{
+  margin-top:clamp(14px,1.9vw,28px); width:clamp(40px,4.2vw,60px);
+  height:1px; background:var(--eLine); border:0;
+}
+
+/* 端の英字ラベル */
+.exp__tag{
+  font-size:clamp(9px,.79vw,11.5px); line-height:1.85; letter-spacing:.14em;
+  color:var(--eLabel); white-space:nowrap;
+  padding-left:clamp(10px,1.3vw,19px); border-left:1px solid var(--eLine);
+}
+.exp__row--rev .exp__tag{
+  padding-left:0; padding-right:clamp(10px,1.3vw,19px);
+  border-left:0; border-right:1px solid var(--eLine); text-align:right;
+}
+
+@media (max-width:900px){
+  .exp{padding-block:52px}
+  .exp__row,.exp__row--rev{grid-template-columns:1fr; gap:18px}
+  .exp__photo{order:-1}
+  .exp__tag{
+    order:9; padding:0 0 0 12px; border-left:1px solid var(--eLine);
+    border-right:0; text-align:left;
+  }
+  .exp__no{font-size:30px}
+  .exp__slash{width:24px}
+  .exp__name b{font-size:19px}
+  .exp__bio{font-size:12.5px; line-height:1.85}
+}
+
+/* ================================================================
+   BOOK（著書のご紹介）─ _ref/book.png（1586x992）の再現
+   ・上下に細い罫（実測 y=64 / y=928、色 #bcc1c9）
+   ・右の絵（書影＋引用符＋線の意匠＋縦の英字）は1枚の画像。
+     地のグラデが焼き込まれているので、左端を mask でぼかして地に溶かす
+   ・地は左が明るく右上へ暗くなる斜めのグラデ（実測）
+   ⚠ 書影は生成画像。実在の著者名・出版社を載せているので、
+     本番は実物の書影に差し替える。書名・出版社・刊行年も要確認
+   ================================================================ */
+.book{
+  --bInk:#111820; --bSub:#4a5261; --bNavy:#0b2b57; --bLine:#bcc1c9;
+  position:relative; overflow:hidden;
+  background:linear-gradient(108deg,#eef0f1 0%,#ebecee 40%,#e6e7eb 62%,#dfe1e6 100%);
+  color:var(--bInk);
+}
+.book::before,.book::after{
+  content:""; position:absolute; left:0; right:0; height:1px; background:var(--bLine);
+}
+.book::before{top:0}
+.book::after{bottom:0}
+
+/* 右の絵。もとのモックは1枚絵だったが、実物の書影（黄色・平面）に合わせて
+   引用符・線の意匠・縦のラベルをCSSに出した。書影を差し替えても崩れない。 */
+.book__visual{
+  position:absolute; right:0; top:0; bottom:0; width:min(54%,880px);
+  pointer-events:none; overflow:hidden;
+}
+.book__quote{
+  position:absolute; font-size:clamp(120px,15vw,215px); line-height:.8;
+  font-family:Georgia,"Times New Roman",serif; font-weight:700;
+  color:transparent; -webkit-text-stroke:2px #d3d7dd; letter-spacing:-.04em;
+}
+.book__quote--a{left:4%; top:6%}
+.book__quote--b{right:6%; bottom:2%}
+.book__net{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
+.book__net path{fill:none; stroke:#c3c8d1; stroke-width:1}
+.book__net circle{fill:#c3c8d1}
+.book__vlabel{
+  position:absolute; right:3.4%; top:14%;
+  writing-mode:vertical-rl; text-orientation:mixed;
+  font-size:clamp(9px,.86vw,12.5px); letter-spacing:.34em; color:#b9bec7; white-space:nowrap;
+}
+/* 書影：実物は平面なので、軽い奥行きと影で本らしく見せる */
+.book__cover{
+  position:absolute; left:45%; top:50%; height:min(70%,510px);
+  aspect-ratio:1566/2267;
+  transform:translate(-50%,-50%) perspective(1600px) rotateY(-11deg);
+  box-shadow:-22px 30px 54px rgba(22,32,52,.26), -5px 9px 16px rgba(22,32,52,.13);
+}
+.book__cover img{width:100%; height:100%; object-fit:cover; display:block}
+.book__cover::before{    /* 背 */
+  content:""; position:absolute; left:-2.2%; top:0; bottom:0; width:2.4%;
+  background:linear-gradient(90deg,#9c7d0c,#d7b11a);
+}
+.book__cover::after{     /* 小口 */
+  content:""; position:absolute; right:-2%; top:1.2%; bottom:1.2%; width:2.4%;
+  background:linear-gradient(90deg,#dedad1,#fbfaf7);
+}
+
+.book .wrap{position:relative; z-index:1}
+.book__body{
+  width:min(100%,clamp(280px,44vw,640px));
+  padding-block:var(--sec-pad);
+}
+
+.book__eyebrow{
+  display:flex; align-items:center; gap:clamp(10px,1.3vw,19px);
+  font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.06em; color:var(--bNavy);
+}
+.book__eyebrow::before{content:""; width:clamp(20px,2.4vw,35px); height:1.5px; background:var(--bNavy)}
+
+.book__title{
+  margin-top:clamp(18px,2.4vw,35px);
+  font-size:var(--h2); line-height:1.42; font-weight:900;
+  letter-spacing:.005em; font-feature-settings:"palt" 0;
+}
+.book__meta{
+  margin-top:clamp(16px,2.2vw,32px);
+  font-size:clamp(13px,1.32vw,19px); line-height:1.65; font-weight:500; color:#1b2431;
+}
+.book__hr{
+  margin-top:clamp(14px,1.8vw,26px); width:clamp(120px,15vw,220px);
+  height:1px; background:#bfc4cc; border:0;
+}
+.book__desc{
+  margin-top:clamp(14px,1.9vw,28px);
+  font-size:clamp(11.5px,1.02vw,15px); line-height:1.95; color:var(--bSub);
+}
+.book__cta{
+  margin-top:clamp(22px,3vw,44px);
+  display:inline-flex; align-items:center; justify-content:space-between; gap:clamp(20px,3vw,44px);
+  min-width:clamp(200px,21vw,308px); height:var(--btn-h);
+  padding:0 clamp(16px,2vw,29px);
+  border:1.5px solid var(--bNavy); color:var(--bNavy); background:transparent;
+  font-size:clamp(12px,1.15vw,17px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease,color .18s ease;
+}
+.book__cta:hover{background:var(--bNavy); color:#fff}
+.book__cta:hover svg{stroke:#fff}
+.book__cta svg{flex:0 0 auto; width:clamp(18px,1.6vw,23px); height:auto; stroke:var(--bNavy); fill:none; stroke-width:1.5; transition:stroke .18s ease}
+
+@media (max-width:900px){
+  .book__visual{
+    position:relative; right:auto; top:auto; bottom:auto; width:100%;
+    aspect-ratio:4/3; overflow:hidden;
+  }
+  .book__quote{font-size:110px}
+  .book__cover{height:78%}
+  .book__body{width:100%; padding-block:34px 44px}
+  .book__meta{font-size:14px}
+  .book__cta{width:100%; height:54px}
+}
+
+/* ================================================================
+   CASE STUDIES（導入事例）─ _ref/cases.png（1535x1024）の再現
+   ・地 #f2f4f6。下に一段暗い相談帯（#e4e6eb）
+   ・1件＝[ロゴ＋社名] | 縦罫 | [見出し2行＋説明2行＋詳細リンク]
+   ・実測: 見出し行送り41px ／ 区切り線 y=554 ／ 縦罫 x=575 ／ 帯の始まり y=877
+   ・ロゴは元サイトの実物（_real/logo_*.png）を透過マスクにしたもの
+   ================================================================ */
+.cases{
+  --cInk:#0d1117; --cSub:#5a6270; --cNavy:#0b2b57; --cLine:#d6d9de;
+  padding-block:var(--sec-pad) 0; background:var(--pale); color:var(--cInk);
+}
+.cases__eyebrow{
+  font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.13em; color:var(--cNavy);
+}
+.cases__title{
+  margin-top:clamp(12px,1.5vw,22px);
+  font-size:var(--h2); line-height:1.2; font-weight:900; letter-spacing:.08em;
+}
+.cases__lead{
+  margin-top:clamp(12px,1.5vw,22px);
+  font-size:clamp(12px,1.05vw,15.5px); line-height:1.8; color:#3f4653;
+}
+
+.case{
+  display:grid; grid-template-columns:minmax(0,31fr) 1px minmax(0,69fr);
+  gap:clamp(20px,3.2vw,46px);
+  padding-block:clamp(30px,4.2vw,60px);
+}
+.cases__list{margin-top:clamp(20px,2.6vw,38px)}
+.case + .case{border-top:1px solid var(--cLine)}
+.case__rule{background:var(--cLine)}
+
+.case__brand{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center}
+.case__logo{
+  width:min(100%,clamp(170px,21vw,302px)); height:clamp(38px,4.9vw,70px);
+  background:#0f2f5e;
+  -webkit-mask:center/contain no-repeat; mask:center/contain no-repeat;
+}
+.case__brand b{
+  margin-top:clamp(12px,1.6vw,23px);
+  font-size:clamp(13px,1.35vw,20px); font-weight:700; letter-spacing:.04em;
+}
+
+.case__body{display:flex; flex-direction:column; justify-content:center; min-width:0}
+.case__body h3{
+  font-size:clamp(14px,1.55vw,23px); line-height:1.62; font-weight:700; letter-spacing:.01em;
+}
+.case__body p{
+  margin-top:clamp(12px,1.6vw,23px);
+  font-size:clamp(11px,1.02vw,15px); line-height:1.85; color:var(--cSub);
+}
+.case__more{
+  align-self:flex-end; margin-top:clamp(12px,1.6vw,23px);
+  display:inline-flex; align-items:center; gap:clamp(12px,1.6vw,24px);
+  padding-bottom:6px; border-bottom:1px solid var(--cNavy);
+  font-size:clamp(11px,1.02vw,15px); font-weight:500; color:var(--cNavy);
+}
+.case__more svg{flex:0 0 auto; width:clamp(16px,1.5vw,22px); height:auto; stroke:var(--cNavy); fill:none; stroke-width:1.4}
+
+/* ---- 相談帯 ---- */
+.cases__foot{
+  margin-top:clamp(24px,3.2vw,46px); background:#e4e6eb;
+}
+.cases__foot .wrap{
+  display:flex; align-items:center; gap:clamp(16px,2.6vw,38px);
+  padding-block:clamp(22px,3vw,44px);
+}
+.cases__mail{
+  flex:0 0 auto; width:clamp(34px,3.8vw,56px); aspect-ratio:56/42;
+  stroke:var(--cNavy); fill:none; stroke-width:1.5;
+}
+.cases__foot div{flex:1 1 auto; min-width:0}
+.cases__foot b{display:block; font-size:clamp(13px,1.25vw,18px); font-weight:700; letter-spacing:.01em}
+.cases__foot p{
+  margin-top:clamp(5px,.7vw,10px);
+  font-size:clamp(11px,1.02vw,15px); line-height:1.7; color:#3f4653;
+}
+.cases__cta{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; gap:clamp(14px,2.2vw,32px);
+  width:clamp(230px,26.6vw,383px); height:var(--btn-h);
+  background:var(--cNavy); color:#fff; border-radius:2px;
+  font-size:clamp(12px,1.09vw,16px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.cases__cta:hover{background:#0a3a74}
+.cases__cta svg{flex:0 0 auto; width:clamp(16px,1.5vw,22px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+
+@media (max-width:900px){
+  .cases{padding-block:52px 0}
+  .case{grid-template-columns:1fr; gap:18px; padding-block:26px}
+  .case__rule{display:none}
+  .case__brand{flex-direction:row; justify-content:flex-start; gap:16px; text-align:left}
+  .case__logo{width:130px; height:34px; -webkit-mask-position:left center; mask-position:left center}
+  .case__brand b{margin-top:0; font-size:14px}
+  .case__body h3{font-size:15.5px}
+  .case__more{align-self:flex-start; min-height:44px; padding-block:10px 8px}
+  .cases__foot .wrap{flex-wrap:wrap; padding-block:26px}
+  .cases__mail{width:32px}
+  .cases__cta{width:100%; height:54px}
+}
+
+/* ================================================================
+   PRICE / QUOTE（料金の考え方）─ _ref/price.png（1672x941）の再現
+   ・地は白。CASES の帯（#e4e6eb）から段差をつける
+   ・表は3列。SHARE Security だけ中央に置き、紺の2px枠で囲う
+   ・実測: 表 x255-1416 y311-712 ／ 列 286/430/446
+           ヘッダー行 63px ／ 本体行 84px ／ セル本文 行送り29px
+           アイコン円 φ39（左余白34・ラベルまで20）
+           帯 y748-878 ／ ボタン 372x60 ／ 封筒 49x39（間 28）
+   ・モックの文字は大きめ（見出し46 / ボタン22 / ヘッダー22）なので、
+     ページの他セクションの級数に合わせて縮めている（版面の比率はモックどおり）
+   ================================================================ */
+.price{
+  --pInk:#16161a; --pLead:#4a5057; --pCell:#444e5a;
+  --pNavy:#082a57; --pLine:#dcdee2; --pHead:#eeeff1; --pBand:#f3f4f6; --pSub:#3d5673;
+  padding-block:var(--sec-pad); background:#fff; color:var(--pInk);
+}
+.price__head{text-align:center}
+.price__eyebrow{
+  font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.16em; color:var(--pNavy);
+}
+.price__eyebrow::after{                      /* 実測 54x2px、中央 */
+  content:""; display:block; margin:clamp(12px,1.3vw,19px) auto 0;
+  width:clamp(38px,3.75vw,54px); height:2px; background:var(--pNavy);
+}
+.price__title{
+  margin-top:clamp(15px,1.6vw,23px);            /* 実測 下線の下端→見出しのインク上端 33px */
+  font-size:var(--h2); line-height:1.34; font-weight:900; letter-spacing:.02em;
+}
+.price__lead{
+  margin-top:clamp(14px,1.7vw,24px);
+  font-size:clamp(12px,1.18vw,17px); line-height:1.88; color:var(--pLead);
+}
+
+/* ---- 表 ---- */
+.pq{
+  margin-top:clamp(20px,2.5vw,36px);            /* 実測 リード下端→表の上端 45px */
+  display:grid; grid-template-columns:minmax(0,286fr) minmax(0,430fr) minmax(0,446fr);
+  border:1px solid var(--pLine);
+}
+.pq__row{display:contents}
+.pq__c{
+  min-width:0; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; padding-inline:clamp(10px,1.4vw,20px);
+}
+.pq__row + .pq__row .pq__c{border-top:1px solid var(--pLine)}
+
+/* SHARE 列は紺の枠で通す（実測 2px） */
+.pq__c--share{border-inline:2px solid var(--pNavy)}
+.pq__row:last-child .pq__c--share{border-bottom:2px solid var(--pNavy)}
+
+/* 見出し行 */
+.pq__row--h .pq__c{
+  height:clamp(44px,4.4vw,63px);
+  font-size:clamp(13px,1.25vw,18px); font-weight:700; letter-spacing:.02em;
+}
+.pq__row--h .pq__c--share{background:var(--pNavy); color:#fff; border-top:2px solid var(--pNavy)}
+.pq__row--h .pq__c--other{background:var(--pHead)}
+
+/* 本体行 */
+.pq__row:not(.pq__row--h) .pq__c{height:clamp(72px,5.9vw,85px)}
+.pq__c p{font-size:clamp(11px,1.04vw,15px); line-height:1.9; color:var(--pCell)}
+
+/* 項目列：紺の丸に白抜きアイコン ＋ ラベル */
+.pq__c--item{
+  justify-content:flex-start; gap:clamp(10px,1.4vw,20px);
+  padding-left:clamp(16px,2.4vw,34px); padding-right:clamp(8px,1vw,14px);
+}
+.pq__ico{
+  flex:0 0 auto; width:clamp(28px,2.7vw,39px); aspect-ratio:1; border-radius:50%;
+  background:var(--pNavy);
+}
+.pq__ico i{
+  /* 高さで揃える。抜き出したPNGは実測のグリフに上下2pxの余白がつくので、
+     円φ39 に対し 59%（＝23px）でモックのグリフ（ink 18px）と一致する */
+  display:block; width:100%; height:100%; background:#fff;
+  -webkit-mask:center/auto 59% no-repeat; mask:center/auto 59% no-repeat;
+}
+.pq__name{font-size:clamp(13px,1.25vw,18px); font-weight:700; letter-spacing:.01em; line-height:1.4}
+
+/* ---- 下の帯 ---- */
+.price__foot{
+  margin-top:clamp(24px,2.5vw,36px); background:var(--pBand);
+  padding-block:clamp(14px,1.35vw,19px);        /* 実測 帯の高さ130px（上下19.5 + 中身91） */
+  display:flex; flex-direction:column; align-items:center;
+}
+.price__act{display:flex; align-items:center; gap:clamp(14px,1.95vw,28px)}
+.price__mail{
+  flex:0 0 auto; width:clamp(34px,3.4vw,49px); aspect-ratio:49/39;
+  stroke:var(--pNavy); fill:none; stroke-width:1.6;
+}
+.price__cta{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; gap:clamp(20px,3vw,44px);
+  width:clamp(250px,25.8vw,372px); height:var(--btn-h);
+  background:var(--pNavy); color:#fff; border-radius:2px;
+  font-size:clamp(13px,1.18vw,17px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.price__cta:hover{background:#0a3a74}
+.price__cta svg{flex:0 0 auto; width:clamp(16px,1.6vw,23px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+.price__note{
+  margin-top:clamp(8px,.76vw,11px);             /* 実測 ボタン下端→補足文のインク上端 16px */
+  font-size:clamp(11px,.97vw,14px); color:var(--pSub); letter-spacing:.01em;
+}
+
+.pq__tag{display:none}
+@media (max-width:900px){
+  .price{padding-block:52px}
+  .pq{grid-template-columns:1fr; border:0; margin-top:24px}
+  .pq__row{display:block; border:1px solid var(--pLine); border-radius:4px; overflow:hidden}
+  .pq__row--h{display:none}                  /* ← .pq__row より後に置くこと（同順位で後勝ち） */
+  .pq__row + .pq__row{margin-top:12px}
+  .pq__row + .pq__row .pq__c{border-top:0}
+  .pq__c{height:auto !important; display:block; text-align:left; padding:14px 16px}
+  .pq__c--item{display:flex; align-items:center; background:var(--pale); padding:12px 16px}
+  .pq__c--share{border-inline:0; border-left:3px solid var(--pNavy); background:#f7f9fd}
+  .pq__row:last-child .pq__c--share{border-bottom:0}
+  .pq__c--other{border-top:1px solid var(--pLine)}
+  .pq__tag{display:block; margin-bottom:5px; font-size:11px; font-weight:700; color:#6a7280; letter-spacing:.04em}
+  .pq__c--share .pq__tag{color:var(--pNavy)}
+  .price__foot{padding:20px 16px}
+  .price__act{flex-direction:column; gap:14px; width:100%}
+  .price__cta{width:100%; height:54px}
+}
+
+/* ================================================================
+   HOW TO GET A QUOTE（お見積もり方法）─ _ref/quote.png（1535x1024）の再現
+   ・地 #f1f2f5。左揃え（中央揃えの PRICE と対にする）
+   ・2案を左右に並べ、中央に縦罫＋「or」の丸。推奨側は左に紺の縦バー
+   ・実測（原画1355px幅 → こちらは1218px、係数0.899）:
+       紺バー x89-97(8px) y298-779 ／ 中央罫 x774-775 y307-770
+       「or」 φ68 中心(775,524)・地色で罫を抜き、まわり11pxも地色
+       番号 01 x155-230 y312-368（字高57）／ 見出し 字送り26
+       説明 行送り30 ／ 罫 y475,585,683 ／ 項目のピッチ98
+       アイコン円 φ67（紺 #072b5c ／ 灰 #747b84）
+       帯 x89-1444 y843-972 ／ ボタン 366x65 ／ 封筒 48x36
+   ・アイコン6点は原画から抜いた透過マスク（`img/quote/ic-*.png`）。
+     灰の円は地が明るいので `--floor 165`（紺と同じ110だと四角い影が残る）
+   ================================================================ */
+.quote{
+  --qBg:var(--pale); --qNavy:#072b5c; --qInk:#16161a; --qBody:#33383f;
+  --qGray:#747b84; --qSub:#656f7c; --qLine:#c8cdd7; --qBand:#f6f7f9;
+  padding-block:var(--sec-pad); background:var(--qBg); color:var(--qInk);
+}
+.quote__eyebrow{font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.16em; color:var(--qNavy)}
+.quote__title{
+  margin-top:clamp(9px,.9vw,13px);
+  font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.04em;
+}
+.quote__lead{
+  margin-top:clamp(12px,1.25vw,18px);
+  font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--qBody);
+}
+
+/* ---- 2案 ---- */
+.q-cols{
+  margin-top:clamp(26px,3.2vw,46px);
+  /* 実測の列比 607 : 158（罫の入る間） : 590。左は紺バー＋余白55pxを内側に持つ */
+  display:grid; grid-template-columns:minmax(0,607fr) minmax(0,158fr) minmax(0,590fr);
+  align-items:stretch;
+}
+.q-col{padding-block:2px 0; min-width:0}      /* 紺バーの上下端は実測 15/14px。上は数字の行間で足りる */
+.q-col--main{border-left:clamp(4px,.49vw,7px) solid var(--qNavy); padding-left:clamp(16px,3.3vw,48px)}
+
+/* 中央の縦罫と「or」 */
+.q-or{
+  position:relative; width:2px; margin:9px auto; background:var(--qLine);
+  display:flex; align-items:center; justify-content:center;
+}
+.q-or span{
+  flex:0 0 auto;                                 /* 親が2pxなので指定しないと潰れる */
+  width:clamp(38px,4.24vw,61px); aspect-ratio:1; border-radius:50%;
+  border:1px solid #c9ced6; background:var(--qBg);
+  box-shadow:0 0 0 clamp(6px,.7vw,10px) var(--qBg);
+  display:grid; place-items:center;
+  font-size:clamp(11px,1.04vw,15px); color:#5a616b; letter-spacing:.02em;
+}
+
+/* 番号＋見出し */
+.q-head{display:flex; align-items:center; gap:clamp(10px,2.1vw,30px)}
+.q-num{
+  flex:0 0 auto; font-size:clamp(36px,4.58vw,66px); line-height:1;   /* 実測の字高57px（×0.899=51）に合わせた */
+  font-weight:700; letter-spacing:.02em; color:var(--qGray);
+}
+.q-col--main .q-num{color:var(--qNavy)}
+.q-head h3{
+  font-size:clamp(15px,1.53vw,22px); line-height:1.4; font-weight:700;
+  font-feature-settings:"palt" 1; white-space:nowrap;   /* 原画は1行。折り返すと段が崩れる */
+}
+.q-col--main .q-head h3{color:var(--qNavy)}
+.q-badge{
+  flex:0 0 auto; display:grid; place-items:center;
+  width:clamp(34px,3.33vw,48px); height:clamp(24px,2.36vw,34px);
+  border:1px solid var(--qNavy); border-radius:2px;
+  font-size:clamp(10px,.9vw,13px); font-weight:700; color:var(--qNavy);
+}
+.q-desc{
+  margin-top:clamp(8px,1.04vw,15px);
+  font-size:clamp(11px,1.04vw,15px); line-height:1.78; color:var(--qBody);
+}
+
+/* 3つの箇条 */
+.q-feat{
+  margin-top:clamp(16px,2vw,29px);
+  border-top:1px solid var(--qLine);
+}
+.q-item{
+  display:flex; align-items:center; gap:clamp(12px,1.53vw,22px);
+  padding-block:clamp(9px,1.11vw,16px) clamp(9px,1.04vw,15px);
+}
+.q-item + .q-item{border-top:1px solid var(--qLine); padding-top:clamp(9px,.9vw,13px)}
+.q-item:last-child{padding-bottom:clamp(9px,.9vw,13px)}
+.q-ico{
+  flex:0 0 auto; width:clamp(38px,4.17vw,60px); aspect-ratio:1; border-radius:50%;
+  background:var(--qGray);
+}
+.q-col--main .q-ico{background:var(--qNavy)}
+.q-ico i{
+  display:block; width:100%; height:100%; background:#fff;
+  -webkit-mask:center/auto 57% no-repeat; mask:center/auto 57% no-repeat;
+}
+.q-item b{display:block; font-size:clamp(13px,1.18vw,17px); font-weight:700; line-height:1.4; color:#0b0e14}
+.q-item p{
+  margin-top:clamp(4px,.42vw,6px);
+  font-size:clamp(11px,.94vw,13.5px); line-height:1.5; color:var(--qSub);
+}
+
+/* ---- 下の帯 ---- */
+.quote__foot{
+  margin-top:clamp(26px,4vw,58px);
+  background:var(--qBand); border:1px solid #e3e5eb;
+  padding:clamp(18px,2.2vw,32px) clamp(18px,10.7vw,154px);
+  display:flex; align-items:center; gap:clamp(14px,2.5vw,36px);
+}
+.quote__mail{
+  flex:0 0 auto; width:clamp(30px,2.99vw,43px); aspect-ratio:48/36;
+  stroke:var(--qNavy); fill:none; stroke-width:1.6;
+}
+.quote__txt{flex:1 1 auto; min-width:0}
+.quote__txt b{display:block; font-size:clamp(14px,1.39vw,20px); font-weight:700; letter-spacing:.01em; color:#1d212d}
+.quote__txt p{
+  margin-top:clamp(4px,.42vw,6px);
+  font-size:clamp(11px,.97vw,14px); line-height:1.6; color:#53555f;
+}
+.quote__cta{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; gap:clamp(16px,2.4vw,35px);
+  width:clamp(220px,22.9vw,330px); height:var(--btn-h);
+  background:var(--qNavy); color:#fff; border-radius:2px;
+  font-size:clamp(12px,1.11vw,16px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.quote__cta:hover{background:#0a3a74}
+.quote__cta svg{flex:0 0 auto; width:clamp(16px,1.53vw,22px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+
+@media (max-width:900px){
+  .quote{padding-block:52px}
+  .q-cols{grid-template-columns:1fr; row-gap:0}
+  .q-or{width:auto; height:auto; background:none; padding-block:18px}
+  .q-or span{box-shadow:none; border-color:var(--qLine)}
+  .q-col--main{border-left-width:4px; padding-left:16px}
+  .q-head{gap:14px; flex-wrap:wrap}
+  .q-head h3{white-space:normal}
+  .q-num{font-size:40px}
+  .q-head h3{font-size:17px}
+  .quote__foot{flex-direction:column; align-items:stretch; gap:16px; padding:22px 18px; text-align:left}
+  .quote__mail{width:32px}
+  .quote__cta{width:100%; height:54px}
+}
+
+/* ================================================================
+   SERVICE FLOW（サービスフロー）─ _ref/flow.png（1505x1045）の再現
+   ・地 #f9f9fa。白のカード3×2、間に矢印。上に工程名の括弧
+   ・実測（原画1298px幅 → こちらは1218px、係数0.938）:
+       カード x101-487 / 553-943 / 1010-1399（幅386・間66）高さ270
+       括弧の線 y268、両端の足は2px幅・カード上端まで30px
+       カード内: STEP行 y329-361 ／ 罫 y380（75x2）／ 期間 y404
+                 見出し y450-475 ／ 説明 y503 ／ 下余白48
+       矢印 中心(520,427) 26x18 ／ 注記 y968
+   ・STEP4/5 の期間は原画では「—」。文字なので行の高さが揃う
+   ================================================================ */
+.flow{
+  --fBg:#fff; --fCard:#fff; --fBorder:#e5e8ef; --fCap:#b3bac8;
+  --fNavy:#072b5c; --fRule:#7a86a1; --fSub:#6a6e78; --fInk:#16161a; --fBody:#4a4f5a;
+  --fgap:clamp(16px,4.3vw,62px);
+  padding-block:var(--sec-pad); background:#fff; color:var(--fInk);
+}
+.flow__eyebrow{font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.16em; color:var(--fNavy)}
+.flow__title{
+  margin-top:clamp(9px,.9vw,13px);
+  font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.04em;
+}
+.flow__lead{
+  margin-top:clamp(12px,1.25vw,18px);
+  font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--fBody);
+}
+
+.flow__row{margin-top:clamp(22px,2.15vw,31px)}
+.flow__row + .flow__row{margin-top:clamp(26px,3.4vw,49px)}
+
+/* ---- 工程名の括弧 ---- */
+.fcaps,.fsteps{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--fgap)}
+.fsteps{margin-top:clamp(8px,.97vw,14px)}
+.fcap{display:flex; align-items:center; gap:clamp(8px,1.25vw,18px); min-width:0}
+.fcap--2{grid-column:span 2}
+.fcap i{position:relative; flex:1 1 auto; height:1px; background:var(--fCap)}
+.fcap i::before{                             /* 端の足。カードの上端まで下ろす */
+  content:""; position:absolute; top:0; width:2px; height:clamp(14px,1.94vw,28px); background:var(--fCap);
+}
+.fcap i:first-child::before{left:0}
+.fcap i:last-child::before{right:0}
+.fcap b{
+  flex:0 0 auto; font-size:clamp(13px,1.39vw,20px); font-weight:700;
+  letter-spacing:.1em; color:var(--fNavy);
+}
+
+/* ---- カード ---- */
+.fstep{
+  position:relative; min-width:0;
+  background:var(--fCard); border:1px solid var(--fBorder); border-radius:2px;
+  padding:clamp(14px,1.67vw,24px) clamp(16px,2.08vw,30px) clamp(22px,2.78vw,40px);
+}
+.fstep__no{display:flex; align-items:baseline; gap:clamp(6px,.76vw,11px); color:var(--fNavy)}
+.fstep__no span{font-size:clamp(12px,1.25vw,18px); font-weight:700; letter-spacing:.1em}
+.fstep__no b{font-size:clamp(28px,2.99vw,43px); font-weight:700; line-height:1}
+.fstep__rule{
+  margin-top:clamp(5px,.56vw,8px);
+  width:clamp(44px,4.86vw,70px); height:2px; background:var(--fRule);
+}
+.fstep__when{
+  margin-top:clamp(11px,1.11vw,16px);
+  font-size:clamp(11px,1.04vw,15px); line-height:1.6; color:var(--fSub);
+}
+.fstep h3{
+  margin-top:clamp(12px,1.18vw,17px);
+  font-size:clamp(17px,1.74vw,25px); line-height:1.35; font-weight:700; letter-spacing:.01em;
+}
+.fstep .fstep__desc{                                /* ← .fstep p にすると __no / __when にも当たる */
+  margin-top:clamp(12px,1.18vw,17px);
+  font-size:clamp(11px,1.04vw,15px); line-height:1.6; color:var(--fBody);
+}
+.fstep__arrow{
+  position:absolute; top:50%; left:calc(100% + var(--fgap) / 2);
+  transform:translate(-50%,-50%);
+  width:clamp(16px,1.67vw,24px); height:auto;
+  stroke:#4d5f83; fill:none; stroke-width:1.4;
+}
+.fstep__tag{
+  display:none;                              /* PCでは括弧が工程名を出すので隠す */
+  margin-bottom:10px; font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--fNavy);
+}
+.flow__note{
+  margin-top:clamp(18px,1.94vw,28px);
+  font-size:clamp(10px,.97vw,14px); line-height:1.6; color:var(--fSub);
+}
+
+@media (max-width:900px){
+  .flow{padding-block:52px; --fgap:14px}
+  .fcaps{display:none}                       /* 括弧は横並び前提。縦積みでは工程名をカードに出す */
+  .fsteps{grid-template-columns:1fr; margin-top:0; gap:12px}
+  .flow__row{margin-top:26px}
+  .flow__row + .flow__row{margin-top:12px}
+  .fstep{padding:18px 18px 22px}
+  .fstep__arrow{display:none}
+  .fstep h3{font-size:19px}
+  .fstep__tag{display:block}                 /* ← 既定の none より後に置くこと */
+}
+
+/* ================================================================
+   生成AIアプリケーションの脆弱性診断も対応
+   ・原画なし。文言は元サイト（share-security.com）の同名セクションが出典
+   ・地は白。サービスフロー(#f9f9fa)とレポート集(#f2f4f6)の間に挟む
+   ================================================================ */
+.gai{
+  --gInk:#16161a; --gNavy:#0b2b57; --gBody:#3f444c; --gLine:#dfe3e9;
+  padding-block:var(--sec-pad); background:var(--pale); color:var(--gInk);
+}
+.gai__head{text-align:center}
+.gai__eyebrow{font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.16em; color:var(--gNavy)}
+.gai__title{
+  margin-top:clamp(12px,1.4vw,20px);
+  font-size:var(--h2); line-height:1.35; font-weight:900; letter-spacing:.02em;
+}
+.gai__lead{
+  margin:clamp(14px,1.7vw,24px) auto 0; max-width:880px;
+  font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--gBody); text-align:left;
+}
+.gai__list{
+  margin-top:clamp(26px,3.2vw,46px);
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(14px,1.9vw,28px);
+}
+.gai__item{
+  border:1px solid var(--gLine); border-left:3px solid var(--gNavy); border-radius:2px;
+  padding:clamp(18px,2.15vw,31px) clamp(16px,1.94vw,28px);
+}
+.gai__item b{display:block; font-size:clamp(14px,1.32vw,19px); font-weight:700; line-height:1.4; color:var(--gNavy)}
+.gai__item p{
+  margin-top:clamp(9px,1.04vw,15px);
+  font-size:clamp(11px,1.04vw,15px); line-height:1.7; color:var(--gBody);
+}
+.gai__note{
+  margin-top:clamp(20px,2.36vw,34px);
+  font-size:clamp(12px,1.04vw,15px); line-height:1.8; color:var(--gBody); text-align:center;
+}
+@media (max-width:900px){
+  .gai{padding-block:52px}
+  .gai__list{grid-template-columns:1fr; gap:12px}
+  .gai__note{text-align:left}
+}
+
+/* ================================================================
+   RESEARCH & ARTICLE（生成AI 脆弱性レポート集）─ _ref/article.png（1536x1024）の再現
+   ・地 #f2f4f6。右上に斜めの装飾（明るい斜線2本＋右上が沈むグラデ、y325まで）
+   ・記事カード3枚。写真 414x195 ／ 間48
+   ・実測（原画1333px幅 → こちら1218px、係数0.914）:
+       写真 x101-514 / 562-974 / 1021-1433、y353-547
+       カテゴリ行 y576-584（罫 x271-419 #d9dee5）
+       見出し 行送り30 ／ 説明 行送り28 ／ 矢印 y746-760（20x15）
+       下罫 y778 ／ ボタン 270x57（y851）中央
+       装飾の斜線 dx/dy = -0.4167（＝22.6°）
+   ・写真3枚は原画からの切り出し（`img/art/a*.jpg`）。本番は実記事のサムネに差し替える前提
+   ================================================================ */
+.art{
+  position:relative; overflow:hidden;
+  --aInk:#0e1926; --aLead:#2e3d51; --aCat:#5b6c85; --aDate:#69788b;
+  --aTitle:#101f36; --aBody:#5d6877; --aLine:#d9dee5; --aNavy:#082f60;
+  padding-block:var(--sec-pad);
+  background:#fff; color:var(--aInk);
+}
+/* 右上の装飾 */
+.art__deco{
+  position:absolute; top:0; right:0; width:min(60%,760px); height:clamp(160px,20.6vw,297px);
+  overflow:hidden; pointer-events:none;
+  background:linear-gradient(112.6deg,rgba(197,207,217,0) 34%,rgba(150,172,196,.42) 100%);
+}
+.art__deco i{
+  position:absolute; top:-12%; height:130%; width:1px;
+  background:rgba(255,255,255,.85);
+  transform:rotate(22.6deg); transform-origin:top center;
+}
+.art__deco i:nth-child(1){right:20.5%}
+.art__deco i:nth-child(2){right:1.5%}
+.art .wrap{position:relative; z-index:1}
+
+.art__eyebrow{
+  display:flex; align-items:center;
+  font-size:clamp(10px,.9vw,13px); font-weight:700; letter-spacing:.26em; color:var(--aTitle);
+}
+.art__eyebrow::after{
+  content:""; margin-left:clamp(10px,1.6vw,23px);
+  width:clamp(30px,3.7vw,53px); height:1px; background:#5a6270;
+}
+.art__title{
+  margin-top:clamp(16px,1.6vw,23px);
+  font-size:var(--h2); line-height:1.28; font-weight:900; letter-spacing:.03em;
+}
+.art__lead{
+  margin-top:clamp(14px,1.6vw,23px);
+  font-size:clamp(12px,1.11vw,16px); line-height:1.78; color:var(--aLead);
+}
+
+/* ---- 記事カード ---- */
+.art__list{
+  margin-top:clamp(28px,4.9vw,70px);
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(18px,3.05vw,44px);
+}
+.acard{display:flex; flex-direction:column; min-width:0}
+.acard__img{
+  display:block; width:100%; aspect-ratio:414/195; object-fit:cover;
+}
+.acard__meta{
+  display:flex; align-items:center; gap:clamp(10px,1.6vw,23px);
+  margin-top:clamp(16px,1.8vw,26px);
+  font-size:clamp(9px,.76vw,11px); font-weight:700; letter-spacing:.12em;
+}
+.acard__cat{flex:0 0 auto; color:var(--aCat)}
+.acard__meta i{flex:1 1 auto; height:1px; background:var(--aLine)}
+.acard__date{flex:0 0 auto; color:var(--aDate); letter-spacing:.1em}
+.acard h3{
+  margin-top:clamp(9px,1.11vw,16px);
+  /* 原画は 22字がカード幅ぴったり（字送り18.7）。同じ比だと環境差で折り返すので一段落とす */
+  font-size:clamp(15px,1.25vw,18px); line-height:1.42; font-weight:700; color:var(--aTitle);
+  font-feature-settings:"palt" 1;
+}
+.acard__desc{
+  margin-top:clamp(6px,.7vw,10px);
+  font-size:clamp(11px,1.08vw,15.5px); line-height:1.68; color:var(--aBody);
+}
+.acard__more{
+  margin-top:auto; padding-top:clamp(8px,.83vw,12px); min-height:24px;
+  display:flex; justify-content:flex-end;
+}
+.acard__more svg{
+  width:clamp(14px,1.25vw,18px); height:auto; stroke:var(--aNavy); fill:none; stroke-width:1.5;
+}
+.acard__rule{margin-top:clamp(10px,1.11vw,16px); height:1px; background:#cdd4dc}
+.acard:hover .acard__more svg{transform:translateX(4px)}
+.acard__more svg{transition:transform .18s ease}
+
+.art__cta{
+  margin:clamp(34px,4.65vw,67px) auto 0;
+  display:flex; align-items:center; justify-content:center; gap:clamp(10px,1.32vw,19px);
+  width:clamp(210px,17.15vw,247px); height:var(--btn-h-s);
+  background:var(--aNavy); color:#fff; border-radius:2px;
+  font-size:clamp(12px,1.04vw,15px); font-weight:700; letter-spacing:.03em;
+  transition:background .18s ease;
+}
+.art__cta:hover{background:#0a3a74}
+.art__cta i{
+  flex:0 0 auto; width:clamp(14px,1.18vw,17px); aspect-ratio:1; background:#fff;
+  -webkit-mask:url(img/ic/document.svg) center/contain no-repeat;
+          mask:url(img/ic/document.svg) center/contain no-repeat;
+}
+.art__cta svg{flex:0 0 auto; width:clamp(15px,1.32vw,19px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+
+@media (max-width:900px){
+  .art{padding-block:44px 52px}
+  .art__deco{width:78%; height:150px}
+  .art__list{grid-template-columns:1fr; gap:32px}
+  .acard h3{font-size:17px}
+  .art__cta{width:100%; height:54px}
+}
+
+/* ================================================================
+   FAQ（よくあるご質問）─ _ref/faq.png（1435x1096）の再現
+   ・地 #f6f6f8。アコーディオンは**中央の細い版面**（原画 x256-1178 = 923px）
+     ほかのセクションのように全幅にはしない
+   ・実測: リスト y286-1021 ／ 閉じた行79px ／ 開いた行174px
+           Q. x283-304（22x22）／ 質問 x329（字送り18.1）
+           ＋/− x1119-1139（21x21）／ 回答 行送り28・左端は質問と揃える
+           開いている行だけ地が #eff2f7
+   ・<details>/<summary> で実際に開閉する
+   ・🚨 原画に載っているのは1問目の回答だけ。2〜8はこのLPの既存記述から起こしたドラフト
+   ================================================================ */
+.faq{
+  --fqInk:#14161c; --fqNavy:#0e2a5c; --fqBody:#3a3d45; --fqLine:#e2e5ec;
+  --fqBorder:#e5e6eb; --fqOpen:#eff2f7;
+  padding-block:var(--sec-pad); background:var(--pale); color:var(--fqInk);
+}
+.faq__head{text-align:center}
+.faq__eyebrow{font-size:clamp(11px,1.02vw,15px); font-weight:700; letter-spacing:.16em; color:#14304f}
+.faq__eyebrow::after{
+  content:""; display:block; margin:clamp(12px,1.25vw,18px) auto 0;
+  width:clamp(20px,1.88vw,27px); height:2px; background:#4b6380;
+}
+.faq__title{
+  margin-top:clamp(17px,1.94vw,28px);
+  font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.02em; color:#0d1b2b;
+}
+.faq__lead{
+  margin-top:clamp(16px,1.81vw,26px);
+  font-size:clamp(12px,1.11vw,16px); line-height:1.8; color:#3a404c;
+}
+
+.faq__list{
+  margin:clamp(32px,3.82vw,55px) auto 0;
+  max-width:927px;                            /* 原画 923px。全幅にはしない */
+  border:1px solid var(--fqBorder); border-radius:2px;
+}
+.faq__item + .faq__item{border-top:1px solid var(--fqLine)}
+.faq__item[open]{background:var(--fqOpen)}
+.faq__item > summary{
+  list-style:none; cursor:pointer;
+  display:flex; align-items:center; gap:clamp(12px,1.74vw,25px);
+  min-height:clamp(58px,5.49vw,79px);
+  padding:clamp(14px,1.4vw,20px) clamp(18px,2.78vw,40px) clamp(14px,1.4vw,20px) clamp(16px,1.94vw,28px);
+}
+.faq__item > summary::-webkit-details-marker{display:none}
+.faq__item > summary::marker{content:""}
+.faq__q{
+  flex:0 0 auto; width:clamp(16px,1.53vw,22px);
+  font-size:clamp(15px,1.46vw,21px); font-weight:700; line-height:1; color:var(--fqNavy);
+}
+.faq__t{
+  flex:1 1 auto; min-width:0;
+  font-size:clamp(13px,1.25vw,18px); line-height:1.5; font-weight:500; color:var(--fqInk);
+}
+.faq__ico{
+  flex:0 0 auto; position:relative;
+  width:clamp(16px,1.46vw,21px); aspect-ratio:1;
+}
+.faq__ico::before,.faq__ico::after{content:""; position:absolute; background:#16355e}
+.faq__ico::before{left:0; right:0; top:calc(50% - 1px); height:2px}
+.faq__ico::after{top:0; bottom:0; left:calc(50% - 1px); width:2px; transition:opacity .15s ease}
+.faq__item[open] .faq__ico::after{opacity:0}
+
+.faq__a{
+  /* 左端は質問文と揃える（Q.幅 ＋ 余白ぶんだけ内側） */
+  padding:0 clamp(18px,2.78vw,40px) clamp(20px,2.71vw,39px)
+          calc(clamp(16px,1.94vw,28px) + clamp(16px,1.53vw,22px) + clamp(12px,1.74vw,25px));
+}
+.faq__a p{font-size:clamp(11px,1.08vw,15.5px); line-height:1.82; color:var(--fqBody)}
+
+@media (max-width:900px){
+  .faq{padding-block:52px}
+  .faq__list{margin-top:26px}
+  .faq__item > summary{gap:12px; padding:14px 16px}
+  .faq__t{font-size:14.5px}
+  .faq__a{padding:0 16px 20px 44px}
+}
+
+/* ================================================================
+   NEWS（お知らせ）─ _ref/news.png（1536x1024）の再現
+   ・地 #f5f6f8。見出しは「NEWS ＋ お知らせ」の横並び、右にボタン
+   ・実測（原画1355px幅 → こちら1218px、係数0.899）:
+       罫 x92-1446 ／ 行のピッチ179（サムネ146＋上下18）
+       サムネ x114-484（371x146）／ 本文の左端 x535（サムネから51）
+       日付 x534-629 ／ 区切り「|」x651 ／ タグ x672-784（113x32・地#e6e9ee）
+       見出し y331（字送り22・行送り36）／「詳細を見る」x1300-1428
+       ボタン 307x66 ／ 注記 y967
+   ・🚨 サムネ4枚（img/news/n*.jpg）とお知らせ4件の中身は**すべてモックの創作**。
+     Interop Tokyo / ITmedia は実在の第三者、書籍『ハイブリッド診断の教科書』は存在しない
+     （実在するのは『騙されるAI』講談社+α新書・2025年8月）。公開前に必ず差し替える
+   ================================================================ */
+.news{
+  --nInk:#101a29; --nHead:#0d1a2b; --nLead:#2a2f3a; --nNavy:#092a53;
+  --nDate:#2b3444; --nLine:#d7d9de; --nChip:#e6e9ee; --nCard:#e2e4ea;
+  padding-block:var(--sec-pad); background:#fff; color:var(--nInk);
+}
+.news__top{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:clamp(20px,3vw,44px);
+}
+.news__ttl{display:flex; align-items:baseline; gap:clamp(9px,1.11vw,16px)}
+.news__ttl h2{font-size:var(--h2); font-weight:900; letter-spacing:.04em; line-height:1; color:var(--nHead)}
+.news__ttl span{font-size:clamp(13px,1.18vw,17px); font-weight:700; letter-spacing:.04em; color:#16161a}
+.news__lead{
+  margin-top:clamp(14px,1.6vw,23px);
+  font-size:clamp(12px,1.04vw,15px); line-height:1.85; color:var(--nLead);
+}
+.news__all{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; gap:clamp(16px,2.4vw,35px);
+  width:clamp(210px,19.17vw,276px); height:var(--btn-h);
+  background:var(--nNavy); color:#fff; border-radius:2px;
+  font-size:clamp(12px,1.01vw,14.5px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.news__all:hover{background:#0a3a74}
+.news__all svg{flex:0 0 auto; width:clamp(16px,1.46vw,21px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+
+.news__list{margin-top:clamp(24px,3.05vw,44px); border-top:1px solid var(--nLine)}
+.nitem{
+  display:grid; grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center; gap:clamp(18px,3.19vw,46px);
+  padding-block:clamp(12px,1.11vw,16px);
+  border-bottom:1px solid var(--nLine);
+}
+.nitem__img{
+  flex:0 0 auto; display:block;
+  width:clamp(120px,23.19vw,334px); aspect-ratio:371/146; object-fit:cover;
+  background:#fff;
+}
+.nitem--card .nitem__img{border:1px solid var(--nCard)}
+.nitem__meta{display:flex; align-items:center; gap:clamp(10px,1.32vw,19px); font-size:clamp(11px,.94vw,13.5px)}
+.nitem__date{font-weight:500; letter-spacing:.05em; color:var(--nDate)}
+.nitem__meta::after{content:none}
+.nitem__bar{width:1px; height:1em; background:#b9bec8}
+.nitem__tag{
+  display:grid; place-items:center;
+  min-width:clamp(72px,7.08vw,102px); height:clamp(22px,2.01vw,29px); padding-inline:10px;
+  background:var(--nChip); color:#0d285b; border-radius:2px;
+  font-size:clamp(10px,.87vw,12.5px); font-weight:700; letter-spacing:.02em;
+}
+.nitem h3{
+  margin-top:clamp(9px,1.11vw,16px);
+  font-size:clamp(14px,1.39vw,20px); line-height:1.64; font-weight:700; color:var(--nInk);
+}
+.nitem__more{
+  flex:0 0 auto; display:flex; align-items:center; gap:clamp(12px,1.88vw,27px);
+  font-size:clamp(11px,.94vw,13.5px); font-weight:500; color:var(--nNavy);
+  white-space:nowrap;
+}
+.nitem__more svg{flex:0 0 auto; width:clamp(16px,1.6vw,23px); height:auto; stroke:var(--nNavy); fill:none; stroke-width:1.4; transition:transform .18s ease}
+.nitem:hover .nitem__more svg{transform:translateX(4px)}
+.news__note{
+  margin-top:clamp(11px,1.04vw,15px);
+  font-size:clamp(10px,.83vw,12px); line-height:1.6; color:#767b86;
+}
+
+@media (max-width:900px){
+  .news{padding-block:52px}
+  .news__top{flex-direction:column; align-items:stretch; gap:18px}
+  .news__all{width:100%; height:54px}
+  .nitem{grid-template-columns:1fr; gap:14px; padding-block:22px}
+  .nitem__img{width:100%}
+  .nitem h3{font-size:16px}
+  .nitem__more{justify-content:flex-end}
+}
+
+/* ================================================================
+   CONTACT ＋ フッター ─ _ref/contact.png（1448x1086）の再現
+   ・地は白。中に大きなパネル（x38-1408 y42-789 / 地#f1f4f7 枠#dfe2e5）
+   ・パネルの中は [左＝訴求＋ボタン] [右＝白のフォームカード]
+   ・実測（原画1371px幅 → こちら1218px、係数0.888）:
+       フォームカード x679-1339（661x660）／ 入力欄 x711-1307（幅597・高さ52）
+       ボタン x115-543（429x78）／ 罫 y374 ／ チェック丸 φ19
+       ラベル y122 ／ 入力 y153 ／ テキストエリア 124px ／ 同意行 y626
+       フッター：上罫 y836・ロゴ y890-927・区切り y989・著作権 y1024
+       ナビの間隔 67px、右端はパネルと揃う
+   ・入力欄は実際に動く（フォーム送信先は未接続 ＝ action は空）
+   ================================================================ */
+.ct{
+  --cPanel:#f1f4f7; --cPanelB:#dfe2e5; --cNavy:#0a2a4e; --cInk:#151a22;
+  --cLead:#4e5159; --cSub:#4f5866; --cNote:#848e9a; --cField:#d9e2ed; --cPh:#bdc3cc;
+  padding-block:var(--sec-pad); background:#fff; color:var(--cInk);
+}
+.ct__panel{
+  display:grid; grid-template-columns:minmax(0,641fr) minmax(0,661fr);
+  align-items:center;
+  background:var(--cPanel); border:1px solid var(--cPanelB); border-radius:4px;
+  padding:clamp(24px,2.85vw,41px) clamp(20px,4.24vw,61px) clamp(22px,2.57vw,37px) clamp(20px,4.72vw,68px);
+}
+.ct__left{max-width:470px}
+.ct__eyebrow{display:flex; align-items:center; gap:clamp(9px,1.11vw,16px); color:#484d56}
+.ct__eyebrow b{font-size:clamp(10px,.9vw,13px); font-weight:700; letter-spacing:.16em}
+.ct__eyebrow i{width:1px; height:1.15em; background:#b6bac1}
+.ct__eyebrow span{font-size:clamp(12px,.97vw,14px); font-weight:500; letter-spacing:.02em}
+.ct__title{
+  margin-top:clamp(14px,1.88vw,27px);
+  font-size:var(--h2); line-height:1.2; font-weight:900; letter-spacing:.03em;
+}
+.ct__lead{
+  margin-top:clamp(12px,1.53vw,22px);
+  font-size:clamp(13px,1.25vw,18px); line-height:1.5; color:var(--cLead);
+}
+.ct__rule{
+  margin-top:clamp(16px,1.94vw,28px);
+  width:min(100%,clamp(240px,26.46vw,381px)); height:1px; background:#c9ced5;
+}
+.ct__pts{margin-top:clamp(16px,1.88vw,27px); display:grid; gap:clamp(9px,1.18vw,17px)}
+.ct__pts li{display:flex; align-items:center; gap:clamp(9px,.97vw,14px)}
+.ct__pts b{
+  flex:0 0 auto; width:clamp(14px,1.18vw,17px); aspect-ratio:1; border-radius:50%;
+  background:#0b2b57; display:grid; place-items:center;
+}
+.ct__pts b svg{width:58%; height:auto; stroke:#fff; fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round}
+.ct__pts span{font-size:clamp(12px,1.11vw,16px); line-height:1.5; color:var(--cSub)}
+.ct__cta{
+  margin-top:clamp(20px,2.5vw,36px);
+  display:flex; align-items:center; justify-content:center; gap:clamp(20px,3.2vw,46px);
+  width:min(100%,clamp(240px,26.46vw,381px)); height:var(--btn-h);
+  background:var(--cNavy); color:#fff; border-radius:3px;
+  font-size:clamp(13px,1.25vw,18px); font-weight:700; letter-spacing:.03em;
+  transition:background .18s ease;
+}
+.ct__cta:hover{background:#0d3a6b}
+.ct__cta svg{flex:0 0 auto; width:clamp(16px,1.6vw,23px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+.ct__note{margin-top:clamp(12px,1.32vw,19px); font-size:clamp(10px,.83vw,12px); color:#999ea5}
+
+/* ---- フォーム ---- */
+.ct__form{
+  background:#fff; border:1px solid #dadce1; border-radius:3px;
+  padding:clamp(20px,2.22vw,32px);
+}
+.ct__f + .ct__f{margin-top:clamp(12px,1.53vw,22px)}
+.ct__f > label{
+  display:flex; align-items:center; gap:clamp(7px,.83vw,12px);
+  font-size:clamp(12px,1.01vw,14.5px); font-weight:700; color:#50555c;
+}
+.ct__req{
+  display:grid; place-items:center; min-width:clamp(26px,2.36vw,34px); height:clamp(14px,1.11vw,16px);
+  padding-inline:5px; border-radius:2px; background:#eff1f5; color:#3b4a63;
+  font-size:clamp(9px,.76vw,11px); font-weight:700; letter-spacing:.02em;
+}
+.ct__f input,.ct__f textarea{
+  display:block; width:100%; margin-top:clamp(7px,.76vw,11px);
+  background:#fbfbfc; border:1px solid var(--cField); border-radius:3px;
+  padding:0 clamp(12px,1.32vw,19px);
+  font:inherit; font-size:clamp(12px,1.11vw,16px); color:var(--cInk);
+  height:clamp(42px,3.19vw,46px);
+}
+.ct__f textarea{height:clamp(90px,7.64vw,110px); padding:clamp(11px,1.11vw,16px) clamp(12px,1.32vw,19px); resize:vertical}
+.ct__f input::placeholder,.ct__f textarea::placeholder{color:var(--cPh)}
+.ct__f input:focus,.ct__f textarea:focus{outline:none; border-color:#93a7c4}
+.ct__ta{position:relative}
+.ct__count{
+  position:absolute; right:clamp(12px,1.32vw,19px); bottom:clamp(8px,.83vw,12px);
+  font-size:clamp(10px,.83vw,12px); color:#9daab8; pointer-events:none;
+}
+.ct__agree{
+  margin-top:clamp(16px,1.88vw,27px);
+  display:flex; align-items:center; gap:clamp(8px,.97vw,14px);
+  font-size:clamp(11px,.97vw,14px); color:#566271;
+}
+.ct__agree{min-height:44px}                    /* タップ領域 */
+.ct__agree input{
+  flex:0 0 auto; width:clamp(16px,1.32vw,19px); aspect-ratio:1; margin:0;
+  accent-color:#0b2b57; cursor:pointer;
+}
+.ct__agree a{color:#2b4d80; text-decoration:underline}
+.ct__fnote{
+  margin-top:clamp(12px,1.32vw,19px);
+  font-size:clamp(10px,.83vw,12px); line-height:1.75; color:var(--cNote);
+}
+/* 生成AIの利用に関する一問一答（構成書の「今すぐ無料相談 ※以下を追加」） */
+.ct__qa{
+  margin-top:clamp(14px,1.46vw,21px); padding-top:clamp(13px,1.32vw,19px);
+  border-top:1px solid #e7e9ee;
+}
+.ct__qa p{
+  display:flex; gap:clamp(6px,.62vw,9px);
+  font-size:clamp(10.5px,.9vw,13px); line-height:1.75;
+}
+.ct__qa p + p{margin-top:clamp(6px,.62vw,9px)}
+.ct__qa b{flex:0 0 auto; font-weight:700}
+.ct__qa-q{color:var(--cInk)}
+.ct__qa-q b{color:var(--cNavy)}
+.ct__qa-a{color:#566271}
+.ct__qa-a b{color:#848e9a}
+
+/* ---- フッター ---- */
+.ft{
+  border-top:1px solid #d3d6dd; background:var(--pale);
+  padding-block:clamp(30px,3.55vw,51px) clamp(20px,2.15vw,31px);
+}
+.ft__top{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:clamp(20px,3vw,44px); flex-wrap:wrap;
+}
+.ft__logo b{display:block; font-size:clamp(20px,1.88vw,27px); font-weight:800; letter-spacing:.01em; color:#0a0a0c}
+.ft__logo b em{font-style:normal; font-weight:500}
+.ft__logo span{
+  display:block; margin-top:clamp(6px,.62vw,9px);
+  font-size:clamp(11px,.97vw,14px); color:#4a4e55;
+}
+.ft__nav{
+  display:flex; flex-wrap:wrap; align-items:center;
+  gap:clamp(16px,4.1vw,59px);
+  font-size:clamp(11px,.97vw,14px); font-weight:500; color:#22262c;
+  padding-top:clamp(2px,.35vw,5px);
+}
+.ft__nav a:hover{color:#0b2b57; text-decoration:underline}
+.ft__rule{margin-top:clamp(22px,2.5vw,36px); height:1px; background:#e6e6e9}
+.ft__cr{margin-top:clamp(16px,1.74vw,25px); font-size:clamp(10px,.9vw,13px); color:#68727f}
+
+@media (max-width:900px){
+  .ct{padding-block:36px}
+  .ct__panel{grid-template-columns:1fr; gap:26px; padding:24px 18px 26px}
+  .ct__left{max-width:none}
+  .ct__cta,.ct__rule{width:100%}
+  .ct__form{padding:18px}
+  .ft{padding-block:32px 24px}
+  .ft__top{flex-direction:column; gap:20px}
+  .ft__nav{gap:2px 22px}
+  .ft__nav a{display:flex; align-items:center; min-height:44px}
+}
+
+/* ---------------- スクロール演出 ---------------- */
+[data-rv]{
+  opacity:0; transform:translateY(18px);
+  transition:opacity .72s cubic-bezier(.22,.61,.36,1), transform .72s cubic-bezier(.22,.61,.36,1);
+  transition-delay:var(--rv-d,0ms);
+}
+[data-rv].is-in{opacity:1; transform:none}
+.hero .copy > .wrap > *{animation:rvUp .9s cubic-bezier(.22,.61,.36,1) both}
+.hero .copy > .wrap > :nth-child(1){animation-delay:.05s}
+.hero .copy > .wrap > :nth-child(2){animation-delay:.16s}
+.hero .copy > .wrap > :nth-child(3){animation-delay:.27s}
+.hero .copy > .wrap > :nth-child(4){animation-delay:.38s}
+.pillar{animation:rvUp .9s cubic-bezier(.22,.61,.36,1) both .5s}
+.pillar--2{animation-delay:.6s} .pillar--3{animation-delay:.7s}
+@keyframes rvUp{from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:none}}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--head-h) + 8px)}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  [data-rv],[data-rv].is-in{opacity:1 !important; transform:none !important; transition:none !important}
+  .hero .copy > .wrap > *,.pillar{animation:none !important}
+}
+
+/* ---------------- 押した状態・フォーカス ---------------- */
+a,button,summary,input,textarea{outline-offset:2px}
+a:focus-visible,button:focus-visible,summary:focus-visible,
+input:focus-visible,textarea:focus-visible{outline:2px solid #0b2b57}
+a[class*="cta"]:active,a[class*="__all"]:active,button:active{transform:translateY(1px)}
+a[class*="cta"],a[class*="__all"]{-webkit-tap-highlight-color:rgba(11,43,87,.12)}
+.acard:hover h3,.nitem:hover h3{color:#0b2b57}
+.acard,.nitem,.case{transition:opacity .18s ease}
+.acard:hover,.nitem:hover{opacity:.92}
+.faq__item > summary:hover{background:rgba(11,43,87,.03)}
+/* ---------------- 英字の飾りを外したことによる調整 ---------------- */
+/* 節見出しが先頭に来るので、飾り分の余白を消す */
+.exp__title,.cases__title,.price__title,.quote__title,
+.flow__title,.gai__title,.art__title,.faq__title{margin-top:0}
+/* エンジニア紹介：縦の英字ラベルを外したので2カラムに */
+.exp__row{grid-template-columns:minmax(0,44fr) minmax(0,56fr)}
+.exp__row--rev{grid-template-columns:minmax(0,56fr) minmax(0,44fr)}
+@media (max-width:900px){
+  .exp__row,.exp__row--rev{grid-template-columns:1fr}
+}
+/* ---------------- 個別の調整 ---------------- */
+/* 導入事例：元サイトの実物ロゴ（カラー）をそのまま置く */
+.case__logo{
+  width:min(100%,clamp(150px,17.4vw,250px)); height:auto; max-height:clamp(34px,4.2vw,60px);
+  object-fit:contain; object-position:center; background:none !important;
+  -webkit-mask:none !important; mask:none !important;
+}
+/* サービスフロー：屋根（線）は「準備」だけ。ほかは工程名だけを中央に置く */
+.fcap--2{margin-inline:calc(var(--fgap) * -0.34)}
+.fcap--plain{justify-content:center}
+
+/* 強み01・02 も 03・04 と同じ箱に入れる */
+.s-row{
+  margin-top:clamp(20px,2.6vw,38px);
+  background:var(--sCard); border-radius:clamp(8px,1vw,14px);
+  padding:clamp(22px,3vw,44px) clamp(18px,2.6vw,38px);
+}
+.s-row + .s-row{margin-top:clamp(20px,2.6vw,38px)}
+
+/* 設置環境の写真は本文の脇に添える程度に */
+.s-photo{width:min(100%,560px); margin-inline:auto}
+
+@media (max-width:900px){
+  .s-row{padding:20px 16px}
+  .case__logo{width:130px; max-height:34px; object-position:left center}
+}
+/* ================================================================
+   ヒーロー背景：支給画像をコードに起こしたもの（画像ファイルなし）
+   viewBox 1672x941 ／ preserveAspectRatio="slice" で画面を覆う
+   ================================================================ */
+.hero__bg{background:#0a1730}
+.fx{will-change:transform}
+.fx g{transform-box:view-box; transform-origin:center}
+
+/* --- 登場（読み込み時に1回） --- */
+@keyframes fxInA{from{opacity:0; transform:translate(70px,-46px)} to{opacity:1; transform:none}}
+@keyframes fxInB{from{opacity:0; transform:translate(64px,52px)}  to{opacity:1; transform:none}}
+@keyframes fxInC{from{opacity:0; transform:translate(-52px,42px)} to{opacity:1; transform:none}}
+@keyframes fxInUp{from{opacity:0; transform:translateY(30px)}     to{opacity:1; transform:none}}
+@keyframes fxPrismIn{from{opacity:0; transform:scale(.86) rotate(-3deg)} to{opacity:1; transform:none}}
+
+/* --- 常時のゆっくりした動き --- */
+@keyframes fxDriftA{0%,100%{transform:translate(0,0)}   50%{transform:translate(-11px,7px)}}
+@keyframes fxDriftB{0%,100%{transform:translate(0,0)}   50%{transform:translate(9px,-8px)}}
+@keyframes fxDriftC{0%,100%{transform:translate(0,0)}   50%{transform:translate(7px,5px)}}
+@keyframes fxBreath{0%,100%{opacity:.92; transform:scale(1)} 50%{opacity:.66; transform:scale(1.035)}}
+@keyframes fxGridWave{0%,100%{opacity:.34} 50%{opacity:.16}}
+@keyframes fxDotPulse{0%,100%{opacity:.5} 50%{opacity:.24}}
+@keyframes fxSweep{0%{transform:translateX(0)} 100%{transform:translateX(2140px)}}
+@keyframes fxDraw{from{stroke-dashoffset:var(--len)} to{stroke-dashoffset:0}}
+
+.fx .fx-a{animation:fxInA 1.15s cubic-bezier(.22,.61,.36,1) both,
+                    fxDriftA 21s ease-in-out 1.2s infinite}
+.fx .fx-b{animation:fxInB 1.15s cubic-bezier(.22,.61,.36,1) .08s both,
+                    fxDriftB 26s ease-in-out 1.3s infinite}
+.fx .fx-c{animation:fxInC 1.15s cubic-bezier(.22,.61,.36,1) .16s both,
+                    fxDriftC 30s ease-in-out 1.4s infinite}
+.fx .fx-prism{animation:fxPrismIn 1.3s cubic-bezier(.22,.61,.36,1) .3s both,
+                       fxBreath 13s ease-in-out 1.6s infinite}
+.fx .fx-grid{animation:fxInUp 1.1s ease .42s both, fxGridWave 17s ease-in-out 1.6s infinite}
+.fx .fx-dots{animation:fxInUp 1.1s ease .52s both, fxDotPulse 9s ease-in-out 1.7s infinite}
+.fx .fx-beams path{stroke-dasharray:var(--len); animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both}
+.fx .fx-beams .b1{--len:1150; animation-delay:.30s}
+.fx .fx-beams .b2{--len:710;  animation-delay:.44s}
+.fx .fx-beams .b3{--len:1222; animation-delay:.56s}
+.fx .fx-beams .b4{--len:1163; animation-delay:.66s}
+.fx .fx-sweep{animation:fxSweep 11s linear 2s infinite}
+
+/* 下帯：背景の明暗が横で変わるので、白い床を1枚敷いて文字を読ませる */
+.pillars{
   background:linear-gradient(180deg,
-    rgba(6,14,20,0) 0%,
-    rgba(6,14,20,.30) 32%,
-    rgba(6,14,20,.66) 58%,
-    rgba(6,14,20,.84) 82%,
-    rgba(6,14,20,.88) 100%);
-  pointer-events:none;
-}
-.callout{
-  position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(26px,3.4vh,40px);
-  opacity:0;transform:translate3d(0,10px,0);
-  transition:opacity .18s linear,transform .18s linear;
-}
-.callout.is-visible{opacity:1;transform:none}
-.callout b{
-  display:block;margin:0 0 9px;
-  font-family:Inter,sans-serif;font-size:12px;font-weight:900;letter-spacing:.22em;
-  text-transform:uppercase;color:#E8B45C;
-}
-.callout p{
-  margin:0;color:#fff;
-  font-size:clamp(19px,2.5vw,36px);font-weight:900;line-height:1.42;
-  letter-spacing:.005em;max-width:22em;
-  text-shadow:0 1px 22px rgba(4,10,14,.45);
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.72) 34%,
+    rgba(255,255,255,.93) 62%,
+    rgba(255,255,255,.96) 100%);
+  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
 }
 
-.progress{
-  flex:none;display:flex;gap:26px;opacity:var(--rail-opacity);
-  font-family:Inter,sans-serif;font-size:10px;font-weight:900;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--ink2);transition:opacity .12s linear;
+@media (prefers-reduced-motion:reduce){
+  .fx *{animation:none !important}
+  .fx .fx-beams path{stroke-dasharray:none}
 }
-
-/* ── 本体 ── */
-.sec{padding:clamp(76px,9vw,124px) 0}
-.sec--cream{background:#F6EFE6}
-.sec--pale{background:#EAEEF0}
-.inner{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
-.lab{font-family:Inter,sans-serif;font-size:11px;font-weight:900;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--gold);margin:0 0 14px}
-.h2{margin:0;font-size:clamp(24px,3.1vw,44px);font-weight:900;line-height:1.5;max-width:19em}
-.note{margin:18px 0 0;font-size:15px;line-height:2.05;color:var(--ink2);max-width:44em}
-
-/* ★§1 5ステップ＝主役。工程ごとに誰が担うかを明示する。
-   競合は「AI活用」か「熟練の技術者」のどちらかしか謳わず、
-   どこで切り替わるかは示さない。開示自体が差別化になる */
-.flow{margin:clamp(40px,5vw,64px) 0 0;border-top:1px solid var(--line)}
-.fl{display:grid;grid-template-columns:56px 150px minmax(0,1fr);gap:clamp(16px,2.4vw,34px);
-  align-items:start;padding:clamp(22px,2.8vw,32px) 0;border-bottom:1px solid var(--line)}
-.fl-n{font-family:Inter,sans-serif;font-size:clamp(24px,2.6vw,34px);font-weight:900;
-  line-height:1;color:var(--line)}
-/* 担当のバッジ。人＝濃い／エージェント＝枠線／両方＝二つ並べる */
-.who{display:flex;gap:6px;flex-wrap:wrap;padding-top:4px}
-.who span{display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:3px;
-  font-size:11.5px;font-weight:900;white-space:nowrap}
-.who .hu{background:var(--ink);color:#fff}
-.who .ag{border:1.5px solid var(--line);color:var(--ink2)}
-.fl-t{font-size:clamp(17px,1.9vw,23px);font-weight:900;line-height:1.6;margin:0}
-.fl-d{margin:9px 0 0;font-size:14.5px;line-height:2;color:var(--ink2)}
-
-/* ★§2 ローカル完結：リスク→解決の順。単体では技術仕様の説明にとどまる */
-.risk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:clamp(20px,2.6vw,38px);margin:clamp(36px,4.4vw,56px) 0 0}
-.rk{padding:clamp(24px,2.8vw,34px);border:1px solid var(--line);border-radius:3px}
-.rk--x{background:rgba(18,32,44,.035)}
-.rk--o{background:#fff}
-.rk h3{margin:0 0 12px;font-size:16px;font-weight:900;line-height:1.6}
-.rk p{margin:0;font-size:14px;line-height:1.95;color:var(--ink2)}
-.rk .tag{display:inline-block;margin:0 0 12px;font-family:Inter,sans-serif;font-size:10px;
-  font-weight:900;letter-spacing:.2em;text-transform:uppercase}
-.rk--x .tag{color:#A8544A}
-.rk--o .tag{color:var(--gold)}
-.todo{margin:20px 0 0;padding:13px 16px;border-left:3px solid var(--gold);
-  background:rgba(180,128,47,.07);font-size:13px;line-height:1.85;color:var(--ink2)}
-
-/* ★12台：ローカル完結の裏づけ。設備投資という実体 */
-.units{margin:clamp(36px,4.4vw,56px) 0 0}
-.units figure{margin:0;position:relative;border-radius:3px;overflow:hidden}
-.units img{width:100%;height:auto;display:block}
-.units figcaption{position:absolute;left:0;right:0;bottom:0;padding:56px 22px 20px;color:#fff;
-  background:linear-gradient(180deg,rgba(6,14,20,0),rgba(6,14,20,.82))}
-.units b{display:block;font-size:clamp(20px,2.4vw,32px);font-weight:900;line-height:1.4}
-.units small{display:block;margin:6px 0 0;font-size:12.5px;opacity:.86;line-height:1.7}
-
-/* ★§3 固定2名：5ステップの第3・第4を誰が担うかの答え。
-   AIの話と分けて書くと、それぞれ独立した強みに見えてしまう */
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:clamp(20px,2.6vw,38px);margin:clamp(36px,4.4vw,56px) 0 0}
-.pf{padding:clamp(24px,2.8vw,34px);background:#fff;border-radius:3px}
-.pf .rl{font-family:Inter,sans-serif;font-size:10px;font-weight:900;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--gold)}
-.pf h3{margin:10px 0 0;font-size:clamp(18px,2vw,24px);font-weight:900;line-height:1.5}
-.pf p{margin:12px 0 0;font-size:14px;line-height:1.95;color:var(--ink2)}
-
-/* ★§4 CTA：診断品質の話が、そのまま発注の手軽さに接続する */
-.est{background:var(--ink);color:#fff}
-.est .lab{color:#E8B45C}
-.est .h2{color:#fff;max-width:17em}
-.est .note{color:rgba(255,255,255,.72)}
-.chain{display:flex;align-items:center;gap:clamp(10px,1.6vw,22px);flex-wrap:wrap;
-  margin:clamp(32px,4vw,48px) 0 0}
-.chain i{font-style:normal;padding:14px 18px;border:1px solid rgba(255,255,255,.24);
-  border-radius:3px;font-size:14px;font-weight:700;line-height:1.5}
-.chain em{font-style:normal;color:#E8B45C;font-weight:900}
-.est .actions{margin:clamp(30px,3.6vw,44px) 0 0}
-.est .button.primary{background:#E8B45C;color:var(--ink);height:56px;padding:0 30px;font-size:15px}
-.est .button.secondary{border-color:rgba(255,255,255,.3);color:#fff;height:56px}
-
-@media(min-width:901px) and (max-height:800px){
-  .hero-type{font-size:clamp(34px,5.4vw,74px)}
-  .hero-body{gap:clamp(10px,1.8vh,20px);padding-top:92px}
-  .lead{font-size:14px;line-height:1.85}
-  .callouts{min-height:88px;padding-bottom:22px}
-  .callout{bottom:22px}
-  .callout p{font-size:clamp(18px,2.1vw,29px)}
-  .button{height:46px}
+@media (max-width:900px){
+  .fx .fx-sweep{display:none}
+  .pillars{background:none; -webkit-backdrop-filter:none; backdrop-filter:none}
 }
+/* ---------------- 地→箱の明暗を交互にする（配色指示書 §4-1） ----------------
+   同じ明度が2段続くと箱の輪郭が地に溶ける。実測すると
+   強み(地100→箱98) / サービスフロー(地100→箱100) / FAQ(地淡→箱なし)
+   / 生成AI(地淡→箱なし) が「2段続き」だった。 */
+.s-card,.s-row{background:var(--pale)}          /* 白地 → 淡い箱 */
+.fstep{background:var(--pale)}                  /* 白地 → 淡い箱 */
+.faq__list{background:#fff}                     /* 淡地 → 白い箱 */
+.faq__item[open]{background:var(--pale2)}       /*        開いた行だけ一段沈める */
+.gai__item{background:#fff}                     /* 淡地 → 白い箱 */
+.news__list .nitem{background:transparent}      /* 一覧は箱にしない（休符） */
+/* ---------------- ダークになったヒーローの文字（配色指示書 §2・§4-3） ----------------
+   濃色地の上は白のアルファだけで作る。第2の色は足さない。 */
+.hero .eyebrow{color:rgba(255,255,255,.82)}
+.hero .h1{color:#ffffff}
+.hero .lead{color:rgba(255,255,255,.78)}
+.hero .cta{background:#ffffff; color:#0b2b57; box-shadow:0 6px 22px rgba(4,12,28,.34)}
+.hero .cta:hover{background:#eaf0f8}
+.hero .cta__ico{stroke:#0b2b57}
+.hero .cta__arw{stroke:#0b2b57}
+.hero .cta__txt{color:#0b2b57}
+/* 3点セット：白い床はやめ、そのまま暗い地に白抜きで置く */
+.pillars{background:none; -webkit-backdrop-filter:none; backdrop-filter:none}
+.pillars .wrap{border-top:1px solid rgba(255,255,255,.16); padding-top:clamp(16px,2vw,28px)}
+.pillar h3{color:rgba(255,255,255,.94)}
+.pillar__ico{stroke:rgba(255,255,255,.86)}
+.pillar__ico--m{background:rgba(255,255,255,.88)}
+/* ヘッダーはヒーローの上に乗るので、最上部では暗い地に合わせる */
+.head:not(.is-stuck){
+  background:rgba(9,20,40,.42); border-bottom-color:rgba(255,255,255,.10);
+}
+.head:not(.is-stuck) .logo-1,.head:not(.is-stuck) .logo-2{color:#fff}
+.head:not(.is-stuck) .head__tag{color:rgba(255,255,255,.74)}
+.head:not(.is-stuck) .head__sep{background:rgba(255,255,255,.28)}
+.head:not(.is-stuck) .gnav a{color:rgba(255,255,255,.88)}
+.head:not(.is-stuck) .gnav a:hover{color:#fff; border-bottom-color:#fff}
+.head:not(.is-stuck) .gnav__cta{background:#fff; color:#0b2b57 !important}
+.head:not(.is-stuck) .gnav__cta:hover{background:#eaf0f8}
+.head:not(.is-stuck) .head__burger span{background:#fff}
 
-@media(max-width:900px){
-  :root{--pad:20px}
-  .nav{display:none}
-  .sequence-scene{height:300vh}
-  .hero{min-height:0}
-  .hero-type{max-width:none;font-size:32px;line-height:1.26}
-  .sequence-frame{object-position:62% 46%}
-  .intro{max-width:none}
-  .lead{font-size:13.5px;line-height:1.9}
-  .actions{gap:9px}
-  .button{width:100%;height:48px}
-  .callouts{min-height:104px;padding-bottom:22px}
-  .callouts::before{top:-70px}
-  .callout{bottom:22px}
-  .callout b{font-size:10px;margin-bottom:6px}
-  .callout p{font-size:19px;line-height:1.5}
-  .progress{display:none}
-  .hero-body{gap:16px;padding:74px var(--pad) 14px}
-  .fl{grid-template-columns:1fr;gap:10px}
-  .fl-n{font-size:22px}
-  .risk,.two{grid-template-columns:1fr}
-  .chain{flex-direction:column;align-items:stretch}
-  .chain i{width:100%}
-  .est .button{width:100%}
+@media (max-width:900px){
+  /* スマホは背景が上のバナーになるので、文字は明るい地の上に戻る */
+  .hero .eyebrow{color:var(--ink-eyebrow)}
+  .hero .h1{color:var(--ink)}
+  .hero .lead{color:var(--ink-lead)}
+  .hero .cta{background:var(--navy); color:#fff; box-shadow:0 2px 7px rgba(10,22,40,.16)}
+  .hero .cta__ico,.hero .cta__arw{stroke:#fff}
+  .hero .cta__txt{color:#fff}
+  .pillars .wrap{border-top:0; padding-top:0}
+  .pillar h3{color:var(--ink-h3)}
+  .pillar__ico{stroke:var(--icon)}
+  .pillar__ico--m{background:var(--icon)}
+  .head:not(.is-stuck){background:#fff; border-bottom-color:var(--rule)}
+  .head:not(.is-stuck) .logo-1,.head:not(.is-stuck) .logo-2{color:var(--ink-logo)}
+  .head:not(.is-stuck) .head__tag{color:var(--ink-tag)}
+  .head:not(.is-stuck) .head__sep{background:var(--rule)}
+  .head:not(.is-stuck) .gnav a{color:#22262c}
+  .head:not(.is-stuck) .gnav__cta{background:var(--navy); color:#fff !important}
+  .head:not(.is-stuck) .head__burger span{background:#16161a}
 }
 </style>
 </head>
-<body>
-  <div class="page">
-    <header class="header" aria-label="SHARE Security">
-      <a class="brand" href="#"><span class="brand-mark">SS</span><span>SHARE Security</span></a>
-      <nav class="nav" aria-label="主要ナビゲーション">
-        <a href="#concept">Concept</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#security">Security</a>
-      </nav>
-      <a class="header-cta" href="#">相談する</a>
-    </header>
+<body id="top">
 
-    <main>
-      <section class="sequence-scene" id="concept" aria-label="スクロール連動のファーストビュー">
-        <div class="hero">
-          <img id="sequenceFrame" class="sequence-frame" alt="ローカルAI基盤のサーバーラックが開き、内部へ入っていく映像フレーム">
+<header class="head" id="head">
+  <div class="wrap head__in">
+    <a class="head__brand" href="#top" aria-label="SHARE Security トップへ">
+      <span class="logo-1">SHARE</span>
+      <span class="logo-2">Security</span>
+      <span class="head__sep" aria-hidden="true"></span>
+      <span class="head__tag">脆弱性診断サービス</span>
+    </a>
 
-          <!-- ★縦に積む。絶対配置にすると画面の高さが変わったとき必ずぶつかる -->
-          <div class="hero-body">
-          <div class="progress" aria-hidden="true">
-            <span>Agent</span><span>Human</span><span>Local Only</span>
-          </div>
+    <nav class="gnav" id="gnav" aria-label="グローバルナビゲーション">
+        <a href="#strengths">強み</a>
+        <a href="#why">診断内容</a>
+        <a href="#price">価格</a>
+        <a href="#cases">導入事例</a>
+        <a href="https://www.share-security.com/blog" target="_blank" rel="noopener">生成AIセキュリティブログ</a>
+        <a href="#news">お知らせ</a>
+      <a class="gnav__cta" href="#contact">お問い合わせ</a>
+    </nav>
 
-          <!-- ★主役。ベンチ100の巨大タイポ。機材にはかけない -->
-          <h1 class="hero-type">
-            <span>どこまでAIで、</span>
-            <span>どこから人か。</span>
-          </h1>
+    <button class="head__burger" id="burger" type="button"
+            aria-label="メニューを開く" aria-expanded="false" aria-controls="gnav">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
 
-          <div class="intro">
-            <p class="kicker">Vulnerability Assessment</p>
-            <p class="lead">脆弱性診断のどの工程をエージェントが担い、どこから人が引き取るのか。5つのステップとして開示します。診断に使う環境は、すべて自社設備の中で閉じています。</p>
-            <div class="actions" aria-label="お問い合わせ">
-              <a class="button primary" href="#estimate">見積もりを相談する</a>
-              <a class="button secondary" href="#flow">5つのステップを見る</a>
-            </div>
-          </div>
-          </div>
+<section class="hero">
 
-          <!-- ★ここには訴求だけ。CTAは上の intro に入れた（v05の重なりバグ対策） -->
-          <aside class="callouts">
-            <div class="callout is-visible" data-from="0" data-to=".26">
-              <b>Closed By Design</b><p>診断で扱うのは、まだ塞がっていない穴の情報。外に出さない。</p>
-            </div>
-            <div class="callout" data-from=".24" data-to=".62">
-              <b>Owned Compute</b><p>推論に使う計算資源を、自社の設備の中に置いている。</p>
-            </div>
-            <div class="callout" data-from=".58" data-to="1">
-              <b>Where Humans Take Over</b><p>エージェントが出した結果を、人が再現して確かめる。</p>
-            </div>
-          </aside>
-        </div>
-      </section>
+  <div class="hero__bg" aria-hidden="true">
+    <svg class="fx" viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" role="presentation">
+      <defs>
+        <linearGradient id="fxBase" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#16294a"/><stop offset=".38" stop-color="#0f1f3c"/>
+          <stop offset=".72" stop-color="#0a1730"/><stop offset="1" stop-color="#050e21"/>
+        </linearGradient>
+        <radialGradient id="fxGlow" cx=".28" cy=".24" r=".72">
+          <stop offset="0" stop-color="#5f86c4" stop-opacity=".30"/>
+          <stop offset=".55" stop-color="#2b4a80" stop-opacity=".14"/>
+          <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="fxNavyA" x1=".1" y1="0" x2="1" y2=".8">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".14"/>
+          <stop offset=".55" stop-color="#ffffff" stop-opacity=".07"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity=".03"/>
+        </linearGradient>
+        <linearGradient id="fxNavyB" x1=".15" y1="0" x2=".85" y2="1">
+          <stop offset="0" stop-color="#000000" stop-opacity=".22"/>
+          <stop offset=".5" stop-color="#000000" stop-opacity=".42"/>
+          <stop offset="1" stop-color="#000000" stop-opacity=".60"/>
+        </linearGradient>
+        <linearGradient id="fxNavyC" x1="0" y1="0" x2=".4" y2="1">
+          <stop offset="0" stop-color="#000000" stop-opacity=".18"/>
+          <stop offset="1" stop-color="#000000" stop-opacity=".50"/>
+        </linearGradient>
+        <linearGradient id="fxPrism" x1=".1" y1="0" x2=".9" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".20"/>
+          <stop offset=".55" stop-color="#ffffff" stop-opacity=".10"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity=".02"/>
+        </linearGradient>
+        <linearGradient id="fxBeam" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <pattern id="fxDots" width="17" height="17" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="#fff"/>
+        </pattern>
+        <pattern id="fxDotsD" width="17" height="17" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="#ffffff"/>
+        </pattern>
+      </defs>
 
-      <!-- ★§1 5ステップ＝主役。他社が書いていないものを最速で目に入れる -->
-      <section class="sec sec--cream" id="flow" aria-label="AIと人の役割分担">
-        <div class="inner">
-          <p class="lab">The Boundary</p>
-          <h2 class="h2">どの工程をエージェントが担い、どこから人が引き取るのか。</h2>
-          <p class="note">「AIを活用しています」も「熟練の技術者が対応します」も、どちらも間違いではありません。ただ、その境界がどこにあるかは書かれていない。ここでは5つの工程に分けて、担当を明示します。</p>
+      <rect width="1672" height="941" fill="url(#fxBase)"/>
+      <rect width="1672" height="941" fill="url(#fxGlow)"/>
 
-          <div class="flow">
-            <div class="fl">
-              <span class="fl-n">01</span>
-              <span class="who"><span class="hu">人</span><span class="ag">エージェント</span></span>
-              <div><p class="fl-t">診断計画の作成</p>
-                <p class="fl-d">対象の構造を読み、どこを、どの順で、どこまで見るかを決めます。</p></div>
-            </div>
-            <div class="fl">
-              <span class="fl-n">02</span>
-              <span class="who"><span class="ag">エージェント</span></span>
-              <div><p class="fl-t">計画に基づく診断</p>
-                <p class="fl-d">既知のパターンに対する網羅的な検査は、エージェントが実行します。</p></div>
-            </div>
-            <div class="fl">
-              <span class="fl-n">03</span>
-              <span class="who"><span class="hu">人</span></span>
-              <div><p class="fl-t">診断結果の再現確認</p>
-                <p class="fl-d">エージェントが挙げた結果を、人が実際に再現して確かめます。再現しなかったものは誤検知として落とします。この工程を省くと、報告書の件数は増えますが、対応すべきものは見えなくなります。</p></div>
-            </div>
-            <div class="fl">
-              <span class="fl-n">04</span>
-              <span class="who"><span class="hu">人</span></span>
-              <div><p class="fl-t">人でなければ見つからない領域の診断</p>
-                <p class="fl-d">設計の前提そのものに起因する穴は、パターンの照合では出てきません。攻撃者が突くのは「仕組み」ではなく「システムの思想」です。</p></div>
-            </div>
-            <div class="fl">
-              <span class="fl-n">05</span>
-              <span class="who"><span class="ag">エージェント</span><span class="hu">人</span></span>
-              <div><p class="fl-t">レポート作成</p>
-                <p class="fl-d">エージェントが下書きを作り、人が内容を確認して出します。</p></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- 右上の楔 -->
+      <g class="fx-a">
+        <path d="M1184 0 H1672 V520 L1497 322 Z" fill="url(#fxNavyA)"/>
+      </g>
+      <!-- 右下の大きな三角 -->
+      <g class="fx-b">
+        <path d="M1497 322 L1672 470 V941 H612 Z" fill="url(#fxNavyB)"/>
+      </g>
+      <!-- 左下の沈み -->
+      <g class="fx-c">
+        <path d="M0 660 L760 941 H0 Z" fill="url(#fxNavyC)"/>
+      </g>
 
-      <!-- ★§2 ローカル完結：リスク→解決の順。単体では技術仕様の説明にとどまる -->
-      <section class="sec sec--pale" id="local" aria-label="ローカル完結">
-        <div class="inner">
-          <p class="lab">Closed By Design</p>
-          <h2 class="h2">診断で扱うのは、まだ塞がっていない穴の情報です。</h2>
-          <p class="note">脆弱性の情報は、修正が終わるまでのあいだ、そのまま攻撃に使える情報でもあります。その扱い方は、診断そのものの品質と同じくらい重要だと考えています。</p>
+      <!-- 右上の縦線 -->
+      <g class="fx-grid" stroke="#ffffff" stroke-width="1.1" opacity=".34">
+        <path d="M1148 0V430M1176 0V446M1204 0V462M1232 0V446M1260 0V430M1288 0V414M1316 0V398M1344 0V382M1372 0V366M1400 0V350M1428 0V334M1456 0V318"/>
+      </g>
 
-          <div class="risk">
-            <div class="rk rk--x">
-              <span class="tag">General</span>
-              <h3>外部のクラウドLLMに送る構成</h3>
-              <p>解析や要約のために外部のモデルを使うと、その時点で情報は自社の管理外に出ます。どこに保持され、いつ消えるのかを、発注した側から確かめる手段はありません。</p>
-            </div>
-            <div class="rk rk--o">
-              <span class="tag">SHARE Security</span>
-              <h3>自社設備の中で閉じる構成</h3>
-              <p>推論に使う計算資源を自社で保有し、診断の全工程を内部で完結させています。外部のAIサービスへ向かう経路そのものが存在しません。</p>
-            </div>
-          </div>
-          <p class="todo">※ 他社の一般構成と自社構成を左右に並べた経路図をここに入れる予定です（宮田さんに両方の経路を確認中）。</p>
+      <!-- 透ける三角（プリズム） -->
+      <g class="fx-prism">
+        <path d="M1013 334 L1462 330 L1146 792 Z" fill="url(#fxPrism)"/>
+      </g>
 
-          <div class="units">
-            <figure>
-              <img src="img/photo-12units.jpg" alt="自社で保有している計算機とラック" loading="lazy">
-              <figcaption>
-                <b>推論用の計算機を、12台。</b>
-                <small>ローカルで完結させるという言葉に、設備が伴っています。※ 台数構成の技術的な意図は確認中</small>
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
+      <!-- 光の筋 -->
+      <g class="fx-beams" stroke="#ffffff" fill="none" stroke-linecap="round">
+        <path class="b1" d="M902 941 L1612 40"  stroke-width="1.4" opacity=".55"/>
+        <path class="b2" d="M986 318 L1672 486" stroke-width="1.2" opacity=".42"/>
+        <path class="b3" d="M0 452 L1120 941"   stroke-width="1"   opacity=".26"/>
+        <path class="b4" d="M320 941 L1290 300" stroke-width="1"   opacity=".22"/>
+      </g>
+      <!-- 走る光 -->
+      <g class="fx-sweep">
+        <rect x="-460" y="0" width="460" height="941" fill="url(#fxBeam)" opacity=".2"/>
+      </g>
 
-      <!-- ★§3 固定2名：5ステップの第3・第4を誰が担うかの答え。
-           AIの話と分けて書くと、それぞれ独立した強みに見えてしまう -->
-      <section class="sec sec--cream" id="team" aria-label="担当する2名">
-        <div class="inner">
-          <p class="lab">Who Takes Over</p>
-          <h2 class="h2">第3・第4の工程を引き取るのは、この2名です。</h2>
-          <p class="note">案件ごとに担当が変わることはありません。エージェントで削った工数を、そのまま人でしか判断できない領域に振り向けるための体制です。</p>
-
-          <div class="two">
-            <div class="pf">
-              <span class="rl">Role 01</span>
-              <h3>CTO経験者</h3>
-              <p>システムを設計する側にいた視点から、その構成が何を前提に置いているかを読みます。第4工程で見る「設計の思想」は、ここから出てきます。</p>
-            </div>
-            <div class="pf">
-              <span class="rl">Role 02</span>
-              <h3>国際ホワイトハッカー</h3>
-              <p>攻撃側の手順で、実際に再現できるかを確かめます。第3工程の誤検知の切り分けと、第4工程の実地の検証を担います。</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ★§4 CTA：診断品質の話が、そのまま発注の手軽さに接続する -->
-      <section class="sec est" id="estimate" aria-label="見積もり">
-        <div class="inner">
-          <p class="lab">Estimate</p>
-          <h2 class="h2">ヒアリングシートの記入は、お願いしていません。</h2>
-          <p class="note">設計の前提まで見るには、実際に触るしかありません。だから見積もりの段階でコピー環境を触ります。結果として、発注側が仕様を書き出す作業が要らなくなります。</p>
-
-          <div class="chain">
-            <i>設計の層まで診断するには<br><em>実際に触るしかない</em></i>
-            <i>だから見積もり段階で<br><em>コピー環境を触る</em></i>
-            <i>結果として<br><em>ヒアリングシートが要らない</em></i>
-          </div>
-
-          <div class="actions">
-            <a class="button primary" href="#">コピー環境を渡して見積もりを受け取る</a>
-            <a class="button secondary" href="#flow">5つのステップをもう一度見る</a>
-          </div>
-        </div>
-      </section>
-
-    </main>
+      <!-- 点の網 -->
+      <g class="fx-dots">
+        <rect x="1486" y="378" width="150" height="185" fill="url(#fxDots)" opacity=".5"/>
+        <rect x="0" y="638" width="140" height="240" fill="url(#fxDotsD)" opacity=".45"/>
+      </g>
+    </svg>
   </div>
 
+  <div class="copy">
+    <div class="wrap">
+      <p class="eyebrow">AIと手動のハイブリッドで、見えないリスクを見抜く。</p>
+
+      <h1 class="h1">最高の脆弱性診断を、<br>最適な価格で。</h1>
+
+      <p class="lead">
+        AIと手動のハイブリッド診断で、<br class="brp">
+        他社が見逃すシステム固有のリスクまで突き止めます。
+      </p>
+
+      <a class="cta" href="#contact">
+        <svg class="cta__ico" viewBox="0 0 27 22" aria-hidden="true">
+          <rect x=".9" y=".9" width="25.2" height="20.2"/>
+          <path d="M.9 .9 13.5 12.6 26.1 .9"/>
+        </svg>
+        <span class="cta__txt">まずは相談する</span>
+        <svg class="cta__arw" viewBox="0 0 18 13" aria-hidden="true">
+          <path d="M0 6.5h16.4M11.2 1.3l5.4 5.2-5.4 5.2"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="pillars">
+    <div class="wrap">
+
+      <div class="pillar pillar--1">
+        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg);aspect-ratio:1"></i>
+        <div><h3>見積時にヒアリングシート不要</h3></div>
+      </div>
+
+      <div class="pillar pillar--2">
+        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg);aspect-ratio:1"></i>
+        <div><h3>大手の50%程度の納得のプライシング</h3></div>
+      </div>
+
+      <div class="pillar pillar--3">
+        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/aicheck.svg);mask-image:url(img/ic/aicheck.svg);aspect-ratio:1"></i>
+        <div><h3>AI＋手動で高品質なハイブリッド診断</h3></div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<section class="issues" id="issues">
+  <div class="wrap">
+    <p class="sec-eyebrow">ISSUES</p>
+    <h2 class="sec-title">このようなことで<br>お困りではありませんか？</h2>
+
+    <ol class="issue-list">
+
+      <li class="issue issue--1">
+        <div class="issue__marks">
+          <span class="issue__no">01</span>
+          <span class="issue__link"><i class="issue__dot"></i></span>
+          <span class="issue__ico"><i></i></span>
+        </div>
+        <div class="issue__body">
+          <h3>リリース前の診断</h3>
+          <p>
+            リリース日は決まっているものの、開発リソースは実装で埋まっており、各社から届くヒアリングシートを埋める余力がない。<br class="brp">
+            かといって、ツールで出力される既知の脆弱性一覧であれば自社でも取得できるため、費用に見合う指摘が得られるのかも見極めたい。
+          </p>
+        </div>
+      </li>
+
+      <li class="issue issue--2">
+        <div class="issue__marks">
+          <span class="issue__no">02</span>
+          <span class="issue__link"><i class="issue__dot"></i></span>
+          <span class="issue__ico"><i></i></span>
+        </div>
+        <div class="issue__body">
+          <h3>資本イベントへの対応</h3>
+          <p>
+            IPO準備やM&amp;Aにあたり、主幹事証券や監査法人、買い手企業からセキュリティ体制の説明を求められた。<br class="brp">
+            診断を実施した事実だけでなく、検出された指摘にどう対処したかまで説明できる状態にしたいが、社内リソースは各タスクに分散している。
+          </p>
+        </div>
+      </li>
+
+      <li class="issue issue--3">
+        <div class="issue__marks">
+          <span class="issue__no">03</span>
+          <span class="issue__link"><i class="issue__dot"></i></span>
+          <span class="issue__ico"><i></i></span>
+        </div>
+        <div class="issue__body">
+          <h3>取引先からの要求</h3>
+          <p>
+            取引先や委託元から、セキュリティチェックシートの提出や第三者による脆弱性診断を求められた。<br class="brp">
+            提出先が製薬企業や金融機関の場合は設問が実装レベルまで踏み込むため、ツール診断の結果一覧では回答しきれず、追加質問にも耐えられるレポートが必要になる。
+          </p>
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
+<section class="strengths" id="strengths">
+  <div class="wrap">
+
+    <div class="s-head">
+      <p class="s-eyebrow">OUR STRENGTH</p>
+      <hr>
+      <h2 class="s-title">これらの課題を、SHARE Securityが解決します</h2>
+    </div>
+    <div class="s-notch" aria-hidden="true">
+      <i></i>
+      <svg viewBox="0 0 80 16"><path d="M0 .5h28l12 14 12-14h28"/></svg>
+      <i></i>
+    </div>
+
+    <div class="s-row">
+      <div class="s-lead">
+        <span class="s-no">01</span>
+        <div>
+          <h3>見積時にヒアリングシート不要</h3>
+          <p>テスト環境をご提供いただくだけで、見積もりを算出します。画面数やAPI数を記入するヒアリングシートの提出は必要ありません。私たちが実際にシステムを動かして確認するため、貴社エンジニアの工数はかからず、最短1週間程度で実働ベースの見積もりをご提示します。</p>
+        </div>
+      </div>
+      <ol class="f3">
+        <li>
+          <figure>
+            <span class="dot"><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/chat.svg);mask-image:url(img/ic/chat.svg)"></i></span>
+            <figcaption>お問い合わせ</figcaption>
+          </figure>
+          <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+          <figure>
+            <span class="dot dot--cross"><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/sheet.svg);mask-image:url(img/ic/sheet.svg)"></i></span>
+            <figcaption>ヒアリングシート<br>不要</figcaption>
+          </figure>
+          <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+          <figure>
+            <span class="dot dot--fill"><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/calculator.svg);mask-image:url(img/ic/calculator.svg)"></i></span>
+            <figcaption>お見積り</figcaption>
+          </figure>
+        </li>
+      </ol>
+    </div>
+
+    <div class="s-row">
+      <div class="s-lead">
+        <span class="s-no">02</span>
+        <div>
+          <h3>大手の<em>50</em>%程度の<br class="brp">納得のプライシング</h3>
+          <p>多くの診断会社は画面数やAPI数に単価を掛けて見積もりを算出します。この方式では参照専用の単純な機能も認証まわりの中核機能も同じ単価で計上されるため、金額と実態が乖離します。SHARE Securityでは実際にシステムを触り、手動で見るべき箇所に工数を集中させる結果として、大手診断会社の約50%の金額になるケースが多くなっています。</p>
+        </div>
+      </div>
+      <div class="s-chart">
+        <div class="bars">
+          <div class="bar bar--a"><span>大手診断会社</span></div>
+          <div class="bar bar--b"><span>SHARE Security</span></div>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M27 0 L40 42.4" stroke="#5a6376" stroke-width="1" stroke-dasharray="3 3" fill="none" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>
+        <div class="badge">
+          価格は<br>大手診断会社の
+          <b>約<em>50</em>%</b>
+          程度
+        </div>
+      </div>
+    </div>
+
+    <div class="s-card">
+      <div class="s-lead">
+        <span class="s-no">03</span>
+        <div>
+          <h3>AI＋手動のハイブリッド診断＆固定の精鋭担当者がフルコミット</h3>
+          <p>脆弱性には2つの層があります。XSSやSQLインジェクションのような既知パターンの層と、そのシステム固有の設計思想から生まれる層です。前者はAIエージェントで網羅的に検出できますが、後者は仕様書にもチェックリストにも現れません。ユーザーは正しい順序で操作するはず、この画面には管理者しか来ないはずといった設計者の無意識の前提は、そのシステムにしか存在しないためです。</p>
+          <p>攻撃者が本当に突くのは、この後者であることが多く、SHARE SecurityではCTO経験者と国際ホワイトハッカーの固定2名が全案件に直接対応し、実際にシステムを触りながら設計の隙を確認します。工数をAIで削減し、人でなければ見つけられない領域に集中投下しています。</p>
+        </div>
+      </div>
+      <ol class="f5">
+        <li><figure>
+          <span class="dot"><span class="num">1</span><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/clipboard.svg);mask-image:url(img/ic/clipboard.svg)"></i></span>
+          <figcaption><b>診断計画の作成</b><span>人＋AIエージェント</span></figcaption>
+        </figure></li>
+        <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+        <li><figure>
+          <span class="dot"><span class="num">2</span><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/chip.svg);mask-image:url(img/ic/chip.svg)"></i></span>
+          <figcaption><b>計画に基づく診断</b><span>AIエージェント</span></figcaption>
+        </figure></li>
+        <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+        <li><figure>
+          <span class="dot"><span class="num">3</span><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/person.svg);mask-image:url(img/ic/person.svg)"></i></span>
+          <figcaption><b>診断結果の<br>再現確認</b><span>人（検出結果を実際に再現し、誤検知を除外）</span></figcaption>
+        </figure></li>
+        <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+        <li><figure>
+          <span class="dot"><span class="num">4</span><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/target.svg);mask-image:url(img/ic/target.svg)"></i></span>
+          <figcaption><b>固有領域の<br>追加診断</b><span>人（AIでは見つけられない・判断できない箇所）</span></figcaption>
+        </figure></li>
+        <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+        <li><figure>
+          <span class="dot"><span class="num">5</span><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/chartdoc.svg);mask-image:url(img/ic/chartdoc.svg)"></i></span>
+          <figcaption><b>レポート作成</b><span>AIエージェントが作成し、人が確認</span></figcaption>
+        </figure></li>
+      </ol>
+    </div>
+
+    <div class="s-card">
+      <div class="s-lead">
+        <span class="s-no">04</span>
+        <div>
+          <h3>ローカルLLMで安心の診断＆ファインチューニングで定期アップデート</h3>
+          <p>診断で扱うのは、まだ修正されていない攻撃可能な脆弱性の詳細です。この情報を外部のクラウドAIサービスに送信すれば、自社の管理外に出ることになります。SHARE Securityが診断にフロンティアAIを使用しないのは、このためです。</p>
+          <p>自社内に12台のワークステーションを設置し、すべての診断処理をローカル環境で完結させているため、診断対象の情報が外部へ送信されることはありません。さらに、この環境で稼働するモデルには診断業務に合わせたファインチューニングを継続的に実施しています。汎用モデルをそのまま利用するのではなく、脆弱性診断という用途に最適化した状態で運用しています。</p>
+        </div>
+      </div>
+
+      <figure class="s-photo">
+        <img src="img/str/units.jpg?v=1" alt="自社内に設置した診断用ワークステーション" loading="lazy" decoding="async">
+        <figcaption>自社内に設置した診断用ワークステーション</figcaption>
+      </figure>
+
+      <div class="d4">
+        <div class="d4__src">
+          <h4>診断対象</h4>
+          <ul>
+            <li><i style="-webkit-mask-image:url(img/ic/server.svg);mask-image:url(img/ic/server.svg)"></i>Webアプリケーション</li>
+            <li><i style="-webkit-mask-image:url(img/ic/database.svg);mask-image:url(img/ic/database.svg)"></i>ソースコード／設定情報</li>
+            <li><i style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i>ドキュメント類</li>
+          </ul>
+        </div>
+
+        <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+
+        <div class="d4__local">
+          <span class="d4__tab">
+            ローカル環境（社内ネットワーク内）
+            <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg>
+          </span>
+          <div class="d4__proc" aria-hidden="true"><span>ローカル処理</span></div>
+          <div class="d4__mid">
+            <figure class="d4__ws">
+              <img loading="lazy" decoding="async" src="img/str/workstation.png" alt="診断用ワークステーション">
+              <figcaption>診断用ワークステーション ×12台</figcaption>
+            </figure>
+            <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+            <div class="d4__llm">
+              <i style="-webkit-mask-image:url(img/ic/brain.svg);mask-image:url(img/ic/brain.svg)"></i>
+              <b>ローカルLLM</b><span>診断業務に合わせて<br>ファインチューニング</span>
+            </div>
+          </div>
+          <p class="d4__notes">・情報は外部に送信しない　　・すべてローカルで処理・保管</p>
+        </div>
+
+        <span class="d4__x" aria-hidden="true">✕</span>
+
+        <div class="d4__out">
+          <div class="d4__cloud">
+            <i style="-webkit-mask-image:url(img/ic/cloud.svg);mask-image:url(img/ic/cloud.svg)"></i>
+            <span>外部クラウドAI</span>
+          </div>
+          <p class="d4__chip">外部クラウドAIへ<br>送信しない</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="why__head">
+      <p class="why__eyebrow">WHY SHARE SECURITY</p>
+      <h2 class="why__title">なぜSHARE Securityが選ばれるのか？</h2>
+      <p class="why__lead">大手診断会社との違いを、5つの視点でわかりやすく比較。</p>
+    </div>
+
+    <div class="cmp-t">
+      <div class="cmp-t__col cmp-t__col--item">
+        <div class="cmp-t__h" aria-hidden="true"></div>
+        <div class="cmp-t__body">
+        <div class="cmp-t__cell">
+          <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i>
+          <span class="cmp-t__name">レポート</span>
+        </div>
+        <div class="cmp-t__cell">
+          <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/person.svg);mask-image:url(img/ic/person.svg)"></i>
+          <span class="cmp-t__name">診断担当者</span>
+        </div>
+        <div class="cmp-t__cell">
+          <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/shield.svg);mask-image:url(img/ic/shield.svg)"></i>
+          <span class="cmp-t__name">診断品質 / 検出率</span>
+        </div>
+        <div class="cmp-t__cell">
+          <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/calculator.svg);mask-image:url(img/ic/calculator.svg)"></i>
+          <span class="cmp-t__name">見積算出方法</span>
+        </div>
+        <div class="cmp-t__cell">
+          <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg)"></i>
+          <span class="cmp-t__name">料金</span>
+        </div>
+        </div>
+      </div>
+      <div class="cmp-t__col cmp-t__col--a">
+        <div class="cmp-t__h cmp-t__h--a">大手診断会社</div>
+        <div class="cmp-t__body">
+        <div class="cmp-t__cell"><div>
+          <span class="cmp-t__label">レポート</span>
+          <p class="cmp-t__t">定型レポート</p><p class="cmp-t__s">補足は最小限</p>
+        </div></div>
+        <div class="cmp-t__cell"><div>
+          <span class="cmp-t__label">診断担当者</span>
+          <p class="cmp-t__t">分業体制</p><p class="cmp-t__s">窓口が変わりやすい</p>
+        </div></div>
+        <div class="cmp-t__cell"><div>
+          <span class="cmp-t__label">診断品質 / 検出率</span>
+          <p class="cmp-t__t">標準化された診断</p><p class="cmp-t__s">手順ベース</p>
+        </div></div>
+        <div class="cmp-t__cell"><div>
+          <span class="cmp-t__label">見積算出方法</span>
+          <p class="cmp-t__t">項目ベース見積</p><p class="cmp-t__s">実態とズレやすい</p>
+        </div></div>
+        <div class="cmp-t__cell"><div>
+          <span class="cmp-t__label">料金</span>
+          <p class="cmp-t__t">費用が高くなりやすい</p><p class="cmp-t__s">一律で割高になりがち</p>
+        </div></div>
+        </div>
+      </div>
+      <div class="cmp-t__col cmp-t__col--b">
+        <div class="cmp-t__h cmp-t__h--b">SHARE Security</div>
+        <div class="cmp-t__body">
+        <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
+          <span class="cmp-t__label">レポート</span>
+          <p class="cmp-t__t">再現キャプチャ付き</p><p class="cmp-t__s">誰でも理解しやすい</p>
+        </div></div>
+        <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
+          <span class="cmp-t__label">診断担当者</span>
+          <p class="cmp-t__t">固定エンジニアが対応</p><p class="cmp-t__s">専門担当と直接やり取り</p>
+        </div></div>
+        <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
+          <span class="cmp-t__label">診断品質 / 検出率</span>
+          <p class="cmp-t__t">AI＋手動診断</p><p class="cmp-t__s">ローカルLLMによるAI診断とのハイブリッド</p>
+        </div></div>
+        <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
+          <span class="cmp-t__label">見積算出方法</span>
+          <p class="cmp-t__t">実システムを確認</p><p class="cmp-t__s">納得感のある見積</p>
+        </div></div>
+        <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
+          <span class="cmp-t__label">料金</span>
+          <p class="cmp-t__t">合理的な価格</p><p class="cmp-t__s">品質と費用のバランス</p>
+        </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why__foot">
+      <p>大手だから安心、ではなく、<br>自社に合った診断会社を選ぶことが重要</p>
+      <a class="why__cta" href="#contact">
+        自社に合った診断を相談する
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h17M12.5 1.2 17.3 6l-4.8 4.8"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="exp" id="experts">
+  <div class="wrap">
+    <h2 class="exp__title">トップエンジニア2名が、<br>直接診断を担当します。</h2>
+    <p class="exp__lead">
+      SHARE Securityの診断は、AI・セキュリティの第一線で<br>
+      実績を持つエンジニア2名が直接担当します。
+    </p>
+
+    <!-- ⚠ 写真は生成画像。本番は本人の写真に差し替える -->
+    <div class="exp__row">
+      <figure class="exp__photo"><img src="img/exp/p1.png?v=2" alt="宮田 晋次" loading="lazy" decoding="async"></figure>
+      <div class="exp__main">
+        <div class="exp__top">
+          <span class="exp__no">01</span>
+          <span class="exp__slash" aria-hidden="true"></span>
+          <div>
+            <p class="exp__name"><b>宮田 晋次</b></p>
+            <p class="exp__role">代表取締役 / セキュリティエンジニア</p>
+            <p>元CTO、LLM・生成AIセキュリティ研究者</p>
+          </div>
+        </div>
+        <p class="exp__bio">
+          大手Web企業でCTOを歴任後、独立。<br>
+          AI/LLM領域のセキュリティ研究とプロダクト開発に従事し、<br>
+          数多くの脆弱性発見と防御技術の実装をリード。
+        </p>
+        <hr class="exp__hr">
+      </div>
+    </div>
+
+    <div class="exp__row exp__row--rev">
+      <div class="exp__main">
+        <div class="exp__top">
+          <span class="exp__no">02</span>
+          <span class="exp__slash" aria-hidden="true"></span>
+          <div>
+            <p class="exp__name"><b>オプレア エイドリアン</b></p>
+            <p class="exp__role">リードバグバウンティハンター</p>
+            <p>国際ホワイトハッカー / 生成AIレッドチーム専門</p>
+          </div>
+        </div>
+        <p class="exp__bio">
+          世界有数のバグバウンティハンターとして活躍。<br>
+          AI/LLMのレッドチーミングや脆弱性発見を専門とし、<br>
+          グローバルプラットフォームで数々の実践経験を持つ。
+        </p>
+        <hr class="exp__hr">
+      </div>
+      <figure class="exp__photo"><img src="img/exp/p2.png?v=2" alt="オプレア エイドリアン" loading="lazy" decoding="async"></figure>
+    </div>
+  </div>
+</section>
+
+<section class="book" id="book">
+  <!-- 書影は元サイト（share-security.com）の実物 -->
+  <div class="book__visual" aria-hidden="true">
+    <span class="book__quote book__quote--a">&ldquo;</span>
+    <svg class="book__net" viewBox="0 0 800 900" preserveAspectRatio="none">
+      <path d="M-40 700 L120 640 L250 700 L420 560 L600 610 L760 500 L900 540"/>
+      <path d="M120 640 L180 470 L420 560"/>
+      <path d="M600 610 L640 760 L820 800"/>
+      <circle cx="120" cy="640" r="6"/><circle cx="250" cy="700" r="5"/>
+      <circle cx="420" cy="560" r="6"/><circle cx="600" cy="610" r="5"/>
+      <circle cx="180" cy="470" r="5"/><circle cx="760" cy="500" r="6"/>
+    </svg>
+    <div class="book__cover"><img loading="lazy" decoding="async" src="img/book/cover.jpg" alt=""></div>
+    <span class="book__quote book__quote--b">&rdquo;</span>
+  </div>
+  <div class="wrap">
+    <div class="book__body">
+      <p class="book__eyebrow">著書のご紹介</p>
+      <h2 class="book__title">騙されるAI<br>「不可解なパートナー」<br>人工知能との付き合い方</h2>
+      <p class="book__meta">著者：宮田晋次<br>講談社＋α新書</p>
+      <hr class="book__hr">
+      <p class="book__desc">
+        SHARE Security代表・宮田晋次による、AIとセキュリティの本質を解き明かす一冊。<br>
+        AI時代を生き抜くための、実践的な視点と洞察を提供します。
+      </p>
+      <a class="book__cta" href="https://www.share-security.com/news/news-title-00" target="_blank" rel="noopener">
+        書籍詳細を見る
+        <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.5 1.2 20.3 6l-4.8 4.8"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="cases" id="cases">
+  <div class="wrap">
+    <h2 class="cases__title">導入事例</h2>
+    <p class="cases__lead">さまざまな業界・用途で、確かな成果につながっています。</p>
+
+    <div class="cases__list">
+      <article class="case">
+        <div class="case__brand">
+          <img class="case__logo" src="img/case/b4a_c.png?v=1" alt="株式会社B4A" loading="lazy" decoding="async">
+          <b>株式会社B4A</b>
+        </div>
+        <div class="case__rule" aria-hidden="true"></div>
+        <div class="case__body">
+          <h3>大手診断会社よりも負担を抑えながら、<br>高品質な脆弱性診断を実施</h3>
+          <p>
+            コストとリソースの最適化を実現しつつ、網羅性と精度の高い診断で、<br>
+            安心してサービス提供を継続できる体制を構築。
+          </p>
+          <a class="case__more" href="https://www.share-security.com/case/project-b4a" target="_blank" rel="noopener">事例詳細を見る <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case__brand">
+          <img class="case__logo" src="img/case/anyflow_c.png?v=1" alt="Anyflow株式会社" loading="lazy" decoding="async">
+          <b>Anyflow株式会社</b>
+        </div>
+        <div class="case__rule" aria-hidden="true"></div>
+        <div class="case__body">
+          <h3>他社ですでに診断済みだった環境を再診断し、<br>それまで見つかっていなかった重大な脆弱性を発見</h3>
+          <p>
+            既存の診断結果に安心せず、より深い観点での診断を実施。<br>
+            見落としリスクを排除し、真に安全な環境づくりに貢献。
+          </p>
+          <a class="case__more" href="https://www.share-security.com/case/project-anyflow" target="_blank" rel="noopener">事例詳細を見る <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="cases__foot">
+    <div class="wrap">
+      <svg class="cases__mail" viewBox="0 0 56 42" aria-hidden="true">
+        <rect x="1" y="1" width="54" height="40"/>
+        <path d="M1 1 28 22 55 1"/>
+      </svg>
+      <div>
+        <b>まずはお気軽にご相談ください</b>
+        <p>お客様の環境やご要望に合わせて、最適な診断プランをご提案します。</p>
+      </div>
+      <a class="cases__cta" href="#contact">相談・お問い合わせはこちら <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<section class="price" id="price">
+  <div class="wrap">
+    <div class="price__head">
+      <h2 class="price__title">高品質な診断を、納得感のある価格で。</h2>
+      <p class="price__lead">
+        SHARE Securityは、大手診断会社と比べて高品質な診断をバランスの取れた価格でご提供します。<br class="brp">
+        充実した診断内容と丁寧な手動診断、分かりやすいお見積もりで、安心してご利用いただけます。
+      </p>
+    </div>
+
+    <div class="pq">
+      <div class="pq__row pq__row--h">
+        <div class="pq__c pq__c--item" aria-hidden="true"></div>
+        <div class="pq__c pq__c--share">SHARE Security</div>
+        <div class="pq__c pq__c--other">大手診断会社</div>
+      </div>
+
+      <div class="pq__row">
+        <div class="pq__c pq__c--item">
+          <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg)"></i></span>
+          <span class="pq__name">料金</span>
+        </div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>高品質な診断を、バランスの取れた<br class="brp">納得感のある価格でご提供します。</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>個別見積もりが多く、<br class="brp">価格が高くなる傾向があります。</p></div>
+      </div>
+
+      <div class="pq__row">
+        <div class="pq__c pq__c--item">
+          <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/clipboard.svg);mask-image:url(img/ic/clipboard.svg)"></i></span>
+          <span class="pq__name">診断内容</span>
+        </div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>主要な脆弱性を網羅し、ビジネスに必要な<br class="brp">診断を十分な品質でご提供します。</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>診断範囲が広い一方で、必要以上に<br class="brp">複雑になる場合があります。</p></div>
+      </div>
+
+      <div class="pq__row">
+        <div class="pq__c pq__c--item">
+          <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/search.svg);mask-image:url(img/ic/search.svg)"></i></span>
+          <span class="pq__name">手動診断</span>
+        </div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>経験豊富なエンジニアが丁寧に手動診断を実施し、<br class="brp">見逃しの少ない精度の高い診断を行います。</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>手動診断を実施するものの、<br class="brp">体制や工程が不透明な場合があります。</p></div>
+      </div>
+
+      <div class="pq__row">
+        <div class="pq__c pq__c--item">
+          <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i></span>
+          <span class="pq__name">見積もり方法</span>
+        </div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>無料でスムーズにお見積もり。<br class="brp">内容を分かりやすくご説明します。</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>ヒアリングや手続きが多く、<br class="brp">見積もりに時間がかかることがあります。</p></div>
+      </div>
+    </div>
+
+    <div class="price__foot">
+      <div class="price__act">
+        <svg class="price__mail" viewBox="0 0 49 39" aria-hidden="true">
+          <rect x="1" y="1" width="47" height="37"/>
+          <path d="M1 1 24.5 20.5 48 1"/>
+        </svg>
+        <a class="price__cta" href="#contact">
+          無料見積もりを依頼する
+          <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg>
+        </a>
+      </div>
+      <p class="price__note">診断対象やご要望に応じてご案内します</p>
+    </div>
+  </div>
+</section>
+
+<section class="quote" id="quote">
+  <div class="wrap">
+    <h2 class="quote__title">お見積もり方法</h2>
+    <p class="quote__lead">
+      お客様のご状況に合わせて、2つの方法からお選びいただけます。<br class="brp">
+      特に、テスト環境をご用意いただく方法は、手間なくスピーディーに見積もりが可能です。
+    </p>
+
+    <div class="q-cols">
+      <div class="q-col q-col--main">
+        <div class="q-head">
+          <span class="q-num">01</span>
+          <h3>テスト環境をご用意いただく方法</h3>
+          <span class="q-badge">推奨</span>
+        </div>
+        <p class="q-desc">
+          テスト環境を提供いただくだけで、実際のシステムを確認し、<br class="brp">
+          精度の高いお見積もりを行う方法です。
+        </p>
+        <div class="q-feat">
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/clock.svg);mask-image:url(img/ic/clock.svg)"></i></span>
+            <div><b>手間が最小限</b><p>ヒアリングシートや資料作成はほぼ不要です。</p></div>
+          </div>
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/target.svg);mask-image:url(img/ic/target.svg)"></i></span>
+            <div><b>精度の高いお見積もり</b><p>実際のシステムを確認するため、より正確な見積もりが可能です。</p></div>
+          </div>
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/calendar.svg);mask-image:url(img/ic/calendar.svg)"></i></span>
+            <div><b>スピーディーに対応</b><p>必要な情報が揃うため、見積もりまでがスムーズです。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-or" aria-hidden="true"><span>or</span></div>
+
+      <div class="q-col">
+        <div class="q-head">
+          <span class="q-num">02</span>
+          <h3>ヒアリングシートによる見積もり</h3>
+        </div>
+        <p class="q-desc">
+          一般的なヒアリングシートにご回答いただき、<br class="brp">
+          その内容をもとにお見積もりを行う方法です。
+        </p>
+        <div class="q-feat">
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i></span>
+            <div><b>シートへのご回答が必要</b><p>ヒアリングシートへのご回答と資料のご準備をお願いします。</p></div>
+          </div>
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/search.svg);mask-image:url(img/ic/search.svg)"></i></span>
+            <div><b>内容の確認・調整が発生</b><p>ご回答内容に基づき、確認事項や調整が発生する場合があります。</p></div>
+          </div>
+          <div class="q-item">
+            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/clock.svg);mask-image:url(img/ic/clock.svg)"></i></span>
+            <div><b>見積もりまでにお時間を要する場合があります</b><p>情報の収集・確認により、見積もりまでに時間がかかることがあります。</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote__foot">
+      <svg class="quote__mail" viewBox="0 0 48 36" aria-hidden="true">
+        <rect x="1" y="1" width="46" height="34"/>
+        <path d="M1 1 24 19 47 1"/>
+      </svg>
+      <div class="quote__txt">
+        <b>お見積もりのご相談・お問い合わせはこちら</b>
+        <p>お客様の状況に合わせて、最適な方法をご案内いたします。</p>
+      </div>
+      <a class="quote__cta" href="#contact">
+        相談・お問い合わせはこちら
+        <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="flow" id="flow">
+  <div class="wrap">
+    <h2 class="flow__title">サービスフロー</h2>
+    <p class="flow__lead">ご相談から再診断まで、診断の流れを6つのSTEPでご案内します。</p>
+
+    <div class="flow__row">
+      <div class="fcaps" aria-hidden="true">
+        <div class="fcap fcap--2"><i></i><b>準備</b><i></i></div>
+        <div class="fcap fcap--plain"><b>診断</b></div>
+      </div>
+      <div class="fsteps">
+        <article class="fstep">
+          <span class="fstep__tag">準備</span>
+          <p class="fstep__no"><span>STEP</span><b>1</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">1営業日</p>
+          <h3>ヒアリング &amp; NDA</h3>
+          <p class="fstep__desc">必要事項を確認し、秘密保持を締結。</p>
+          <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
+        </article>
+        <article class="fstep">
+          <span class="fstep__tag">準備</span>
+          <p class="fstep__no"><span>STEP</span><b>2</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">7営業日</p>
+          <h3>コピー環境構築 &amp; 見積もり</h3>
+          <p class="fstep__desc">コピー環境をもとに、実働ベースで見積もり。</p>
+          <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
+        </article>
+        <article class="fstep">
+          <span class="fstep__tag">診断</span>
+          <p class="fstep__no"><span>STEP</span><b>3</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">最短5〜14日</p>
+          <h3>診断実施</h3>
+          <p class="fstep__desc">本番運用を想定したセキュリティ診断を実施。</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="flow__row">
+      <div class="fcaps" aria-hidden="true">
+        <div class="fcap fcap--plain"><b>報告</b></div>
+        <div class="fcap fcap--plain"><b>最終調整</b></div>
+        <div class="fcap fcap--plain"><b>運用</b></div>
+      </div>
+      <div class="fsteps">
+        <article class="fstep">
+          <span class="fstep__tag">報告</span>
+          <p class="fstep__no"><span>STEP</span><b>4</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">—</p>
+          <h3>速報レポート</h3>
+          <p class="fstep__desc">検出した項目を速報として共有。</p>
+          <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
+        </article>
+        <article class="fstep">
+          <span class="fstep__tag">最終調整</span>
+          <p class="fstep__no"><span>STEP</span><b>5</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">—</p>
+          <h3>最終報告書 &amp; 質疑対応</h3>
+          <p class="fstep__desc">最終報告書を提出し、質疑に対応。</p>
+          <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
+        </article>
+        <article class="fstep">
+          <span class="fstep__tag">運用</span>
+          <p class="fstep__no"><span>STEP</span><b>6</b></p>
+          <div class="fstep__rule" aria-hidden="true"></div>
+          <p class="fstep__when">初回報告後3カ月以内</p>
+          <h3>再診断</h3>
+          <p class="fstep__desc">改善後の効果検証を実施。</p>
+        </article>
+      </div>
+    </div>
+
+    <p class="flow__note">※スケジュールは目安です。対象システムの規模や状況により変動する場合があります。</p>
+  </div>
+</section>
+
+<section class="gai" id="genai">
+  <div class="wrap">
+    <div class="gai__head">
+      <h2 class="gai__title">生成AIアプリケーションの脆弱性診断も対応</h2>
+      <p class="gai__lead">
+        AIエージェントなど、ChatGPT・Claude・Geminiといった生成AIをAPIで活用しているアプリケーションの脆弱性は、従来型のシステムにはない新たなリスクを孕んでいます。SHARE Securityは、生成AI時代の脆弱性にも国内最先端で対応できる専門チームです。
+      </p>
+    </div>
+
+    <div class="gai__list">
+      <div class="gai__item"><b>System Promptリーク</b><p>AIへの命令の流出</p></div>
+      <div class="gai__item"><b>Prompt Injection</b><p>AIへの命令書き換えや外部API呼び出しの誘導</p></div>
+      <div class="gai__item"><b>知識汚染／被暗黙学習</b><p>学習済みAIに対する情報混入・誤応答</p></div>
+    </div>
+
+    <p class="gai__note">実際の診断では、OpenAI主催コンペなどで培った技術で「生成AIならではのペネトレーションテスト」を実施＆レポートします。</p>
+  </div>
+</section>
+
+<section class="art" id="article">
+  <div class="art__deco" aria-hidden="true"><i></i><i></i></div>
+  <div class="wrap">
+    <h2 class="art__title">生成AI 脆弱性レポート集</h2>
+    <p class="art__lead">
+      SHARE Securityは、生成AIやLLMに関するセキュリティの研究を継続し、<br class="brp">
+      脆弱性に関する知見や技術記事を発信しています。
+    </p>
+
+    <div class="art__list">
+      <a class="acard" href="https://www.share-security.com/post/ai%E3%81%AE%E3%80%8C%E5%BB%BA%E5%89%8D%E3%80%8D%E3%81%A8%E3%80%8C%E6%9C%AC%E9%9F%B3%E3%80%8D%E3%81%8C%E8%A6%8B%E3%81%88%E3%82%8B%EF%BC%9F-anthropic%E3%81%8C%E5%85%AC%E9%96%8B%E3%81%97%E3%81%9F-%E5%BF%83%E3%81%AE%E4%B8%AD%E3%82%92%E8%A6%97%E3%81%8F-%E3%83%84%E3%83%BC%E3%83%AB%E3%81%A7%E9%81%8A%E3%82%93%E3%81%A7%E3%81%BF%E3%81%9F" target="_blank" rel="noopener">
+        <img class="acard__img" src="img/art/a1.jpg?v=2" alt="記事「AIの「建前」と「本音」が見える？」のサムネイル" loading="lazy">
+        <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.07.09</span></p>
+        <h3>AIの「建前」と「本音」が見える？<br class="brp">Anthropicが公開した“心の中を覗く”ツールで遊んでみた</h3>
+        <p class="acard__desc">Anthropicが公開した可視化ツールで、<br class="brp">モデルが答えを選ぶ過程を実際にのぞいてみました。</p>
+        <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
+        <span class="acard__rule" aria-hidden="true"></span>
+      </a>
+      <a class="acard" href="https://www.share-security.com/post/claude-code%E3%81%8C%E6%94%BB%E6%92%83%E8%80%85%E3%81%AE%E6%8B%A0%E7%82%B9%E3%81%AB%E3%81%AA%E3%82%8B-%E6%AD%A3%E8%A6%8F%E3%83%84%E3%83%BC%E3%83%AB%E3%82%92%E4%B9%97%E3%81%A3%E5%8F%96%E3%82%8B%E6%96%B0%E3%81%9F%E3%81%AA%E6%BD%9C%E4%BC%8F%E6%89%8B%E5%8F%A3" target="_blank" rel="noopener">
+        <img class="acard__img" src="img/art/a2.jpg?v=2" alt="記事「Claude Codeが攻撃者の拠点になる」のサムネイル" loading="lazy">
+        <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.05.29</span></p>
+        <h3>Claude Codeが攻撃者の拠点になる<br class="brp">— 正規ツールを乗っ取る新たな潜伏手口</h3>
+        <p class="acard__desc">ウイルスを持ち込まずに正規のAIツールを<br class="brp">攻撃インフラへ転用する手口を解説します。</p>
+        <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
+        <span class="acard__rule" aria-hidden="true"></span>
+      </a>
+      <a class="acard" href="https://www.share-security.com/post/vercel%E7%A4%BE%E3%81%8C%E4%BE%B5%E5%AE%B3%E3%81%95%E3%82%8C%E3%82%8B-%E5%85%A5%E5%8F%A3%E3%81%A8%E3%81%AA%E3%81%A3%E3%81%9F%E3%81%AE%E3%81%AF%E7%A4%BE%E5%93%A1%E3%81%8C%E4%BD%BF%E3%81%86%E3%80%8Cai%E3%83%84%E3%83%BC%E3%83%AB%E3%80%8D" target="_blank" rel="noopener">
+        <img class="acard__img" src="img/art/a3.jpg?v=2" alt="記事「Vercel社が侵害される」のサムネイル" loading="lazy">
+        <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.04.20</span></p>
+        <h3>Vercel社が侵害される<br class="brp">— 入口となったのは社員が使う「AIツール」</h3>
+        <p class="acard__desc">侵入の入口となったのは、社員が業務で<br class="brp">利用していた外部のAIツールでした。</p>
+        <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
+        <span class="acard__rule" aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <a class="art__cta" href="https://www.share-security.com/blog" target="_blank" rel="noopener">
+      <i></i>記事をもっと見る
+      <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h17M12.6 1.6 17 6l-4.4 4.4"/></svg>
+    </a>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="faq__head">
+      <h2 class="faq__title">よくあるご質問</h2>
+      <p class="faq__lead">サービスに関するよくあるご質問をまとめました。</p>
+    </div>
+
+    <div class="faq__list">
+      <details class="faq__item" open>
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">見積もりに費用はかかりますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>ご相談・お見積もりは無料です。<br class="brp">診断対象や実施条件をヒアリングのうえ、内容に応じて個別にご案内します。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">コピー環境だけで見積もりできますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>テスト環境をご用意いただければ、ヒアリングシートや資料のご準備はほぼ不要です。<br class="brp">実際のシステムを確認したうえで、精度の高いお見積もりをご提示します。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">価格はどのくらいですか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>診断対象の範囲や実施条件によって変わるため、個別にお見積もりします。<br class="brp">大手診断会社と比べて、高品質な診断をバランスの取れた価格でご提供します。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">大手診断会社との違いは？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>固定のエンジニアが最後まで担当し、AIの網羅性と手動診断を組み合わせて実施します。<br class="brp">レポートは再現キャプチャ付きで、開発チームがそのまま対応に移せる内容です。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">急ぎで診断実施もできますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>診断の実施期間は最短5〜14日です。<br class="brp">ご相談から診断開始までは、ヒアリング＆NDAに1営業日、コピー環境構築と見積もりに7営業日を目安としています。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">報告書の内容・品質はどのようなものですか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>検出した項目は速報レポートで先に共有し、そのうえで最終報告書を提出します。<br class="brp">再現手順のキャプチャを添えているため、誰が読んでも状況を把握できます。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">診断実施後のサポートはありますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>最終報告書の提出後、質疑に対応します。<br class="brp">初回報告から3カ月以内であれば、改善後の効果を確かめる再診断を実施します。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">生成AIの診断とは具体的にどんなことをしますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>プロンプトインジェクションやRAG構成での情報漏洩など、生成AI特有のリスクを対象に診断します。<br class="brp">研究で得た知見は、レポートや技術記事として継続的に公開しています。</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="news" id="news">
+  <div class="wrap">
+    <div class="news__top">
+      <div>
+        <div class="news__ttl"><h2>お知らせ</h2></div>
+        <p class="news__lead">
+          イベント登壇、メディア掲載、書籍関連など、<br class="brp">
+          SHARE Securityの最新情報をお届けします。
+        </p>
+      </div>
+      <a class="news__all" href="https://www.share-security.com/news" target="_blank" rel="noopener">すべてのお知らせを見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></a>
+    </div>
+
+    <div class="news__list">
+      <a class="nitem" href="https://www.share-security.com/news/news-title-04" target="_blank" rel="noopener">
+        <img class="nitem__img" src="img/news/n1.jpg?v=2" alt="現代ビジネスサミット2025秋 登壇のお知らせ" loading="lazy">
+        <div>
+          <p class="nitem__meta">
+            <span class="nitem__date">2025.10.03</span>
+            <i class="nitem__bar" aria-hidden="true"></i>
+            <span class="nitem__tag">登壇</span>
+          </p>
+          <h3>「現代ビジネスサミット2025秋」に<br class="brp">弊社代表の宮田晋次が登壇いたします</h3>
+        </div>
+        <span class="nitem__more">詳細を見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></span>
+      </a>
+      <a class="nitem" href="https://www.share-security.com/news/news-title-02" target="_blank" rel="noopener">
+        <img class="nitem__img" src="img/news/n2.jpg?v=2" alt="Note公式での紹介記事" loading="lazy">
+        <div>
+          <p class="nitem__meta">
+            <span class="nitem__date">2025.09.22</span>
+            <i class="nitem__bar" aria-hidden="true"></i>
+            <span class="nitem__tag">メディア掲載</span>
+          </p>
+          <h3>『騙されるAI』がNote公式にて<br class="brp">紹介されました</h3>
+        </div>
+        <span class="nitem__more">詳細を見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></span>
+      </a>
+      <a class="nitem" href="https://www.share-security.com/news/news-title-01" target="_blank" rel="noopener">
+        <img class="nitem__img" src="img/news/n3.jpg?v=2" alt="書籍『騙されるAI』" loading="lazy">
+        <div>
+          <p class="nitem__meta">
+            <span class="nitem__date">2025.09.16</span>
+            <i class="nitem__bar" aria-hidden="true"></i>
+            <span class="nitem__tag">メディア掲載</span>
+          </p>
+          <h3>文春オンラインに書籍内容が<br class="brp">取り上げられました</h3>
+        </div>
+        <span class="nitem__more">詳細を見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></span>
+      </a>
+      <a class="nitem" href="https://www.share-security.com/news/news-title-03" target="_blank" rel="noopener">
+        <img class="nitem__img" src="img/news/n4.jpg?v=2" alt="現代ビジネスでの掲載記事" loading="lazy">
+        <div>
+          <p class="nitem__meta">
+            <span class="nitem__date">2025.09.04</span>
+            <i class="nitem__bar" aria-hidden="true"></i>
+            <span class="nitem__tag">メディア掲載</span>
+          </p>
+          <h3>現代ビジネスに書籍内容が<br class="brp">取り上げられました</h3>
+        </div>
+        <span class="nitem__more">詳細を見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></span>
+      </a>
+    </div>
+    <p class="news__note">※掲載内容はリリース時点の情報です。</p>
+  </div>
+</section>
+
+<section class="ct" id="contact">
+  <div class="wrap">
+    <div class="ct__panel">
+      <div class="ct__left">
+        <p class="ct__eyebrow"><span>無料相談・お問い合わせ</span></p>
+        <h2 class="ct__title">今すぐ無料相談</h2>
+        <p class="ct__lead">いただいた内容を確認のうえ、通常3営業日以内にご連絡いたします。</p>
+        <div class="ct__rule" aria-hidden="true"></div>
+        <a class="ct__cta" href="#contact-form">まずは相談する <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></a>
+      </div>
+
+      <form class="ct__form" id="contact-form" action="" method="post">
+        <div class="ct__f">
+          <label for="cf-company">会社名<span class="ct__req">必須</span></label>
+          <input id="cf-company" name="company" type="text" required placeholder="例）株式会社シェアセキュリティ">
+        </div>
+        <div class="ct__f">
+          <label for="cf-name">お名前<span class="ct__req">必須</span></label>
+          <input id="cf-name" name="name" type="text" required placeholder="例）山田 太郎">
+        </div>
+        <div class="ct__f">
+          <label for="cf-mail">メールアドレス<span class="ct__req">必須</span></label>
+          <input id="cf-mail" name="email" type="email" required placeholder="例）taro.yamada@example.com">
+        </div>
+        <div class="ct__f ct__ta">
+          <label for="cf-body">お問い合わせ内容<span class="ct__req">必須</span></label>
+          <textarea id="cf-body" name="body" required maxlength="500" placeholder="例）現状の課題やご相談内容をご記入ください"></textarea>
+          <span class="ct__count" id="cf-count">0 / 500</span>
+        </div>
+        <label class="ct__agree">
+          <input type="checkbox" name="agree" required>
+          <span><a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>に同意する</span>
+          <span class="ct__req">必須</span>
+        </label>
+        <p class="ct__fnote">
+          ご入力いただいた個人情報は、お問い合わせへの回答およびご連絡のみに<br class="brp">
+          利用し、その他の目的で利用することはありません。
+        </p>
+        <div class="ct__qa">
+          <p class="ct__qa-q"><b>Q.</b>診断に生成AIを使用する場合、当社のシステム情報が外部に送信されることはありませんか。</p>
+          <p class="ct__qa-a"><b>A.</b>当社ではローカルLLMを活用しているため、貴社ネットワーク環境の外に情報が送信されることはありません。</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft__top">
+      <div class="ft__logo">
+        <b>SHARE <em>Security</em></b>
+        <span>脆弱性診断サービス</span>
+      </div>
+      <nav class="ft__nav">
+        <a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>
+        <a href="#strengths">強み</a>
+        <a href="#why">診断内容</a>
+        <a href="#price">価格</a>
+        <a href="#cases">導入事例</a>
+        <a href="https://www.share-security.com/blog" target="_blank" rel="noopener">生成AIセキュリティブログ</a>
+        <a href="#news">お知らせ</a>
+      </nav>
+    </div>
+    <div class="ft__rule" aria-hidden="true"></div>
+    <p class="ft__cr">© 2025 SHARE Security</p>
+  </div>
+</footer>
+
 <script>
-    const frameCount = 240;
-    const root = document.documentElement;
-    const frame = document.getElementById('sequenceFrame');
-    const scene = document.querySelector('.sequence-scene');
-    const callouts = Array.from(document.querySelectorAll('.callout'));
-    const params = new URLSearchParams(location.search);
-    const lockedProgress = params.get('qa') === 'mid'
-      ? 0.52
-      : params.get('qa') === 'end'
-        ? 0.92
-        : null;
+  /* ---- 追従ヘッダー：スクロールしたら白を強めて境界線を出す ---- */
+  (function () {
+    var head = document.getElementById('head');
+    if (!head) return;
+    var on = false;
+    var upd = function () {
+      var y = window.scrollY > 8;
+      if (y !== on) { on = y; head.classList.toggle('is-stuck', y); }
+    };
+    upd();
+    addEventListener('scroll', upd, { passive: true });
+  })();
 
-    const isOutputPreview = location.pathname.includes('/outputs/')
-      || location.pathname.endsWith('/sharesec_fv_A_v06.html');
-    const frameBase = isOutputPreview
-      ? 'sharesec_v05_frames/'
-      : 'img/sharesec-v05-frames/';
+  /* ---- スマホのメニュー開閉 ---- */
+  (function () {
+    var b = document.getElementById('burger'), nav = document.getElementById('gnav');
+    if (!b || !nav) return;
+    var close = function () { nav.classList.remove('is-open'); b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', 'メニューを開く'); };
+    b.addEventListener('click', function () {
+      var open = nav.classList.toggle('is-open');
+      b.setAttribute('aria-expanded', String(open));
+      b.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    });
+    nav.addEventListener('click', function (e) { if (e.target.tagName === 'A') close(); });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    addEventListener('resize', function () { if (innerWidth > 900) close(); });
+  })();
 
-    const pad = (n) => String(n).padStart(3, '0');
-    const frameSrc = (index) => `${frameBase}frame_${pad(index)}.webp`;
-    let targetIndex = -1;
-    let displayedIndex = -1;
-    const frameCache = new Map();
-
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    }
-
-    function lerp(a, b, t) {
-      return a + (b - a) * t;
-    }
-
-    function progressForScene() {
-      if (lockedProgress !== null) return lockedProgress;
-      const range = Math.max(1, scene.offsetHeight - window.innerHeight);
-      return clamp(-scene.getBoundingClientRect().top / range, 0, 1);
-    }
-
-    function displayFrame(index) {
-      if (displayedIndex === index) return;
-      displayedIndex = index;
-      frame.src = frameSrc(index);
-    }
-
-    function primeFrame(index) {
-      if (frameCache.has(index)) return;
-      const img = new Image();
-      frameCache.set(index, img);
-      img.onload = () => {
-        frameCache.set(index, 'loaded');
-        if (index === targetIndex || displayedIndex === -1) {
-          displayFrame(index);
-        }
-      };
-      img.src = frameSrc(index);
-    }
-
-    function setFrame(progress) {
-      const nextIndex = Math.round(progress * (frameCount - 1));
-      if (nextIndex === targetIndex) return;
-      targetIndex = nextIndex;
-
-      const cached = frameCache.get(nextIndex);
-      if (cached === 'loaded') {
-        displayFrame(nextIndex);
-        return;
-      }
-
-      primeFrame(nextIndex);
-    }
-
-    function updateSurface(progress) {
-      // ★ベンチ100は巨大タイポが消えない。スクロールで薄くするが、0にはしない
-      const introOpacity = progress < .20 ? 1 : clamp(1 - (progress - .20) / .22, 0, 1);
-      const typeOpacity = clamp(1 - progress * 2.6, 0, 1);
-      const shadeOpacity = progress < .2 ? clamp(.7 - progress * 2.6, .12, .7) : 0;
-      const railOpacity = progress < .36 ? clamp(1 - progress * 2.2, .2, 1) : .12;
-      root.style.setProperty('--progress', progress.toFixed(4));
-      root.style.setProperty('--intro-opacity', introOpacity.toFixed(3));
-      root.style.setProperty('--intro-y', `${Math.round(lerp(0, -46, progress))}px`);
-      root.style.setProperty('--type-opacity', typeOpacity.toFixed(3));
-      root.style.setProperty('--type-y', `${Math.round(lerp(0, -110, progress))}px`);
-      root.style.setProperty('--shade-opacity', shadeOpacity.toFixed(3));
-      root.style.setProperty('--rail-opacity', railOpacity.toFixed(3));
-    }
-
-    function updateCallouts(progress) {
-      callouts.forEach((item) => {
-        const from = Number(item.dataset.from);
-        const to = Number(item.dataset.to);
-        item.classList.toggle('is-visible', progress >= from && progress <= to);
+  /* ---- スクロールで順に出す（IntersectionObserver。reduce-motion は無効） ---- */
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var groups = [
+      '.issues .sec-title, .issue',
+      '.strengths .s-head, .s-row, .s-card',
+      '.why__head, .cmp-t, .why__foot',
+      '.exp__head, .exp__row',
+      '.book__visual, .book__body',
+      '.cases__eyebrow, .cases__title, .cases__lead, .case, .cases__foot',
+      '.price__head, .pq, .price__foot',
+      '.quote__eyebrow, .quote__title, .quote__lead, .q-col, .quote__foot',
+      '.flow__eyebrow, .flow__title, .flow__lead, .flow__row, .flow__note',
+      '.gai__head, .gai__item, .gai__note',
+      '.art__eyebrow, .art__title, .art__lead, .acard, .art__cta',
+      '.faq__head, .faq__item',
+      '.news__top, .nitem, .news__note',
+      '.ct__panel'
+    ];
+    var els = [];
+    groups.forEach(function (sel) {
+      var list = [].slice.call(document.querySelectorAll(sel));
+      list.forEach(function (el, i) {
+        el.setAttribute('data-rv', '');
+        el.style.setProperty('--rv-d', Math.min(i, 4) * 80 + 'ms');
+        els.push(el);
       });
+    });
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('is-in'); });
+      return;
     }
-
-    function update() {
-      const progress = progressForScene();
-      setFrame(progress);
-      updateSurface(progress);
-      updateCallouts(progress);
-    }
-
-    function preloadFrames() {
-      const important = [0, 32, 72, 120, 176, 239];
-      important.forEach(primeFrame);
-
-      let i = 0;
-      const preloadChunk = () => {
-        const end = Math.min(frameCount, i + 12);
-        for (; i < end; i += 1) {
-          primeFrame(i);
-        }
-        if (i < frameCount) {
-          setTimeout(preloadChunk, 80);
-        }
-      };
-      setTimeout(preloadChunk, 120);
-    }
-
-    let ticking = false;
-    function requestUpdate() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        update();
-        ticking = false;
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
       });
-    }
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
 
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    update();
-    preloadFrames();
-  </script>
+  // テキストエリアの文字数カウンタ（原画の「0 / 500」）
+  (function () {
+    var ta = document.getElementById('cf-body');
+    var c  = document.getElementById('cf-count');
+    if (!ta || !c) return;
+    ta.addEventListener('input', function () { c.textContent = ta.value.length + ' / 500'; });
+  })();
+</script>
+
 </body>
 </html>
