@@ -161,6 +161,8 @@ a{text-decoration:none; color:inherit}
 /* ---------------- コピー ---------------- */
 .copy{display:flex; align-items:center}
 .copy .wrap{padding-bottom:clamp(10px,2vh,26px)}
+/* 全体を少し下へ寄せる（上下中央だと詰まって見える） */
+.copy .wrap{padding-top:clamp(28px,7vh,92px)}
 
 .eyebrow{
   font-size:clamp(12.5px,1.15vw,17px);
@@ -265,6 +267,7 @@ a{text-decoration:none; color:inherit}
   .hero__veil{display:none}   /* スマホは文字が別背景なのでブレンド不要 */
 
   .copy{order:2; display:block; padding:26px 0 30px}
+  .copy .wrap{padding-top:0}
   .cta{width:100%; height:54px; margin-top:22px}
   .cta__txt{padding-left:0}
 
