@@ -555,38 +555,60 @@ a{text-decoration:none; color:inherit}
 }
 
 /* ---- 04 の構成図 ---- */
-/* 構成書の「情報の流れの対比図」。同じ診断対象から、
-   上＝一般的な構成（社外のクラウドAIへ出る）／下＝SHAREの構成（ローカルで完結）へ分岐させる */
-.d4{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center;
-    gap:clamp(10px,1.4vw,22px)}
-.d4__cases{display:grid; gap:clamp(14px,1.7vw,26px)}
+/* 構成書の「情報の流れの対比図」。
+   上に診断対象を置き、そこから左＝一般的な構成／右＝SHAREの構成へ分岐させる。
+   上から下へ1方向に読める形にする。 */
+.d4{--dgap:clamp(14px,1.8vw,28px); display:block}
+.d4__cases{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--dgap);
+  align-items:start}
 .d4__case{
-  position:relative; border-radius:6px;
-  padding:clamp(14px,1.6vw,24px) clamp(12px,1.4vw,20px) clamp(12px,1.4vw,20px);
+  position:relative; border-radius:6px; text-align:center;
+  padding:clamp(20px,2.2vw,32px) clamp(12px,1.4vw,20px) clamp(14px,1.6vw,24px);
 }
 .d4__case--std{background:#f4f5f7; border:1px solid #e0e3e9}
 .d4__case--ours{background:#fff; border:1px solid #dbe3f0}
 .d4__cap{
-  position:absolute; top:0; left:clamp(12px,1.5vw,22px); transform:translateY(-50%);
+  position:absolute; top:0; left:50%; transform:translate(-50%,-50%);
   padding:clamp(3px,.35vw,5px) clamp(8px,.9vw,13px); border-radius:2px;
   font-size:clamp(10px,.86vw,12.5px); font-weight:700; letter-spacing:.04em;
   background:#7c8493; color:#fff; white-space:nowrap;
 }
 .d4__cap--ours{background:var(--sNd)}
-.d4__caseIn{display:flex; align-items:center; gap:clamp(10px,1.4vw,22px)}
-.d4__case--std .d4__cloud{flex:0 0 auto; width:clamp(96px,12.6vw,182px); background:#fff}
+.d4__case--std .d4__cloud{width:min(100%,clamp(120px,14vw,200px)); margin-inline:auto; background:#fff}
 .d4__warn{
-  flex:1 1 auto; min-width:0;
+  margin-top:clamp(10px,1.2vw,18px);
   font-size:clamp(10.5px,.9vw,13px); line-height:1.75; color:#6b727e;
 }
+.d4__warn--ok{color:var(--sNd); font-weight:700}
+
+/* 分岐の線。列の中心は列幅から出すので、幅が変わっても合う */
+.d4__fork{
+  position:relative; height:clamp(34px,3.6vw,52px);
+  margin:clamp(10px,1.2vw,18px) 0 0;
+  --dcol:calc((100% - var(--dgap)) / 2);
+  --dc1:calc(var(--dcol) / 2);
+  --dc2:calc(100% - var(--dcol) / 2);
+}
+.d4__fork i{position:absolute; background:#7c8698}
+.d4__stem{left:50%; top:0; width:1.4px; height:46%; transform:translateX(-50%)}
+.d4__bar{left:var(--dc1); right:calc(var(--dcol) / 2); top:calc(46% - .7px); height:1.4px}
+.d4__leg{top:46%; bottom:11px; width:1.4px}
+.d4__leg--1{left:var(--dc1); transform:translateX(-50%)}
+.d4__leg--2{left:var(--dc2); transform:translateX(-50%)}
+.d4__tip{
+  position:absolute; bottom:0; width:14px; height:auto; transform:translateX(-50%);
+  stroke:#7c8698; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
+}
+.d4__tip--1{left:var(--dc1)} .d4__tip--2{left:var(--dc2)}
 .d4 .ar{flex:0 0 auto; width:clamp(16px,1.9vw,28px); height:auto; stroke:var(--sInk); fill:none; stroke-width:2}
 .d4__src{
-  flex:0 0 auto; width:clamp(146px,18.6vw,268px);
+  width:min(100%,clamp(280px,62vw,860px)); margin-inline:auto;
   background:#fff; border:1px solid #e3e6ec; border-radius:6px;
   padding:clamp(12px,1.5vw,22px) clamp(9px,1.1vw,16px);
 }
 .d4__src h4{font-size:clamp(11px,1.05vw,15.5px); font-weight:700; text-align:center}
-.d4__src ul{list-style:none; margin-top:clamp(9px,1.1vw,16px); display:grid; gap:clamp(6px,.75vw,11px)}
+.d4__src ul{list-style:none; margin-top:clamp(9px,1.1vw,16px); display:grid; gap:clamp(6px,.75vw,11px);
+  grid-template-columns:repeat(3,minmax(0,1fr))}
 .d4__src li{
   display:flex; align-items:center; gap:clamp(7px,.9vw,13px);
   border:1px solid #e6e9ef; border-radius:5px; background:#fff;
@@ -694,13 +716,17 @@ a{text-decoration:none; color:inherit}
   .f5{flex-wrap:wrap; justify-content:flex-start; gap:14px 0}
   .f5 figure{width:33.33%}
   .f5 .ar{display:none}
-  /* grid になったので、スマホは1列に落として縦積みにする */
-  .d4{grid-template-columns:minmax(0,1fr); align-items:stretch}
-  .d4__caseIn{flex-direction:column; align-items:stretch}
-  .d4__case--std .d4__cloud{width:100%}
-  .d4__warn{text-align:center}
-  .d4__cap{position:static; transform:none; display:inline-block; margin-bottom:10px}
-  .d4__case{padding:clamp(12px,3.6vw,16px)}
+  /* スマホは2列に並べられないので、上から順に積む。
+     分岐の線は「1本の下向き矢印」に畳む */
+  .d4__cases{grid-template-columns:minmax(0,1fr)}
+  .d4__case{padding:20px 14px 16px}
+  .d4__case--std .d4__cloud{width:min(100%,200px)}
+  .d4__fork{height:30px}
+  .d4__bar,.d4__leg--2,.d4__tip--2{display:none}
+  .d4__stem{left:50%; height:60%}
+  .d4__leg--1{left:50%; top:60%; bottom:11px}
+  .d4__tip--1{left:50%}
+  .d4__src ul{grid-template-columns:minmax(0,1fr)}
   .d4__tab{white-space:normal; text-align:center; max-width:calc(100% - 20px); font-size:11px}
   .d4__local{padding-top:34px}
   .d4__proc{display:none}          /* 縦積みでは意味を成さないので出さない */
@@ -3157,47 +3183,50 @@ a.art__cta[class] i{background:var(--navy)}
           </ul>
         </div>
 
+        <!-- 診断対象から2つの構成へ分岐する線 -->
+        <div class="d4__fork" aria-hidden="true">
+          <i class="d4__stem"></i>
+          <i class="d4__bar"></i>
+          <i class="d4__leg d4__leg--1"></i>
+          <i class="d4__leg d4__leg--2"></i>
+          <svg class="d4__tip d4__tip--1" viewBox="0 0 14 10"><path d="M1 2l6 6 6-6"/></svg>
+          <svg class="d4__tip d4__tip--2" viewBox="0 0 14 10"><path d="M1 2l6 6 6-6"/></svg>
+        </div>
+
         <div class="d4__cases">
-          <!-- 一般的な構成：情報が社外へ出る -->
           <div class="d4__case d4__case--std">
             <span class="d4__cap">一般的な構成</span>
-            <div class="d4__caseIn">
-              <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
-              <!-- ここは「実際に送信されている」流れなので ✕ は付けない -->
-              <div class="d4__cloud">
-                <i style="-webkit-mask-image:url(img/ic/cloud.svg);mask-image:url(img/ic/cloud.svg)"></i>
-                <span>外部クラウドAI</span>
-              </div>
-              <p class="d4__warn">診断対象の情報が<br class="brp">社外のサーバーへ送信される</p>
+            <!-- ここは「実際に送信されている」流れなので ✕ は付けない -->
+            <div class="d4__cloud">
+              <i style="-webkit-mask-image:url(img/ic/cloud.svg);mask-image:url(img/ic/cloud.svg)"></i>
+              <span>外部クラウドAI</span>
             </div>
+            <p class="d4__warn">診断対象の情報が<br>社外のサーバーへ送信される</p>
           </div>
 
-          <!-- SHARE Security の構成：ローカルで完結 -->
           <div class="d4__case d4__case--ours">
             <span class="d4__cap d4__cap--ours">SHARE Security の構成</span>
-            <div class="d4__caseIn">
-              <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
-              <div class="d4__local">
-                <span class="d4__tab">
-                  ローカル環境（貴社のネットワーク環境内）
-                  <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg>
-                </span>
-                <div class="d4__mid">
-                  <figure class="d4__ws">
-                    <img loading="lazy" decoding="async" src="img/str/workstation.png" alt="診断用ワークステーション">
-                    <figcaption>診断用ワークステーション ×12台</figcaption>
-                  </figure>
-                  <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
-                  <div class="d4__llm">
-                    <i style="-webkit-mask-image:url(img/ic/brain.svg);mask-image:url(img/ic/brain.svg)"></i>
-                    <b>ローカルLLM</b><span>診断業務に合わせて<br>ファインチューニング</span>
-                  </div>
+            <div class="d4__local">
+              <span class="d4__tab">
+                ローカル環境（貴社のネットワーク環境内）
+                <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg>
+              </span>
+              <div class="d4__mid">
+                <figure class="d4__ws">
+                  <img loading="lazy" decoding="async" src="img/str/workstation.png" alt="診断用ワークステーション">
+                  <figcaption>診断用ワークステーション ×12台</figcaption>
+                </figure>
+                <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+                <div class="d4__llm">
+                  <i style="-webkit-mask-image:url(img/ic/brain.svg);mask-image:url(img/ic/brain.svg)"></i>
+                  <b>ローカルLLM</b><span>診断業務に合わせて<br>ファインチューニング</span>
                 </div>
-                <p class="d4__notes"><span>・情報は外部に送信しない</span><span>・すべてローカルで処理・保管</span></p>
               </div>
             </div>
+            <p class="d4__warn d4__warn--ok">情報は外部に送信されず<br>すべてローカルで処理・保管される</p>
           </div>
         </div>
+      </div>
       </div>
 
   </div>
