@@ -50,7 +50,6 @@
   --max:1360px;                        /* 中身の最大幅 */
   --pad:clamp(20px,4vw,56px);          /* 左右の余白 */
   --head-h:clamp(58px,7.4vh,78px);     /* ヘッダーの高さ */
-  --band-h:clamp(148px,23vh,196px);    /* 下帯＝3点セットの帯 */
 
   /* --- 級数と余白の共通スケール（チェックリスト対応） --- */
   --h2:clamp(23px,2.78vw,40px);         /* 節見出し。h1(46px) より必ず小さい */
@@ -96,9 +95,10 @@ a{text-decoration:none; color:inherit}
 /* ---------------- 舞台：1画面に収める ---------------- */
 .hero{
   position:relative;
-  min-height:calc(100svh - var(--head-h));
+  /* 次の節を少しだけのぞかせる。1画面ぴったりだと「続きがある」と伝わらない */
+  min-height:calc(100svh - var(--head-h) - clamp(120px,21vh,208px));
   display:grid;
-  grid-template-rows:1fr var(--band-h);
+  grid-template-rows:1fr;
   background:transparent;      /* 背景は position:fixed の .hero__bg が受け持つ */
 }
 .hero > *:not(.hero__bg){position:relative; z-index:1}
@@ -238,7 +238,7 @@ a{text-decoration:none; color:inherit}
    〜900px：縦に流す。写真はCTAより上。
    ================================================================ */
 @media (max-width:900px){
-  :root{--head-h:56px; --band-h:0px}   /* auto だと mask の calc が壊れるので 0px */
+  :root{--head-h:56px}
   .head{background:#fff; border-bottom-color:var(--rule)}
   .head__burger{display:block}
   .head__brand{min-height:44px; display:flex; align-items:center}
