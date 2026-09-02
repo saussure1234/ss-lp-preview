@@ -602,13 +602,12 @@ a{text-decoration:none; color:inherit}
 .d4__tip--1{left:var(--dc1)} .d4__tip--2{left:var(--dc2)}
 .d4 .ar{flex:0 0 auto; width:clamp(16px,1.9vw,28px); height:auto; stroke:var(--sInk); fill:none; stroke-width:2}
 .d4__src{
-  width:min(100%,clamp(280px,62vw,860px)); margin-inline:auto;
+  width:min(100%,clamp(260px,34vw,440px)); margin-inline:auto;   /* 中身は縦並びなので幅は詰める */
   background:#fff; border:1px solid #e3e6ec; border-radius:6px;
   padding:clamp(12px,1.5vw,22px) clamp(9px,1.1vw,16px);
 }
 .d4__src h4{font-size:clamp(11px,1.05vw,15.5px); font-weight:700; text-align:center}
-.d4__src ul{list-style:none; margin-top:clamp(9px,1.1vw,16px); display:grid; gap:clamp(6px,.75vw,11px);
-  grid-template-columns:repeat(3,minmax(0,1fr))}
+.d4__src ul{list-style:none; margin-top:clamp(9px,1.1vw,16px); display:grid; gap:clamp(6px,.75vw,11px)}
 .d4__src li{
   display:flex; align-items:center; gap:clamp(7px,.9vw,13px);
   border:1px solid #e6e9ef; border-radius:5px; background:#fff;
@@ -734,7 +733,6 @@ a{text-decoration:none; color:inherit}
   .d4__stem{left:50%; height:60%}
   .d4__leg--1{left:50%; top:60%; bottom:11px}
   .d4__tip--1{left:50%}
-  .d4__src ul{grid-template-columns:minmax(0,1fr)}
   .d4__tab{white-space:normal; text-align:center; max-width:calc(100% - 20px); font-size:11px}
   .d4__local{padding-top:34px}
   .d4__proc{display:none}          /* 縦積みでは意味を成さないので出さない */
