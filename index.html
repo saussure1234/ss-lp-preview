@@ -2133,7 +2133,6 @@ section:not(.hero),footer{position:relative; z-index:1}
 /* ================================================================
    メリハリ：ブランドの濃色を「地」と「箱」に入れる（配色指示書 §4-4）
    ・重い強調（地ごと濃色）… 著書 ／ 生成AI ／ 今すぐ無料相談
-   ・軽い強調（箱だけ濃色）… 強み03
    濃色の上は白のアルファだけで作る（§2）。第2の色は足さない。
    ================================================================ */
 :root{
@@ -2155,23 +2154,8 @@ section:not(.hero),footer{position:relative; z-index:1}
 .ct.is-dark{color:var(--d-head)}
 .ct.is-dark .ct__panel{background:#fff; border-color:rgba(255,255,255,.22)}
 
-/* ---- 軽い強調：強み03 の箱だけ濃色 ---- */
-.s-card--dark{
-  background:linear-gradient(180deg,
-    var(--ground-dark) 0%,
-    color-mix(in srgb, var(--ground-dark) 72%, #000) 100%) !important;
-  --sInk:var(--d-head); --sSub:var(--d-text-sub);
-  --sN:var(--d-num); --sRule:var(--d-line-2); --sRing:var(--d-line-3);
-}
-.s-card--dark .s-lead p{color:var(--d-text)}
-.s-card--dark .dot i{background:rgba(255,255,255,.92)}
-.s-card--dark .f5 .num{background:rgba(255,255,255,.92); color:var(--ground-dark)}
-.s-card--dark .f5 .ar{stroke:var(--d-line-3)}
-.s-card--dark .f5 figcaption span{color:var(--d-text)}
-
 @media (prefers-contrast:more){
-  .is-dark,.s-card--dark{--d-text:rgba(255,255,255,.95); --d-text-sub:rgba(255,255,255,.88)}
-}
+  .is-dark,}
 /* ---------------- 3点セット：CTAの直下に置く ---------------- */
 .pillars{margin-top:clamp(20px,2.4vw,34px)}
 .prow{display:flex; flex-direction:column; gap:clamp(9px,1.05vw,15px)}
@@ -2190,7 +2174,7 @@ section:not(.hero),footer{position:relative; z-index:1}
 }
 /* ---------------- 濃色をページ全体に配る（配色指示書 §4-4） ----------------
    濃色地（章）      … 著書 ／ 生成AI ／ 今すぐ無料相談
-   濃色の箱（軽い強調）… 強み03 ／ 大手比較のSHARE列 ／ 価格表のSHARE列 ／ お見積もり方法01
+   濃色の箱（軽い強調）… 大手比較のSHARE列 ／ 価格表のSHARE列 ／ お見積もり方法01
    休符（箱なし）    … 課題提起・導入事例・レポート集・FAQ・お知らせ
    ---------------------------------------------------------------- */
 
@@ -2531,7 +2515,7 @@ section:not(.hero),footer{position:relative; z-index:1}
       </div>
     </div>
 
-    <div class="s-card s-card--dark">
+    <div class="s-card">
       <div class="s-lead">
         <span class="s-no">03</span>
         <div>
