@@ -2140,24 +2140,7 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(10px,.83vw,12px); line-height:1.75; color:var(--cNote);
 }
 /* 生成AIの利用に関する一問一答（構成書の「今すぐ無料相談 ※以下を追加」） */
-/* フォームの外（見出しの直下）に置く。送信ボタンの後ろだと、
-   ためらう理由に答える前に決断させることになる */
-.ct__qa{
-  margin-top:clamp(16px,1.7vw,24px);
-  padding:clamp(14px,1.4vw,20px) clamp(16px,1.6vw,23px);
-  border:1px solid #e2e6ec; border-radius:3px; background:#fafbfd;
-  text-align:left;
-}
-.ct__qa p{
-  display:flex; gap:clamp(6px,.62vw,9px);
-  font-size:clamp(10.5px,.9vw,13px); line-height:1.75;
-}
-.ct__qa p + p{margin-top:clamp(6px,.62vw,9px)}
-.ct__qa b{flex:0 0 auto; font-weight:700}
-.ct__qa-q{color:var(--cInk)}
-.ct__qa-q b{color:var(--cNavy)}
-.ct__qa-a{color:#566271}
-.ct__qa-a b{color:#848e9a}
+/* 生成AIの一問一答は FAQ セクションへ移した（内容としてそちらが本籍） */
 
 /* ---- フッター ---- */
 .ft{
@@ -2649,7 +2632,7 @@ a.art__cta[class] i{background:var(--navy)}
 .ct__submit[class]:hover{background:var(--accent-hover)}
 .ct__submit[class]:active{transform:translateY(1px)}
 .ct__submit svg{flex:0 0 auto; width:clamp(16px,1.53vw,22px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
-.ct__fnote,.ct__qa{max-width:620px; margin-inline:auto}
+.ct__fnote{max-width:620px; margin-inline:auto}
 .ct__fnote{text-align:center}
 @media (max-width:900px){
   .ct__panel{padding:24px 18px 26px}
@@ -3847,6 +3830,14 @@ a.art__cta[class] i{background:var(--navy)}
         </summary>
         <div class="faq__a"><p>プロンプトインジェクションやRAG構成での情報漏洩など、生成AI特有のリスクを対象に診断します。<br class="brp">研究で得た知見は、レポートや技術記事として継続的に公開しています。</p></div>
       </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">診断に生成AIを使用する場合、当社のシステム情報が外部に送信されることはありませんか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>当社ではローカルLLMを活用しているため、貴社ネットワーク環境の外に情報が送信されることはありません。</p></div>
+      </details>
     </div>
   </div>
 </section>
@@ -3924,11 +3915,6 @@ a.art__cta[class] i{background:var(--navy)}
       <div class="ct__head">
         <h2 class="ct__title">今すぐ無料相談</h2>
         <p class="ct__lead">いただいた内容を確認のうえ、通常3営業日以内にご連絡いたします。</p>
-        <!-- 送信をためらう理由に先に答える。ボタンの後ろにあると読まれない -->
-        <div class="ct__qa">
-          <p class="ct__qa-q"><b>Q.</b>診断に生成AIを使用する場合、当社のシステム情報が外部に送信されることはありませんか。</p>
-          <p class="ct__qa-a"><b>A.</b>当社ではローカルLLMを活用しているため、貴社ネットワーク環境の外に情報が送信されることはありません。</p>
-        </div>
       </div>
 
       <form class="ct__form" id="contact-form" action="" method="post">
