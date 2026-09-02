@@ -2086,28 +2086,41 @@ section:not(.hero),footer{position:relative; z-index:1}
 @keyframes fxPrismIn{from{opacity:0; transform:scale(.86) rotate(-3deg)} to{opacity:1; transform:none}}
 
 /* --- 常時のゆっくりした動き --- */
-@keyframes fxDriftA{0%,100%{transform:translate(0,0)}   50%{transform:translate(-11px,7px)}}
-@keyframes fxDriftB{0%,100%{transform:translate(0,0)}   50%{transform:translate(9px,-8px)}}
-@keyframes fxDriftC{0%,100%{transform:translate(0,0)}   50%{transform:translate(7px,5px)}}
+@keyframes fxDriftA{0%,100%{transform:translate(0,0)} 33%{transform:translate(-16px,9px)} 66%{transform:translate(-7px,-6px)}}
+@keyframes fxDriftB{0%,100%{transform:translate(0,0)} 33%{transform:translate(13px,-11px)} 66%{transform:translate(5px,8px)}}
+@keyframes fxDriftC{0%,100%{transform:translate(0,0)} 33%{transform:translate(11px,7px)} 66%{transform:translate(-6px,4px)}}
 @keyframes fxBreath{0%,100%{opacity:.92; transform:scale(1)} 50%{opacity:.66; transform:scale(1.035)}}
-@keyframes fxGridWave{0%,100%{opacity:.34} 50%{opacity:.16}}
+@keyframes fxGridWave{0%,100%{opacity:.36} 50%{opacity:.14}}
+@keyframes fxSlideX{0%,100%{transform:translateX(0)} 50%{transform:translateX(-18px)}}
+@keyframes fxSlideY{0%,100%{transform:translateY(0)} 50%{transform:translateY(9px)}}
 @keyframes fxDotPulse{0%,100%{opacity:.5} 50%{opacity:.24}}
 @keyframes fxSweep{0%{transform:translateX(0)} 100%{transform:translateX(2140px)}}
 @keyframes fxDraw{from{stroke-dashoffset:var(--len)} to{stroke-dashoffset:0}}
 
 .fx .fx-a{animation:fxInA 1.15s cubic-bezier(.22,.61,.36,1) both,
-                    fxDriftA 21s ease-in-out 1.2s infinite}
+                    fxDriftA 15s ease-in-out 1.2s infinite}
 .fx .fx-b{animation:fxInB 1.15s cubic-bezier(.22,.61,.36,1) .08s both,
-                    fxDriftB 26s ease-in-out 1.3s infinite}
+                    fxDriftB 19s ease-in-out 1.3s infinite}
 .fx .fx-c{animation:fxInC 1.15s cubic-bezier(.22,.61,.36,1) .16s both,
-                    fxDriftC 30s ease-in-out 1.4s infinite}
-.fx .fx-grid{animation:fxInUp 1.1s ease .42s both, fxGridWave 17s ease-in-out 1.6s infinite}
-.fx .fx-dots{animation:fxInUp 1.1s ease .52s both, fxDotPulse 9s ease-in-out 1.7s infinite}
-.fx .fx-beams path{stroke-dasharray:var(--len); animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both}
-.fx .fx-beams .b1{--len:1150; animation-delay:.30s}
-.fx .fx-beams .b2{--len:710;  animation-delay:.44s}
-.fx .fx-beams .b3{--len:1222; animation-delay:.56s}
-.fx .fx-beams .b4{--len:1163; animation-delay:.66s}
+                    fxDriftC 23s ease-in-out 1.4s infinite}
+.fx .fx-grid{animation:fxInUp 1.1s ease .42s both, fxGridWave 12s ease-in-out 1.6s infinite,
+                        fxSlideX 28s ease-in-out 1.6s infinite}
+.fx .fx-dots{animation:fxInUp 1.1s ease .52s both, fxDotPulse 7s ease-in-out 1.7s infinite,
+                        fxSlideY 20s ease-in-out 1.7s infinite}
+/* 線は描かれたあと、明るい区間が線の上を流れ続ける */
+.fx .fx-beams path{
+  stroke-dasharray:var(--len);
+  animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both,
+            fxFlow var(--flow,22s) linear 1.6s infinite;
+}
+@keyframes fxFlow{
+  0%  {stroke-dasharray:0 0 calc(var(--len) * .38) var(--len); stroke-dashoffset:0}
+  100%{stroke-dasharray:0 0 calc(var(--len) * .38) var(--len); stroke-dashoffset:calc(var(--len) * -1.38)}
+}
+.fx .fx-beams .b1{--len:1150; --flow:19s; animation-delay:.30s,1.9s}
+.fx .fx-beams .b2{--len:710;  --flow:14s; animation-delay:.44s,2.0s}
+.fx .fx-beams .b3{--len:1222; --flow:26s; animation-delay:.56s,2.1s}
+.fx .fx-beams .b4{--len:1163; --flow:23s; animation-delay:.66s,2.2s}
 
 /* 下帯：背景の明暗が横で変わるので、白い床を1枚敷いて文字を読ませる */
 
