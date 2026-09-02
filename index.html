@@ -2140,9 +2140,13 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(10px,.83vw,12px); line-height:1.75; color:var(--cNote);
 }
 /* 生成AIの利用に関する一問一答（構成書の「今すぐ無料相談 ※以下を追加」） */
+/* フォームの外（見出しの直下）に置く。送信ボタンの後ろだと、
+   ためらう理由に答える前に決断させることになる */
 .ct__qa{
-  margin-top:clamp(14px,1.46vw,21px); padding-top:clamp(13px,1.32vw,19px);
-  border-top:1px solid #e7e9ee;
+  margin-top:clamp(16px,1.7vw,24px);
+  padding:clamp(14px,1.4vw,20px) clamp(16px,1.6vw,23px);
+  border:1px solid #e2e6ec; border-radius:3px; background:#fafbfd;
+  text-align:left;
 }
 .ct__qa p{
   display:flex; gap:clamp(6px,.62vw,9px);
@@ -3920,6 +3924,11 @@ a.art__cta[class] i{background:var(--navy)}
       <div class="ct__head">
         <h2 class="ct__title">今すぐ無料相談</h2>
         <p class="ct__lead">いただいた内容を確認のうえ、通常3営業日以内にご連絡いたします。</p>
+        <!-- 送信をためらう理由に先に答える。ボタンの後ろにあると読まれない -->
+        <div class="ct__qa">
+          <p class="ct__qa-q"><b>Q.</b>診断に生成AIを使用する場合、当社のシステム情報が外部に送信されることはありませんか。</p>
+          <p class="ct__qa-a"><b>A.</b>当社ではローカルLLMを活用しているため、貴社ネットワーク環境の外に情報が送信されることはありません。</p>
+        </div>
       </div>
 
       <form class="ct__form" id="contact-form" action="" method="post">
@@ -3950,10 +3959,6 @@ a.art__cta[class] i{background:var(--navy)}
           ご入力いただいた個人情報は、お問い合わせへの回答およびご連絡のみに<br class="brp">
           利用し、その他の目的で利用することはありません。
         </p>
-        <div class="ct__qa">
-          <p class="ct__qa-q"><b>Q.</b>診断に生成AIを使用する場合、当社のシステム情報が外部に送信されることはありませんか。</p>
-          <p class="ct__qa-a"><b>A.</b>当社ではローカルLLMを活用しているため、貴社ネットワーク環境の外に情報が送信されることはありません。</p>
-        </div>
       </form>
     </div>
   </div>
