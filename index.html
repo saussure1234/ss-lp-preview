@@ -652,6 +652,13 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(9.5px,.86vw,12.5px); color:var(--sInk); white-space:nowrap;
 }
 /* 設置環境の写真（強み4） */
+/* 写真を段落の右に置く。見出しは全幅のまま */
+.s-split{
+  display:grid; grid-template-columns:minmax(0,1fr) clamp(230px,29%,390px);
+  gap:clamp(18px,2.4vw,34px); align-items:start;
+  margin-top:clamp(10px,1.2vw,18px);
+}
+.s-photo--side{margin:0 !important}
 .s-photo{
   margin:clamp(18px,2.4vw,34px) 0 clamp(18px,2.4vw,34px);
   border-radius:clamp(5px,.6vw,9px); overflow:hidden;
@@ -707,6 +714,7 @@ a{text-decoration:none; color:inherit}
   .s-lead > div{min-width:0}
   .s-lead h3{font-size:15.5px}
   .s-lead p{font-size:12px}
+  .s-split{grid-template-columns:minmax(0,1fr); gap:16px}   /* スマホは写真を下へ */
   .s-no{font-size:26px; padding-right:14px}
   .f3{gap:2px}
   .f3 figure{width:auto; flex:1 1 0}
@@ -1464,18 +1472,25 @@ a{text-decoration:none; color:inherit}
 .pq__tag{display:none}
 @media (max-width:900px){
   .price{padding-block:52px}
-  .pq{grid-template-columns:1fr; border:0}   /* margin は --g-body に一本化（旧24px） */
-  .pq__row{display:block; border:1px solid var(--pLine); border-radius:4px; overflow:hidden}
-  .pq__row--h{display:none}                  /* ← .pq__row より後に置くこと（同順位で後勝ち） */
-  .pq__row + .pq__row{margin-top:12px}
-  .pq__row + .pq__row .pq__c{border-top:0}
-  .pq__c{height:auto !important; display:block; text-align:left; padding:14px 16px}
-  .pq__c--item{display:flex; align-items:center; background:var(--pale); padding:12px 16px}
-  .pq__c--share{border-inline:0; border-left:3px solid var(--pNavy); background:#f7f9fd}
-  .pq__row:last-child .pq__c--share{border-bottom:0}
-  .pq__c--other{border-top:1px solid var(--pLine)}
-  .pq__tag{display:block; margin-bottom:5px; font-size:11px; font-weight:700; color:#6a7280; letter-spacing:.04em}
-  .pq__c--share .pq__tag{color:var(--pNavy)}
+  /* 縦積みだと行ごとの比較ができないので、3列のまま横スクロール（WHYの比較表と同じ作り）。
+     1列目（項目）は sticky で残す */
+  .pq-scroll{
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(-1 * clamp(24px,6vw,110px));
+    padding-inline:clamp(24px,6vw,110px);
+    scrollbar-width:thin;
+  }
+  .pq{grid-template-columns:124px 164px 164px; min-width:452px}
+  .pq__row{display:contents}
+  .pq__row--h{display:contents}              /* 見出し行も出す（横スクロールで並ぶため） */
+  .pq__c{height:96px; padding:10px 12px; text-align:center}
+  .pq__c--item{position:sticky; left:0; z-index:2; background:#fff;
+               justify-content:flex-start; text-align:left; padding:10px 12px}
+  .pq__row--h .pq__c--item{background:var(--pale)}
+  .pq__ico{width:20px}
+  .pq__name{font-size:11.5px; line-height:1.35}
+  .pq__c p{font-size:11px; line-height:1.65}
+  .pq__tag{display:none}                     /* 項目名は1列目に出るので不要 */
   .price__foot{padding:20px 16px}
   .price__act{flex-direction:column; gap:14px; width:100%}
   .price__cta{width:100%; height:54px}
@@ -3163,15 +3178,18 @@ a.art__cta[class] i{background:var(--navy)}
         <span class="s-no">04</span>
         <div>
           <h3>ローカルLLMで安心の診断＆ファインチューニングで定期アップデート</h3>
+          <div class="s-split">
+          <div>
           <p>診断で扱うのは、まだ修正されていない攻撃可能な脆弱性の詳細です。この情報を外部のクラウドAIサービスに送信すれば、自社の管理外に出ることになります。SHARE Securityが診断にフロンティアAIを使用しないのは、このためです。</p>
           <p>貴社のネットワーク環境に12台のワークステーションを設置し、すべての診断処理をローカル環境で完結させているため、診断対象の情報が外部へ送信されることはありません。さらに、この環境で稼働するモデルには診断業務に合わせたファインチューニングを継続的に実施しています。汎用モデルをそのまま利用するのではなく、脆弱性診断という用途に最適化した状態で運用しています。</p>
-        </div>
-      </div>
-
-      <figure class="s-photo">
-        <img src="img/str/units.jpg?v=1" alt="貴社のネットワーク環境に設置した診断用ワークステーション" loading="lazy" decoding="async">
-        <figcaption>貴社のネットワーク環境に設置した診断用ワークステーション</figcaption>
-      </figure>
+          </div>
+          <figure class="s-photo s-photo--side">
+            <img src="img/str/units.jpg?v=1" alt="貴社のネットワーク環境に設置した診断用ワークステーション" loading="lazy" decoding="async">
+            <figcaption>貴社のネットワーク環境に設置した診断用ワークステーション</figcaption>
+          </figure>
+          </div><!-- /.s-split -->
+        </div><!-- /本文 -->
+      </div><!-- /.s-lead -->
 
       <div class="d4">
         <div class="d4__src">
@@ -3554,6 +3572,7 @@ a.art__cta[class] i{background:var(--navy)}
       </p>
     </div>
 
+    <div class="pq-scroll">
     <div class="pq">
       <div class="pq__row pq__row--h">
         <div class="pq__c pq__c--item" aria-hidden="true"></div>
@@ -3596,6 +3615,7 @@ a.art__cta[class] i{background:var(--navy)}
         <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>無料でスムーズにお見積もり。<br class="brp">内容を分かりやすくご説明します。</p></div>
         <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>ヒアリングや手続きが多く、<br class="brp">見積もりに時間がかかることがあります。</p></div>
       </div>
+    </div>
     </div>
 
     <div class="price__foot">
