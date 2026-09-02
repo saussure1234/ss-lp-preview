@@ -2500,7 +2500,9 @@ section:not(.hero),footer{position:relative; z-index:1}
 }
 .q-col--main .q-num{color:var(--d-num)}
 .q-col--main .q-head h3{color:var(--d-head)}
-.q-col--main .q-badge{border-color:var(--d-line-3); color:var(--d-head)}
+/* 「推奨」は2択の答え。白抜きだと弱いので保護色で塗る
+   （白文字4.52:1／紺の箱との差3.4:1で、面としても文字としても成立する） */
+.q-col--main .q-badge{background:var(--accent); border-color:var(--accent); color:#fff}
 .q-col--main .q-desc{color:var(--d-text)}
 .q-col--main .q-feat{border-top-color:var(--d-line-1)}
 .q-col--main .q-item + .q-item{border-top-color:var(--d-line-1)}
@@ -2520,8 +2522,11 @@ section:not(.hero),footer{position:relative; z-index:1}
    ・詳細度を稼ぐため [class] を付ける
    ================================================================ */
 :root{
-  --accent:#bb580c;        /* hsl(26,88%,39%) 白文字で AA を満たす明度 */
-  --accent-hover:#9b4808;  /* hsl(26,90%,32%) */
+  /* 色相はそのまま、彩度を上限まで上げて鮮やかにした。
+     白文字4.5:1の上限は明度39.8%。ここを超えると白文字がAAを外れるので、
+     「もっと明るく」は彩度で稼ぐ（実測：どの色相でも4.5:1の輝度は同じ＝明るさは頭打ち） */
+  --accent:#c45500;        /* hsl(26,100%,38.5%) 白文字 4.52:1 */
+  --accent-hover:#a34700;  /* hsl(26,90%,32%) */
   --accent-pale:#fef1e7;   /* hsl(26,90%,95%) */
   --accent-ink:#9c4d11;    /* hsl(26,80%,34%) */
 }
