@@ -809,12 +809,25 @@ a{text-decoration:none; color:inherit}
 
 @media (max-width:900px){
   .why{padding-block:52px}
-  .cmp-t{grid-template-columns:1fr; gap:14px}
-  .cmp-t__col--item{display:none}          /* 項目名は各セルの中に出す */
-  .cmp-t__h--a,.cmp-t__h--b{border-radius:6px 6px 0 0}
-  .cmp-t__col--a .cmp-t__body{border:1px solid var(--wLine); border-top:0; border-radius:0 0 6px 6px}
-  .cmp-t__cell{height:auto; padding:14px 16px; align-items:flex-start}
-  .cmp-t__label{display:block !important; font-size:11px; color:var(--wSub); margin-bottom:5px}
+  /* 縦積みだと「大手を全部読んでからSHAREを全部読む」形になり、行ごとの比較ができない。
+     3列のまま横スクロールさせ、1列目（項目）は sticky で残す */
+  .cmp-scroll{
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    margin-inline:calc(-1 * clamp(24px,6vw,110px));   /* .wrap の左右パディングを打ち消す */
+    padding-inline:clamp(24px,6vw,110px);
+    scrollbar-width:thin;
+  }
+  /* 項目名（診断品質/検出率）が1〜2行に収まる幅を確保する。84pxだと「レポ／ート」と割れた */
+  .cmp-t{grid-template-columns:124px 164px 164px; min-width:452px; gap:0}
+  .cmp-t__col--item{display:block; position:sticky; left:0; z-index:2}
+  .cmp-t__col--item .cmp-t__h{background:var(--pale)}
+  .cmp-t__cell{height:96px; padding:10px 12px; align-items:center}
+  .cmp-t__ico{width:20px}
+  .cmp-t__name{font-size:11.5px; line-height:1.35}
+  .cmp-t__t{font-size:12.5px}
+  .cmp-t__s{font-size:10.5px}
+  .cmp-t__check{width:18px}
+  .cmp-t__label{display:none !important}
   .why__foot{flex-direction:column; align-items:stretch; gap:18px}
   .why__foot p{font-size:15px}
   .why__cta{width:100%; height:56px}
@@ -2662,7 +2675,7 @@ a.art__cta[class] i{background:var(--navy)}
 .cmp-t__col--b .cmp-t__cell{justify-content:center; text-align:center}
 .cmp-t__col--b .cmp-t__cell{gap:clamp(8px,1vw,14px)}
 @media (max-width:900px){
-  .cmp-t__col--a .cmp-t__cell,.cmp-t__col--b .cmp-t__cell{justify-content:flex-start; text-align:left}
+  .cmp-t__col--a .cmp-t__cell,.cmp-t__col--b .cmp-t__cell{justify-content:center; text-align:center}
 }
 /* ================================================================
    レスポンシブ：スマホ・タブレットのFVを整える
@@ -3160,6 +3173,7 @@ a.art__cta[class] i{background:var(--navy)}
       <p class="why__lead">大手診断会社との違いを、5つの視点でわかりやすく比較。</p>
     </div>
 
+    <div class="cmp-scroll">
     <div class="cmp-t">
       <div class="cmp-t__col cmp-t__col--item">
         <div class="cmp-t__h" aria-hidden="true"></div>
@@ -3236,6 +3250,7 @@ a.art__cta[class] i{background:var(--navy)}
         </div></div>
         </div>
       </div>
+    </div>
     </div>
 
     <div class="why__foot">
