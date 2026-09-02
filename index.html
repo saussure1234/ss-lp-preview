@@ -52,7 +52,14 @@
   --head-h:clamp(58px,7.4vh,78px);     /* ヘッダーの高さ */
 
   /* --- 級数と余白の共通スケール（チェックリスト対応） --- */
-  --h2:clamp(23px,2.78vw,40px);         /* 節見出し。h1(46px) より必ず小さい */
+  --h2:clamp(23px,2.78vw,40px);
+  /* 縦のリズム。もとはモック1枚ずつに合わせた個別値で、実測すると
+     見出し→リードが 17〜26px、リード→本体が 36〜80px とバラついていた */
+  /* SHARE Security を強調する面。グラデは使わない（列の中で明→暗が繰り返して縞に見える） */
+  --hl-navy:#0a2547;
+  --g-eyebrow:clamp(18px,2vw,28px);      /* 小見出し → 見出し */
+  --g-lead:clamp(14px,1.55vw,22px);      /* 見出し → リード */
+  --g-body:clamp(30px,3.6vw,46px);       /* 見出しブロック → 本体 */         /* 節見出し。h1(46px) より必ず小さい */
   --h2-sp:clamp(21px,5.6vw,32px);       /* 〜900px の節見出し */
   --sec-pad:clamp(58px,7.2vw,104px);    /* 節の上下余白。全節で同じ値 */
   /* 淡い地。中性グレーではなくブランド色相(213°)の低彩度にする。
@@ -292,7 +299,7 @@ a{text-decoration:none; color:inherit}
   font-weight:600; letter-spacing:.22em; color:#3d4a60;
 }
 .sec-title{
-  margin-top:clamp(16px,2vw,28px);
+  margin-top:var(--g-eyebrow);
   font-size:var(--h2);
   line-height:1.52;                    /* 実測 行送り79px ÷ 52px */
   font-weight:900; letter-spacing:.004em;
@@ -302,7 +309,7 @@ a{text-decoration:none; color:inherit}
 
 .issue-list{
   list-style:none;
-  margin-top:clamp(40px,5.6vw,80px);
+  margin-top:var(--g-body);
   display:flex; flex-direction:column;
   gap:clamp(38px,4.9vw,70px);
 }
@@ -376,7 +383,7 @@ a{text-decoration:none; color:inherit}
 
 @media (max-width:900px){
   .issues{padding-block:52px}
-  .issue-list{margin-top:34px; gap:30px}
+  .issue-list{gap:30px}                 /* margin は --g-body に一本化（旧34px） */
   .issue{gap:14px}
   .issue__no{min-width:40px; font-size:32px}
   .issue__link{width:16px; height:44px; margin-left:8px; margin-right:12px}
@@ -412,7 +419,7 @@ a{text-decoration:none; color:inherit}
   margin:clamp(12px,1.3vw,19px) auto 0;
 }
 .s-title{
-  margin-top:clamp(18px,2vw,28px);
+  margin-top:var(--g-eyebrow);
   font-size:var(--h2); line-height:1.45; font-weight:900;
   letter-spacing:.01em; font-feature-settings:"palt" 0; color:var(--sInk);
 }
@@ -479,19 +486,33 @@ a{text-decoration:none; color:inherit}
 
 /* ---- 02 の棒グラフ ---- */
 .s-chart{display:flex; align-items:flex-end; justify-content:center; gap:clamp(28px,5vw,74px); padding-top:clamp(16px,2vw,30px)}
-.bars{position:relative; display:flex; align-items:flex-end; gap:clamp(20px,2.6vw,38px);
-      padding-bottom:9px; padding-right:clamp(72px,10vw,146px); border-bottom:1px solid #cfd4dd}
-.bars svg{position:absolute; left:0; right:0; top:0; bottom:9px; width:100%; height:auto}
+.bars{
+  /* 点線は棒の位置から自動で決まるようにしたいので、高さと間隔を変数に出す */
+  --bgap:clamp(20px,2.6vw,38px);
+  --ha:clamp(84px,11.7vw,169px);          /* 大手の棒 */
+  --hb:clamp(48px,6.7vw,97px);            /* SHARE の棒 */
+  position:relative; display:flex; align-items:flex-end; gap:var(--bgap);
+  padding-bottom:9px; padding-right:clamp(18px,2.2vw,32px); border-bottom:1px solid #cfd4dd}
 .bar--b span{max-width:none; white-space:nowrap !important; text-align:left}
 .bar{width:clamp(52px,6.7vw,96px); position:relative}
 .bar span{
   position:absolute; left:50%; transform:translateX(-50%); bottom:calc(100% + 7px);
   font-size:clamp(9.5px,.86vw,12.5px); font-weight:700; white-space:nowrap; color:var(--sInk);
 }
-.bar--a{height:clamp(84px,11.7vw,169px); background:var(--sGray)}
-.bar--b{height:clamp(48px,6.7vw,97px); background:var(--sNd)}
-.bar--b span{left:auto; right:0; transform:translateX(100%); bottom:calc(100% + 3px); padding-left:10px; padding-right:6px}
-.bars svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none}
+.bar--a{height:var(--ha); background:var(--sGray)}
+.bar--b{height:var(--hb); background:var(--sNd)}
+/* 2本の棒の頭を結ぶ点線。大手の棒の右上角から SHARE の棒の左上角まで、
+   ちょうどその矩形を占める。中の線は左上→右下の対角1本なので、
+   棒の幅や間隔が変わっても勝手に合う（実測値をパスに焼き込まない） */
+.bar__link{
+  position:absolute; left:100%; top:0;
+  width:var(--bgap); height:calc(var(--ha) - var(--hb));
+  overflow:visible; pointer-events:none;
+}
+.bar__link path{fill:none; stroke:#5a6376; stroke-width:1; stroke-dasharray:3 3;
+  vector-effect:non-scaling-stroke}
+/* ラベルは棒の真上（大手側と同じ置き方）。右に逃がすと棒と切り離れて見える */
+.bar--b span{bottom:calc(100% + 7px)}
 .badge{
   flex:0 0 auto; width:clamp(96px,13.1vw,190px); aspect-ratio:1; border-radius:50%;
   border:1.5px solid var(--sN); display:grid; place-items:center; text-align:center;
@@ -615,6 +636,9 @@ a{text-decoration:none; color:inherit}
   margin-top:clamp(10px,1.2vw,18px); text-align:center;
   font-size:clamp(9.5px,.86vw,12.5px); line-height:1.9; color:var(--sInk);
 }
+/* 原画では2項目のあいだが全角スペース2つぶん。マークアップに直接書くと
+   スマホの縦積み（flex）で空行になるので、余白は CSS に持たせる */
+.d4__notes span + span{margin-left:2em}
 .d4__out{flex:0 0 auto; width:clamp(96px,12.6vw,182px); text-align:center}
 .d4__cloud{
   border:1px dashed #b7bfcc; border-radius:6px;
@@ -660,6 +684,21 @@ a{text-decoration:none; color:inherit}
   .d4__local{margin-top:20px; align-self:auto}
   .d4__mid{flex-direction:column}
   .d4__x{text-align:center}
+
+  /* 縦積みでは PC 用の固定幅（ws 120px / llm 84px）が狭すぎて
+     「ファインチューニン／グ」のように1文字だけ折り返す。幅と字を戻す */
+  .d4__src h4{font-size:13px}
+  .d4__ws{width:min(100%,220px); margin-inline:auto}
+  .d4__ws figcaption{font-size:11.5px}
+  .d4__llm{width:min(100%,268px); margin-inline:auto; padding:16px 16px 14px}
+  .d4__llm b{font-size:13.5px}
+  .d4__llm span{font-size:11.5px}
+  .d4__tab{font-size:12px}
+  /* flex なら span の間の全角スペースが空行にならない */
+  .d4__notes{display:flex; flex-direction:column; gap:4px; text-align:center; line-height:1.7}
+  .d4__notes span + span{margin-left:0}
+  .d4__cloud span{font-size:11.5px}
+  .d4__chip{font-size:11.5px}
 }
 
 /* ================================================================
@@ -683,18 +722,18 @@ a{text-decoration:none; color:inherit}
   content:""; width:clamp(20px,2.4vw,34px); height:1px; background:#aab2c0;
 }
 .why__title{
-  margin-top:clamp(14px,1.7vw,24px);
+  margin-top:var(--g-eyebrow);
   font-size:var(--h2); line-height:1.4; font-weight:900;
   letter-spacing:.01em; font-feature-settings:"palt" 0;
 }
 .why__lead{
-  margin-top:clamp(10px,1.2vw,18px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.02vw,15px); line-height:1.8; color:var(--wSub);
 }
 
 /* ---- 表 ---- */
 .cmp-t{
-  margin-top:clamp(24px,3.1vw,45px);
+  margin-top:var(--g-body);
   display:grid;
   grid-template-columns:minmax(0,25fr) minmax(0,29fr) minmax(0,30fr);
   position:relative;
@@ -803,7 +842,7 @@ a{text-decoration:none; color:inherit}
   letter-spacing:.01em; font-feature-settings:"palt" 0; color:#101828;
 }
 .exp__lead{
-  margin-top:clamp(12px,1.5vw,22px);
+  margin-top:var(--g-lead);
   font-size:clamp(11.5px,.98vw,14.5px); line-height:1.85; color:#4b5563;
 }
 
@@ -819,7 +858,7 @@ a{text-decoration:none; color:inherit}
    もとのモックは1枚絵だったが、実物の写真（白背景のバストアップ）に合わせて
    地・楔・ラベルをCSSに出した。写真を差し替えても枠は崩れない。 */
 .exp__photo{
-  position:relative; margin:0; overflow:hidden;
+  position:relative; margin:0; overflow:visible;   /* 人物だけ枠の外へ出す */
   aspect-ratio:633/319;
   background:
     radial-gradient(120% 150% at 68% 30%, #2a3644 0%, #1a2431 45%, #0e1721 100%);
@@ -827,11 +866,54 @@ a{text-decoration:none; color:inherit}
 .exp__row--rev .exp__photo{
   background:radial-gradient(120% 150% at 32% 30%, #2a3644 0%, #1a2431 45%, #0e1721 100%);
 }
+/* ---- 人物の裏の紺を常時動かす。書籍セクションと同じ手：
+       形は静止版で残し、その上を明るい区間が流れる。
+       実測の全長：el1=721 / el2=340 / el3=335（getTotalLength）---- */
+.exp__net{position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;
+  clip-path:inset(0)}   /* 枠を overflow:visible にしたので、絵だけは枠内に切る */
+.exp__row--rev .exp__net{transform:scaleX(-1)}   /* 反転の行は絵も反転させて構図を合わせる */
+.exp__net path{fill:none; stroke-width:1}
+.en-far path{stroke:rgba(255,255,255,.13)}
+.en-far{animation:enDriftFar 24s ease-in-out infinite}
+.en-far path:nth-child(1){animation:enGhost 8s ease-in-out infinite}
+.en-far path:nth-child(2){animation:enGhost 11s ease-in-out -4s infinite}
+.en-lines,.en-pulse{animation:enDriftNear 17s ease-in-out infinite}
+.en-lines path{stroke:rgba(255,255,255,.20)}
+.en-pulse path{stroke:rgba(255,255,255,.62); stroke-width:1.4; stroke-linecap:round}
+.en-pulse .el1{animation:enFlow1 8s   linear infinite}
+.en-pulse .el2{animation:enFlow2 5.4s linear -1.8s infinite}
+.en-pulse .el3{animation:enFlow3 6.2s linear -3.1s infinite}
+@keyframes enFlow1{from{stroke-dasharray:0 0 159 721; stroke-dashoffset:0} to{stroke-dasharray:0 0 159 721; stroke-dashoffset:-880}}
+@keyframes enFlow2{from{stroke-dasharray:0 0 75 340;  stroke-dashoffset:0} to{stroke-dasharray:0 0 75 340;  stroke-dashoffset:-415}}
+@keyframes enFlow3{from{stroke-dasharray:0 0 74 335;  stroke-dashoffset:0} to{stroke-dasharray:0 0 74 335;  stroke-dashoffset:-409}}
+.en-nodes circle{fill:rgba(255,255,255,.55); transform-box:fill-box; transform-origin:center;
+  animation:enBreath var(--t,4.8s) ease-in-out infinite}
+.en-nodes .ep1{--t:4.8s; animation-delay:0s}    .en-nodes .ep2{--t:5.6s; animation-delay:-.9s}
+.en-nodes .ep3{--t:4.2s; animation-delay:-1.8s} .en-nodes .ep4{--t:6.1s; animation-delay:-2.7s}
+.en-nodes .ep5{--t:5.2s; animation-delay:-3.6s} .en-nodes .ep6{--t:4.5s; animation-delay:-4.4s}
+.en-rings circle{fill:none; stroke:rgba(255,255,255,.30); stroke-width:1; animation:enRing 6s ease-out infinite}
+.en-rings .er2{animation-delay:-3s}
+@keyframes enDriftFar{0%,100%{transform:translate(0,0)} 33%{transform:translate(14px,-8px)} 66%{transform:translate(-10px,7px)}}
+@keyframes enDriftNear{0%,100%{transform:translate(0,0)} 50%{transform:translate(-9px,6px)}}
+@keyframes enGhost{0%,100%{opacity:.25} 50%{opacity:.75}}
+@keyframes enBreath{0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(1.4)}}
+@keyframes enRing{0%{r:3; opacity:.5} 70%{opacity:0} 100%{r:22; opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .exp__net *{animation:none !important}
+  .en-pulse,.en-rings{display:none}
+}
+/* 楔と写真は絵より前に出す */
+.exp__photo::before{z-index:1}
+.exp__photo img{z-index:2}
+
 .exp__photo img{
-  /* 切り抜きは頭の生え際で始まるので、126% だと上が切れる。
-     枠に収まる高さにして、上に少し余白を残す */
+  /* 頭を枠の上に出して立体感を作る。胸の切り口は枠の下端にぴったり合わせて隠す
+     （切り抜きの下端は真横一直線なので、下にはみ出すと切り口が見えてしまう） */
+  /* max-width が先に効くと object-fit:contain が高さを縮めて枠内に収まってしまう。
+     高さ側が効くように上限を緩める（実測：枠520x262／写真746x620＝比1.203
+     → 高さ106%=278px のとき幅334px=枠の64%。頭が枠の上に約16px出る） */
   position:absolute; bottom:0; right:6%;
-  height:94%; width:auto; max-width:52%; object-fit:contain; object-position:bottom; display:block;
+  height:106%; width:auto; max-width:70%; object-fit:contain; object-position:bottom; display:block;
   filter:saturate(.82) contrast(1.04) brightness(.96);
 }
 /* 実在の人物なので左右反転はしない */
@@ -963,6 +1045,66 @@ a{text-decoration:none; color:inherit}
 .book__net{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
 .book__net path{fill:none; stroke:#c3c8d1; stroke-width:1}
 .book__net circle{fill:#c3c8d1}
+
+/* ---- 書籍セクションの線を常時動かす（FVと同じ手：流れる破線＋漂う層＋呼吸する節点）
+       実測の全長：bl1=1061 / bl2=437 / bl3=340（getTotalLength） ---- */
+.bn-far path{stroke:#c3c8d1; opacity:.34}
+.bn-far{animation:bnDriftFar 26s ease-in-out infinite}
+.bn-far path:nth-child(1){animation:bnGhost 7s ease-in-out infinite}
+.bn-far path:nth-child(2){animation:bnGhost 9s ease-in-out -3s infinite}
+.bn-far path:nth-child(3){animation:bnGhost 11s ease-in-out -6s infinite}
+
+.bn-lines,.bn-pulse{animation:bnDriftNear 19s ease-in-out infinite}
+/* dashoffset の keyframe に calc(var(--x)) を書くと CSS が補間できず
+   50%で値が飛ぶ（＝流れずにパッと切り替わる）。線ごとに実数で書く。
+   実測の全長：bl1=1061 / bl2=437 / bl3=340、明るい区間は全長の22% */
+.bn-pulse path{stroke-width:1.6; stroke-linecap:round}
+.bn-pulse .bl1{animation:bnFlow1 9s   linear infinite}
+.bn-pulse .bl2{animation:bnFlow2 6s   linear -2s   infinite}
+.bn-pulse .bl3{animation:bnFlow3 5.2s linear -3.4s infinite}
+@keyframes bnFlow1{
+  from{stroke-dasharray:0 0 233 1061; stroke-dashoffset:0}
+  to  {stroke-dasharray:0 0 233 1061; stroke-dashoffset:-1294}
+}
+@keyframes bnFlow2{
+  from{stroke-dasharray:0 0 96 437; stroke-dashoffset:0}
+  to  {stroke-dasharray:0 0 96 437; stroke-dashoffset:-533}
+}
+@keyframes bnFlow3{
+  from{stroke-dasharray:0 0 75 340; stroke-dashoffset:0}
+  to  {stroke-dasharray:0 0 75 340; stroke-dashoffset:-415}
+}
+
+.bn-nodes circle{animation:bnBreath var(--t,4.6s) ease-in-out infinite}
+.bn-nodes .bp1{--t:4.6s; animation-delay:0s}    .bn-nodes .bp2{--t:5.4s; animation-delay:-.8s}
+.bn-nodes .bp3{--t:4.1s; animation-delay:-1.6s} .bn-nodes .bp4{--t:5.9s; animation-delay:-2.4s}
+.bn-nodes .bp5{--t:5.1s; animation-delay:-3.2s} .bn-nodes .bp6{--t:4.4s; animation-delay:-4s}
+
+.bn-rings circle{fill:none; stroke:#c3c8d1; stroke-width:1; animation:bnRing 5.5s ease-out infinite}
+.bn-rings .br1{animation-delay:0s} .bn-rings .br2{animation-delay:-1.9s} .bn-rings .br3{animation-delay:-3.7s}
+
+@keyframes bnDriftFar{0%,100%{transform:translate(0,0)} 33%{transform:translate(22px,-14px)} 66%{transform:translate(-16px,12px)}}
+@keyframes bnDriftNear{0%,100%{transform:translate(0,0)} 50%{transform:translate(-14px,9px)}}
+@keyframes bnGhost{0%,100%{opacity:.16} 50%{opacity:.46}}
+@keyframes bnBreath{0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.45; transform:scale(1.35)}}
+@keyframes bnRing{0%{r:5; opacity:.55} 70%{opacity:0} 100%{r:34; opacity:0}}
+
+/* 節点の拡大は円の中心を基準に */
+.bn-nodes circle{transform-box:fill-box; transform-origin:center}
+
+/* 濃色章では既定の #c3c8d1 が地に沈む。白のアルファに置き換えて動きを見せる */
+.book.is-dark .bn-lines path{stroke:rgba(255,255,255,.26)}
+.book.is-dark .bn-pulse path{stroke:rgba(255,255,255,.85)}
+.book.is-dark .bn-far path{stroke:rgba(255,255,255,.20)}
+.book.is-dark .bn-nodes circle{fill:rgba(255,255,255,.72)}
+.book.is-dark .bn-rings circle{stroke:rgba(255,255,255,.42)}
+.bn-pulse path{stroke:#8fa3bd}
+
+@media (prefers-reduced-motion:reduce){
+  .book__net *{animation:none !important}
+  .bn-pulse{display:none}
+  .bn-rings{display:none}
+}
 .book__vlabel{
   position:absolute; right:3.4%; top:14%;
   writing-mode:vertical-rl; text-orientation:mixed;
@@ -998,7 +1140,7 @@ a{text-decoration:none; color:inherit}
 .book__eyebrow::before{content:""; width:clamp(20px,2.4vw,35px); height:1.5px; background:var(--bNavy)}
 
 .book__title{
-  margin-top:clamp(18px,2.4vw,35px);
+  margin-top:var(--g-eyebrow);
   font-size:var(--h2); line-height:1.42; font-weight:900;
   letter-spacing:.005em; font-feature-settings:"palt" 0;
 }
@@ -1058,7 +1200,7 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.2; font-weight:900; letter-spacing:.08em;
 }
 .cases__lead{
-  margin-top:clamp(12px,1.5vw,22px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.05vw,15.5px); line-height:1.8; color:#3f4653;
 }
 
@@ -1067,7 +1209,7 @@ a{text-decoration:none; color:inherit}
   gap:clamp(20px,3.2vw,46px);
   padding-block:clamp(30px,4.2vw,60px);
 }
-.cases__list{margin-top:clamp(20px,2.6vw,38px)}
+.cases__list{margin-top:var(--g-body)}
 .case + .case{border-top:1px solid var(--cLine)}
 .case__rule{background:var(--cLine)}
 
@@ -1170,13 +1312,13 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.34; font-weight:900; letter-spacing:.02em;
 }
 .price__lead{
-  margin-top:clamp(14px,1.7vw,24px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.18vw,17px); line-height:1.88; color:var(--pLead);
 }
 
 /* ---- 表 ---- */
 .pq{
-  margin-top:clamp(20px,2.5vw,36px);            /* 実測 リード下端→表の上端 45px */
+  margin-top:var(--g-body);            /* 実測 リード下端→表の上端 45px */
   display:grid; grid-template-columns:minmax(0,286fr) minmax(0,430fr) minmax(0,446fr);
   border:1px solid var(--pLine);
 }
@@ -1250,7 +1392,7 @@ a{text-decoration:none; color:inherit}
 .pq__tag{display:none}
 @media (max-width:900px){
   .price{padding-block:52px}
-  .pq{grid-template-columns:1fr; border:0; margin-top:24px}
+  .pq{grid-template-columns:1fr; border:0}   /* margin は --g-body に一本化（旧24px） */
   .pq__row{display:block; border:1px solid var(--pLine); border-radius:4px; overflow:hidden}
   .pq__row--h{display:none}                  /* ← .pq__row より後に置くこと（同順位で後勝ち） */
   .pq__row + .pq__row{margin-top:12px}
@@ -1292,7 +1434,7 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.04em;
 }
 .quote__lead{
-  margin-top:clamp(12px,1.25vw,18px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--qBody);
 }
 
@@ -1435,12 +1577,13 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.04em;
 }
 .flow__lead{
-  margin-top:clamp(12px,1.25vw,18px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--fBody);
 }
 
 .flow__row{margin-top:clamp(22px,2.15vw,31px)}
 .flow__row + .flow__row{margin-top:clamp(26px,3.4vw,49px)}
+.fturn + .flow__row{margin-top:clamp(6px,.7vw,10px)}   /* 行間は .fturn が持つ */
 
 /* ---- 工程名の括弧 ---- */
 .fcaps,.fsteps{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--fgap)}
@@ -1483,6 +1626,46 @@ a{text-decoration:none; color:inherit}
   margin-top:clamp(12px,1.18vw,17px);
   font-size:clamp(11px,1.04vw,15px); line-height:1.6; color:var(--fBody);
 }
+/* STEP3 → STEP4 の折り返し。列は repeat(3,1fr)+var(--fgap) なので、
+   1列の幅は (100% - fgap*2)/3、その中央が列の中心になる */
+.fturn{
+  position:relative;
+  height:clamp(26px,2.8vw,40px);
+  margin-top:clamp(10px,1.15vw,17px);
+  --fcol:calc((100% - var(--fgap) * 2) / 3);
+  --fc1:calc(var(--fcol) / 2);                  /* 1列目の中心 */
+  --fc3:calc(100% - var(--fcol) / 2);           /* 3列目の中心 */
+}
+/* 矢印は STEP4 の箱の「左・上下中央」に入れる。
+   .fsteps は grid（1行）なので高さが .fstep と等しく、top:50% がそのまま箱の中央になる。
+   経路は3つの箱に分けて持たせ、どこにも実測値を焼き込まない：
+     .fturn  … 3列目の中心から下 → 左（枠の外 var(--fout) まで）
+     .fcaps  … その x を「見出し行＋.fstepsの上マージン」ぶん下ろす
+     .fsteps … その x を箱の中央まで下ろし、右へ折れて矢じり */
+/* 🚨 .fcaps i と書くと「準備」の屋根の <i>（.fcap--2 の左右の脚）まで拾って壊れる。
+   自分の要素だけを名指しする */
+.fturn i,.fturn__mid,.fturn__enter{position:absolute; background:#4d5f83}
+.fturn{--fout:clamp(14px,1.8vw,26px)}      /* 1列目の左端からさらに外へ出す量 */
+.fturn__down{left:var(--fc3); top:0; width:1.4px; height:calc(100% - .7px); transform:translateX(-50%)}
+.fturn__bar{left:calc(-1 * var(--fout)); right:calc(var(--fcol) / 2); bottom:0; height:1.4px}
+
+.fcaps{position:relative}
+.fturn__mid{
+  left:calc(-1 * clamp(14px,1.8vw,26px)); width:1.4px;
+  top:0; bottom:calc(-1 * clamp(8px,.97vw,14px));   /* .fsteps の margin-top ぶん下まで伸ばす */
+}
+.fsteps{position:relative}
+.fturn__enter{
+  left:calc(-1 * clamp(14px,1.8vw,26px)); width:1.4px;
+  top:0; height:calc(50% + .7px);
+}
+.fturn__head{
+  position:absolute; left:calc(-1 * clamp(14px,1.8vw,26px)); top:50%;
+  transform:translateY(-50%);
+  width:clamp(14px,1.8vw,26px); height:auto;   /* 幅＝外に出した量。矢じりの先が箱の左端にちょうど当たる */
+  stroke:#4d5f83; fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round;
+}
+
 .fstep__arrow{
   position:absolute; top:50%; left:calc(100% + var(--fgap) / 2);
   transform:translate(-50%,-50%);
@@ -1506,6 +1689,7 @@ a{text-decoration:none; color:inherit}
   .flow__row + .flow__row{margin-top:12px}
   .fstep{padding:18px 18px 22px}
   .fstep__arrow{display:none}
+  .fturn,.fturn__mid,.fturn__enter,.fturn__head{display:none}   /* 1列積みでは折り返しが起きない */
   .fstep h3{font-size:19px}
   .fstep__tag{display:block}                 /* ← 既定の none より後に置くこと */
 }
@@ -1526,15 +1710,16 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.35; font-weight:900; letter-spacing:.02em;
 }
 .gai__lead{
-  margin:clamp(14px,1.7vw,24px) auto 0; max-width:880px;
+  margin:var(--g-lead) auto 0; max-width:880px;
   font-size:clamp(12px,1.11vw,16px); line-height:1.9; color:var(--gBody); text-align:left;
 }
 .gai__list{
-  margin-top:clamp(26px,3.2vw,46px);
+  margin-top:var(--g-body);
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(14px,1.9vw,28px);
 }
 .gai__item{
-  border:1px solid var(--gLine); border-left:3px solid var(--gNavy); border-radius:2px;
+  /* 左の細いラインは保護色。3箱まとめて「ここが要点」の目印にする */
+  border:1px solid var(--gLine); border-left:3px solid var(--accent); border-radius:2px;
   padding:clamp(18px,2.15vw,31px) clamp(16px,1.94vw,28px);
 }
 .gai__item b{display:block; font-size:clamp(14px,1.32vw,19px); font-weight:700; line-height:1.4; color:var(--gNavy)}
@@ -1599,13 +1784,13 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.28; font-weight:900; letter-spacing:.03em;
 }
 .art__lead{
-  margin-top:clamp(14px,1.6vw,23px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.11vw,16px); line-height:1.78; color:var(--aLead);
 }
 
 /* ---- 記事カード ---- */
 .art__list{
-  margin-top:clamp(28px,4.9vw,70px);
+  margin-top:var(--g-body);
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(18px,3.05vw,44px);
 }
 .acard{display:flex; flex-direction:column; min-width:0}
@@ -1692,12 +1877,12 @@ a{text-decoration:none; color:inherit}
   font-size:var(--h2); line-height:1.3; font-weight:900; letter-spacing:.02em; color:#0d1b2b;
 }
 .faq__lead{
-  margin-top:clamp(16px,1.81vw,26px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.11vw,16px); line-height:1.8; color:#3a404c;
 }
 
 .faq__list{
-  margin:clamp(32px,3.82vw,55px) auto 0;
+  margin:var(--g-body) auto 0;
   max-width:927px;                            /* 原画 923px。全幅にはしない */
   border:1px solid var(--fqBorder); border-radius:2px;
 }
@@ -1725,8 +1910,18 @@ a{text-decoration:none; color:inherit}
 }
 .faq__ico::before,.faq__ico::after{content:""; position:absolute; background:#16355e}
 .faq__ico::before{left:0; right:0; top:calc(50% - 1px); height:2px}
-.faq__ico::after{top:0; bottom:0; left:calc(50% - 1px); width:2px; transition:opacity .15s ease}
-.faq__item[open] .faq__ico::after{opacity:0}
+.faq__ico::after{top:0; bottom:0; left:calc(50% - 1px); width:2px; transition:opacity .18s ease}
+/* is-closing は閉じるアニメ中に付く。open が外れるのはアニメ終了後なので、
+   これが無いと「＋に戻る」のが 220ms 遅れて見える */
+.faq__item[open]:not(.is-closing) .faq__ico::after{opacity:0}
+/* 高さは details 自身に送る（中の .faq__a を animate しても、閉じている間は
+   ::details-content が content-visibility:hidden でレイアウトを飛ばすため効かない） */
+.faq__item{overflow:hidden}
+.faq__item[open]:not(.is-closing) .faq__a{animation:faqIn .3s cubic-bezier(.22,.68,.3,1) both}
+@keyframes faqIn{from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .faq__item[open]:not(.is-closing) .faq__a{animation:none}
+}
 
 .faq__a{
   /* 左端は質問文と揃える（Q.幅 ＋ 余白ぶんだけ内側） */
@@ -1737,7 +1932,7 @@ a{text-decoration:none; color:inherit}
 
 @media (max-width:900px){
   .faq{padding-block:52px}
-  .faq__list{margin-top:26px}
+  /* .faq__list の margin は --g-body に一本化（旧26px） */
   .faq__item > summary{gap:12px; padding:14px 16px}
   .faq__t{font-size:14.5px}
   .faq__a{padding:0 16px 20px 44px}
@@ -1769,7 +1964,7 @@ a{text-decoration:none; color:inherit}
 .news__ttl h2{font-size:var(--h2); font-weight:900; letter-spacing:.04em; line-height:1; color:var(--nHead)}
 .news__ttl span{font-size:clamp(13px,1.18vw,17px); font-weight:700; letter-spacing:.04em; color:#16161a}
 .news__lead{
-  margin-top:clamp(14px,1.6vw,23px);
+  margin-top:var(--g-lead);
   font-size:clamp(12px,1.04vw,15px); line-height:1.85; color:var(--nLead);
 }
 .news__all{
@@ -1783,7 +1978,7 @@ a{text-decoration:none; color:inherit}
 .news__all:hover{background:#0a3a74}
 .news__all svg{flex:0 0 auto; width:clamp(16px,1.46vw,21px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
 
-.news__list{margin-top:clamp(24px,3.05vw,44px); border-top:1px solid var(--nLine)}
+.news__list{margin-top:var(--g-body); border-top:1px solid var(--nLine)}
 .nitem{
   display:grid; grid-template-columns:auto minmax(0,1fr) auto;
   align-items:center; gap:clamp(18px,3.19vw,46px);
@@ -1861,11 +2056,11 @@ a{text-decoration:none; color:inherit}
 .ct__eyebrow i{width:1px; height:1.15em; background:#b6bac1}
 .ct__eyebrow span{font-size:clamp(12px,.97vw,14px); font-weight:500; letter-spacing:.02em}
 .ct__title{
-  margin-top:clamp(14px,1.88vw,27px);
+  margin-top:var(--g-eyebrow);
   font-size:var(--h2); line-height:1.2; font-weight:900; letter-spacing:.03em;
 }
 .ct__lead{
-  margin-top:clamp(12px,1.53vw,22px);
+  margin-top:var(--g-lead);
   font-size:clamp(13px,1.25vw,18px); line-height:1.5; color:var(--cLead);
 }
 .ct__rule{
@@ -2127,8 +2322,6 @@ section:not(.hero),footer{position:relative; z-index:1}
                     fxDriftA 9s ease-in-out 1.2s infinite}
 .fx .fx-b{animation:fxInB 1.15s cubic-bezier(.22,.61,.36,1) .08s both,
                     fxDriftB 11s ease-in-out 1.3s infinite}
-.fx .fx-c{animation:fxInC 1.15s cubic-bezier(.22,.61,.36,1) .16s both,
-                    fxDriftC 13s ease-in-out 1.4s infinite}
 /* 縦線は1本ずつ時間をずらして光らせる。全体はゆっくり横へ流す */
 .fx .fx-grid{animation:fxInUp 1.1s ease .42s both, fxSlideX 14s ease-in-out 1.6s infinite}
 .fx .fx-grid path{animation:fxGridWave 3.2s ease-in-out infinite; opacity:.34}
@@ -2141,19 +2334,21 @@ section:not(.hero),footer{position:relative; z-index:1}
 .fx .fx-dots{animation:fxInUp 1.1s ease .52s both, fxDotPulse 4s ease-in-out 1.7s infinite,
                         fxSlideY 10s ease-in-out 1.7s infinite}
 /* 線は描かれたあと、明るい区間が線の上を流れ続ける */
+/* 🚨 dashoffset の keyframe に calc(var(--len)*-1.38) と書くと CSS が補間できず、
+   50%で値がパッと飛ぶ（＝流れずに切り替わるだけ）。実測で 1150→1150→0→0 だった。
+   線ごとに実数で書く。明るい区間は全長の38%、送り量は全長×1.38 */
 .fx .fx-beams path{
   stroke-dasharray:var(--len);
-  animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both,
-            fxFlow var(--flow,22s) linear 1.6s infinite;
+  animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) both;
 }
-@keyframes fxFlow{
-  0%  {stroke-dasharray:0 0 calc(var(--len) * .38) var(--len); stroke-dashoffset:0}
-  100%{stroke-dasharray:0 0 calc(var(--len) * .38) var(--len); stroke-dashoffset:calc(var(--len) * -1.38)}
-}
-.fx .fx-beams .b1{--len:1150; --flow:7s;  animation-delay:.30s,1.9s}
-.fx .fx-beams .b2{--len:710;  --flow:5.5s; animation-delay:.44s,2.0s}
-.fx .fx-beams .b3{--len:1222; --flow:9s;  animation-delay:.56s,2.1s}
-.fx .fx-beams .b4{--len:1163; --flow:8s;  animation-delay:.66s,2.2s}
+.fx .fx-beams .b1{--len:1150; animation-delay:.30s; animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) .30s both, fxFlow1 7s   linear 1.9s infinite}
+.fx .fx-beams .b2{--len:710;  animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) .44s both, fxFlow2 5.5s linear 2.0s infinite}
+.fx .fx-beams .b3{--len:1222; animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) .56s both, fxFlow3 9s   linear 2.1s infinite}
+.fx .fx-beams .b4{--len:1163; animation:fxDraw 1.5s cubic-bezier(.22,.61,.36,1) .66s both, fxFlow4 8s   linear 2.2s infinite}
+@keyframes fxFlow1{from{stroke-dasharray:0 0 437 1150; stroke-dashoffset:0} to{stroke-dasharray:0 0 437 1150; stroke-dashoffset:-1587}}
+@keyframes fxFlow2{from{stroke-dasharray:0 0 270 710;  stroke-dashoffset:0} to{stroke-dasharray:0 0 270 710;  stroke-dashoffset:-980}}
+@keyframes fxFlow3{from{stroke-dasharray:0 0 464 1222; stroke-dashoffset:0} to{stroke-dasharray:0 0 464 1222; stroke-dashoffset:-1686}}
+@keyframes fxFlow4{from{stroke-dasharray:0 0 442 1163; stroke-dashoffset:0} to{stroke-dasharray:0 0 442 1163; stroke-dashoffset:-1605}}
 
 /* 下帯：背景の明暗が横で変わるので、白い床を1枚敷いて文字を読ませる */
 
@@ -2201,7 +2396,9 @@ section:not(.hero),footer{position:relative; z-index:1}
 
 /* ---- 重い強調②：今すぐ無料相談（濃色地 ＋ 明るい大箱） ---- */
 .ct.is-dark{color:var(--d-head)}
-.ct.is-dark .ct__panel{background:#fff; border-color:rgba(255,255,255,.22)}
+.ct.is-dark .ct__panel{background:#fff; border-color:rgba(255,255,255,.22);
+  color:var(--cInk)}   /* 濃色地の白抜きを、白い箱の中では元の黒に戻す（§4-3） */
+.ct.is-dark .ct__title{color:var(--cInk)}
 
 @media (prefers-contrast:more){
   .is-dark,}
@@ -2248,14 +2445,15 @@ section:not(.hero),footer{position:relative; z-index:1}
 .gai.is-dark .gai__title{color:var(--d-head)}
 .gai.is-dark .gai__lead,.gai.is-dark .gai__note{color:var(--d-text)}
 .gai.is-dark .gai__item{
-  background:var(--d-face-1); border-color:var(--d-line-1); border-left-color:var(--d-line-3);
+  background:var(--d-face-1); border-color:var(--d-line-1);
+  border-left-color:var(--accent);       /* 濃色地でも保護色は変えない（押す/効く場所の目印を固定） */
 }
 .gai.is-dark .gai__item b{color:var(--d-head)}
 .gai.is-dark .gai__item p{color:var(--d-text)}
 
 /* ---- 大手比較：SHARE列だけ濃色の箱にする ---- */
 .cmp-t__col--b .cmp-t__body{
-  background:linear-gradient(180deg,var(--ground-dark),color-mix(in srgb,var(--ground-dark) 74%,#000)) !important;
+  background:var(--hl-navy) !important;   /* グラデをやめて単色（価格表のSHARE列と同じ面） */
   border-color:var(--ground-dark) !important;
 }
 .cmp-t__col--b .cmp-t__t{color:var(--d-head)}
@@ -2266,18 +2464,31 @@ section:not(.hero),footer{position:relative; z-index:1}
 .cmp-t__col--b .cmp-t__check svg{stroke:var(--ground-dark)}
 
 /* ---- 価格表：SHARE列だけ濃色の箱にする ---- */
+/* 🚨 グラデを1セルずつに掛けていたので、列の中で明→暗が4回繰り返して縞に見えた。
+   さらに行の境界が明るいグレー(#dcdee2)のまま濃色の上に載っていた。
+   面は単色、罫は白のアルファにする */
 .pq__c--share:not(.pq__row--h .pq__c--share){
-  background:linear-gradient(180deg,rgba(11,43,87,.96),rgba(4,18,42,.96));
+  background:var(--hl-navy);
 }
+.pq__row + .pq__row .pq__c--share{border-top-color:rgba(255,255,255,.13)}
 .pq__row:not(.pq__row--h) .pq__c--share p{color:rgba(255,255,255,.88)}
 .pq__row:not(.pq__row--h) .pq__c--share .pq__tag{color:rgba(255,255,255,.72)}
 
 /* ---- お見積もり方法：推奨の01だけ濃色の箱にする ---- */
 .q-col--main{
-  background:linear-gradient(180deg,var(--ground-dark),color-mix(in srgb,var(--ground-dark) 74%,#000));
+  background:var(--hl-navy);              /* グラデをやめて単色 */
   border-left:0;
   border-radius:clamp(5px,.6vw,9px);
   padding:clamp(20px,2.6vw,38px) clamp(18px,2.4vw,34px);
+}
+/* 02 も 01 と同じ形の箱にする。中は塗らず、薄いグレーの罫だけ */
+.q-col--sub{
+  /* 1px の --line-pale(#dce5ef) では地(--pale #f1f4f9)との差が小さくて見えなかった。
+     太さと濃さを1段ずつ上げる */
+  border:2px solid #b7c6da;
+  border-radius:clamp(5px,.6vw,9px);
+  padding:clamp(20px,2.6vw,38px) clamp(18px,2.4vw,34px);
+  background:none;
 }
 .q-col--main .q-num{color:var(--d-num)}
 .q-col--main .q-head h3{color:var(--d-head)}
@@ -2291,8 +2502,219 @@ section:not(.hero),footer{position:relative; z-index:1}
 .q-col--main .q-ico i{background:#fff}
 
 @media (max-width:900px){
-  .q-col--main{padding:20px 16px}
-  .pq__c--share:not(.pq__row--h .pq__c--share){background:linear-gradient(180deg,rgba(11,43,87,.96),rgba(4,18,42,.96))}
+  .q-col--main,.q-col--sub{padding:20px 16px}   /* 01と02で内側の余白を揃える */
+  /* スマホは1列積みなので濃色の面は使わない（.pq__c--share は淡地に戻る） */
+}
+/* ================================================================
+   補色：ブランドの紺(213°)の反対側から暖色を1色だけ（配色指示書 §3-5・§5）
+   ・面には使わない。主CTAと「必須」バッジだけ
+   ・地が明でも濃でも色を変えない ＝「押す場所」の目印を固定する
+   ・詳細度を稼ぐため [class] を付ける
+   ================================================================ */
+:root{
+  --accent:#bb580c;        /* hsl(26,88%,39%) 白文字で AA を満たす明度 */
+  --accent-hover:#9b4808;  /* hsl(26,90%,32%) */
+  --accent-pale:#fef1e7;   /* hsl(26,90%,95%) */
+  --accent-ink:#9c4d11;    /* hsl(26,80%,34%) */
+}
+
+/* 主CTA：相談・見積もりへ進むボタン */
+a.cta[class],
+a.gnav__cta[class],
+a.why__cta[class],
+a.cases__cta[class],
+a.price__cta[class],
+a.quote__cta[class],
+a.ct__cta[class]{
+  background:var(--accent); color:#fff;
+}
+a.cta[class]:hover,
+a.gnav__cta[class]:hover,
+a.why__cta[class]:hover,
+a.cases__cta[class]:hover,
+a.price__cta[class]:hover,
+a.quote__cta[class]:hover,
+a.ct__cta[class]:hover{background:var(--accent-hover)}
+a.cta[class] .cta__txt,a.cta[class] .cta__ico,a.cta[class] .cta__arw{color:#fff; stroke:#fff}
+.head:not(.is-stuck) a.gnav__cta[class]{background:var(--accent); color:#fff}
+.head:not(.is-stuck) a.gnav__cta[class]:hover{background:var(--accent-hover)}
+.ct.is-dark a.ct__cta[class]{background:var(--accent); color:#fff}
+
+/* 副CTA：一覧や詳細へ移るだけのものは紺のまま（暖色は主CTAだけ） */
+a.book__cta[class],a.art__cta[class],a.news__all[class]{background:transparent}
+a.art__cta[class],a.news__all[class]{
+  background:transparent; color:var(--navy); border:1.5px solid var(--navy);
+}
+a.art__cta[class]:hover,a.news__all[class]:hover{background:rgba(11,43,87,.06)}
+a.art__cta[class] svg,a.news__all[class] svg{stroke:var(--navy)}
+a.art__cta[class] i{background:var(--navy)}
+
+/* 「必須」バッジ */
+.ct__req[class]{background:var(--accent-pale); color:var(--accent-ink)}
+/* ================================================================
+   FVのフォーム（本家と同じ、右側に置く）
+   ・入力欄はラベルなしのプレースホルダ方式（本家に合わせる）
+   ・白いカード。暗い背景の上に乗るので明暗が交互になる
+   ================================================================ */
+.hero__grid{
+  /* 実測（1440px）：文字の右端x588 → フォーム左x955 で見た目の空き367px。
+     内訳は「列間gap 58」＋「左の列の余り 309」。gap は普通で、
+     余っているのは 1fr の左列のほう。フォームを広げて余りを削る */
+  display:grid; grid-template-columns:minmax(0,1fr) clamp(300px,32vw,460px);
+  gap:clamp(24px,3vw,44px); align-items:center;
+}
+.hero__left{min-width:0}
+
+.hform{
+  background:#fff; border-radius:4px;
+  box-shadow:0 18px 44px rgba(4,12,28,.22), 0 2px 6px rgba(4,12,28,.10);
+  padding:clamp(18px,1.9vw,27px) clamp(16px,1.7vw,25px) clamp(16px,1.6vw,23px);
+  display:flex; flex-direction:column; gap:clamp(7px,.76vw,11px);
+}
+.hform__ttl{
+  display:flex; align-items:center; justify-content:center; gap:clamp(8px,.9vw,13px);
+  margin-bottom:clamp(4px,.42vw,6px);
+  font-size:clamp(14px,1.18vw,17px); font-weight:700; letter-spacing:.02em; color:var(--navy);
+}
+.hform__ttl svg{width:clamp(14px,1.18vw,17px); height:auto; stroke:var(--navy); fill:none; stroke-width:1.6}
+.hform input[type=text],.hform input[type=email],.hform input[type=tel],.hform textarea{
+  width:100%; font:inherit; color:var(--ink);
+  font-size:clamp(11px,.9vw,13px);
+  background:#fbfcfd; border:1px solid var(--line-pale); border-radius:3px;
+  padding:0 clamp(9px,.83vw,12px); height:clamp(34px,2.85vw,41px);
+}
+.hform textarea{height:clamp(64px,5.4vw,78px); padding:clamp(8px,.7vw,10px) clamp(9px,.83vw,12px); resize:vertical}
+.hform ::placeholder{color:#9aa7b6}
+.hform input:focus,.hform textarea:focus{outline:none; border-color:#93a7c4; background:#fff}
+.hform__agree{
+  display:flex; align-items:flex-start; gap:clamp(6px,.55vw,8px);
+  margin-top:clamp(2px,.28vw,4px);
+  font-size:clamp(9.5px,.76vw,11px); line-height:1.55; color:#4f5866;
+}
+.hform__agree input{flex:0 0 auto; width:14px; height:14px; margin:2px 0 0; accent-color:var(--navy); cursor:pointer}
+.hform__agree a{color:#2b4d80; text-decoration:underline}
+.hform__submit[class]{
+  margin-top:clamp(5px,.55vw,8px); width:100%; height:clamp(38px,3.06vw,44px);
+  background:var(--accent); color:#fff; border:0; border-radius:3px; cursor:pointer;
+  font:inherit; font-size:clamp(12px,1.04vw,15px); font-weight:700; letter-spacing:.04em;
+  transition:background .18s ease;
+}
+.hform__submit[class]:hover{background:var(--accent-hover)}
+.hform__submit[class]:active{transform:translateY(1px)}
+
+@media (max-width:900px){
+  .hero__grid{grid-template-columns:1fr; gap:22px}
+  .hform{padding:18px 16px 16px}
+  .hform input[type=text],.hform input[type=email],.hform input[type=tel]{height:44px; font-size:14px}
+  .hform textarea{height:88px; font-size:14px}
+  .hform__submit[class]{height:50px; font-size:15px}
+  .hform__agree{font-size:11.5px; min-height:44px; align-items:center}
+  .hform__agree input{width:18px; height:18px; margin-top:0}
+}
+/* ---------------- 今すぐ無料相談：1本の中央組みに ---------------- */
+.ct__panel{
+  display:block;
+  padding:clamp(28px,3.6vw,52px) clamp(20px,3vw,44px) clamp(26px,3.2vw,46px);
+}
+.ct__head{text-align:center; max-width:640px; margin-inline:auto}
+.ct__head .ct__eyebrow{justify-content:center}
+.ct__form{
+  max-width:620px; margin:var(--g-body) auto 0;
+  border:0; padding:0; background:none;
+}
+.ct__submit[class]{
+  margin-top:clamp(16px,1.88vw,27px); width:100%; height:var(--btn-h);
+  display:flex; align-items:center; justify-content:center; gap:clamp(16px,2.4vw,35px);
+  background:var(--accent); color:#fff; border:0; border-radius:3px; cursor:pointer;
+  font:inherit; font-size:clamp(12px,1.11vw,16px); font-weight:700; letter-spacing:.02em;
+  transition:background .18s ease;
+}
+.ct__submit[class]:hover{background:var(--accent-hover)}
+.ct__submit[class]:active{transform:translateY(1px)}
+.ct__submit svg{flex:0 0 auto; width:clamp(16px,1.53vw,22px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
+.ct__fnote,.ct__qa{max-width:620px; margin-inline:auto}
+.ct__fnote{text-align:center}
+@media (max-width:900px){
+  .ct__panel{padding:24px 18px 26px}
+  /* .ct__form の margin は --g-body に一本化（旧22px） */
+  .ct__submit[class]{height:54px}
+}
+/* ---------------- 構成書へのFB反映（橋本さん 2026-09-02） ---------------- */
+/* 「✕」は外部クラウドAIの箱の上に重ねる */
+.d4__cloud{position:relative}
+.d4__cloud .d4__x{      /* .d4__cloud span より詳細度を上げないと効かない */
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  display:block; margin-top:0;
+  font-size:clamp(34px,3.9vw,56px); line-height:1; color:var(--sRed); opacity:.92;
+  pointer-events:none; z-index:1;
+}
+/* 見積フローが4ステップになったので、円を一回り小さくして収める */
+.f3 .dot{width:clamp(48px,6.1vw,88px)}
+.f3 figcaption{font-size:clamp(9px,.83vw,12px)}
+
+/* 大手比較の表：セルを中央揃えに */
+.cmp-t__col--a .cmp-t__cell,
+.cmp-t__col--b .cmp-t__cell{justify-content:center; text-align:center}
+.cmp-t__col--b .cmp-t__cell{gap:clamp(8px,1vw,14px)}
+@media (max-width:900px){
+  .cmp-t__col--a .cmp-t__cell,.cmp-t__col--b .cmp-t__cell{justify-content:flex-start; text-align:left}
+}
+/* ================================================================
+   レスポンシブ：スマホ・タブレットのFVを整える
+   ・背景をバナーとして切り離さず、コンテンツの後ろに敷く
+   ・地の明暗が横で変わるので、白いスクリムを1枚かけて文字を読ませる
+   ================================================================ */
+@media (max-width:900px){
+  .hero{
+    position:relative; overflow:hidden;
+    min-height:calc(100svh - var(--head-h) - 96px);
+    display:block; background:transparent;
+  }
+  .hero__bg{
+    position:absolute; inset:0; width:100%; height:100%;
+    aspect-ratio:auto; z-index:0; order:0;
+  }
+  .hero__bg .fx{width:100%; height:100%}
+  /* 🚨 白いスクリムで暗い絵を薄めると、全体が「グレー」になって沈む。
+     スマホは濃色側に振り切って、絵はそのまま見せ、文字を白にする。
+     白いフォームの箱が浮いてコントラストが立つ。 */
+  .hero::before{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(3,10,24,.34) 0%,
+        rgba(3,10,24,.56) 44%,
+        rgba(3,10,24,.74) 100%),
+      linear-gradient(90deg, rgba(3,10,24,.34) 0%, rgba(3,10,24,.12) 70%, rgba(3,10,24,0) 100%);
+
+  }
+  .h1{color:#fff}
+  .lead{color:rgba(255,255,255,.88)}
+  .pillar h3{color:#fff}
+  .pillar__ico--m{background:#fff}
+  .copy{position:relative; z-index:2; order:0; padding:clamp(26px,5vh,44px) 0 34px}
+  .copy .wrap{padding-top:0}
+  .pillars{margin-top:20px}
+  .hform{margin-top:26px}
+}
+
+/* 〜430px：さらに詰める */
+@media (max-width:430px){
+  .hero{min-height:calc(100svh - var(--head-h) - 72px)}
+  .h1{letter-spacing:0}
+  .hform{padding:16px 14px 14px}
+  .hform input[type=text],.hform input[type=email],.hform input[type=tel]{height:42px}
+  .hform textarea{height:80px}
+}
+
+/* 901〜1100px：デスクトップ組みだが横が狭いので詰める */
+@media (min-width:901px) and (max-width:1100px){
+  .hero__grid{grid-template-columns:minmax(0,1fr) clamp(272px,30vw,320px); gap:26px}
+  .hform{padding:16px 14px 14px}
+  .hform input[type=text],.hform input[type=email],.hform input[type=tel]{height:36px}
+  .hform textarea{height:62px}
+  .gnav{gap:12px}
+  .gnav a{font-size:11.5px}
 }
 </style>
 </head>
@@ -2327,16 +2749,18 @@ section:not(.hero),footer{position:relative; z-index:1}
 <section class="hero">
 
   <div class="hero__bg" aria-hidden="true">
-    <svg class="fx" viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" role="presentation">
+    <svg class="fx" id="fxsvg" viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" role="presentation">
       <defs>
-        <linearGradient id="fxBase" x1="0" y1="0" x2="1" y2=".85">
-          <stop offset="0" stop-color="#f6f8fa"/><stop offset=".33" stop-color="#e7ecf2"/>
-          <stop offset=".50" stop-color="#b4c1d3"/><stop offset=".63" stop-color="#4a5f80"/>
-          <stop offset=".78" stop-color="#101f3c"/><stop offset="1" stop-color="#01050e"/>
+        <linearGradient id="fxBase" x1="0" y1="0" x2="1" y2=".48">
+          <stop offset="0" stop-color="#f6f8fa"/><stop offset=".23" stop-color="#eaeff5"/>
+          <stop offset=".42" stop-color="#cbd5e2"/><stop offset=".56" stop-color="#4a5f80"/>
+          <stop offset=".68" stop-color="#101f3c"/><stop offset="1" stop-color="#01050e"/>
         </linearGradient>
-        <radialGradient id="fxGlow" cx=".26" cy=".24" r=".64">
+        <!-- 見出しの周りだけ白く抜く。r=.64 だと x1505(表示1295) まで白が届いてしまい、
+             fxBase をいくら暗くしても中央が明るいままだった -->
+        <radialGradient id="fxGlow" cx=".18" cy=".31" r=".47">
           <stop offset="0" stop-color="#ffffff" stop-opacity=".92"/>
-          <stop offset=".6" stop-color="#ffffff" stop-opacity=".34"/>
+          <stop offset=".55" stop-color="#ffffff" stop-opacity=".40"/>
           <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
         </radialGradient>
         <linearGradient id="fxNavyA" x1=".1" y1="0" x2="1" y2=".8">
@@ -2370,10 +2794,8 @@ section:not(.hero),footer{position:relative; z-index:1}
       <g class="fx-b">
         <path d="M1497 322 L1672 470 V941 H612 Z" fill="url(#fxNavyB)"/>
       </g>
-      <!-- 左下の沈み -->
-      <g class="fx-c">
-        <path d="M0 660 L760 941 H0 Z" fill="url(#fxNavyC)"/>
-      </g>
+      <!-- 左下の沈み（fx-c）は撤去。地の暗い側を右へ寄せたあと、
+           左下だけに青灰色の三角形が取り残されて浮いて見えたため -->
 
       <!-- 右上の縦線 -->
       <g class="fx-grid" stroke="#ffffff" stroke-width="1.1">
@@ -2414,52 +2836,85 @@ section:not(.hero),footer{position:relative; z-index:1}
       <!-- 点の網 -->
       <g class="fx-dots">
         <rect x="1486" y="378" width="150" height="185" fill="url(#fxDots)" opacity=".5"/>
-        <rect x="0" y="638" width="140" height="240" fill="url(#fxDotsD)" opacity=".45"/>
       </g>
     </svg>
+    <script>
+      /* 画面が縦長になるほど、絵の「図形が密な帯」だけを切り出して見せる。
+         右端（x1520〜）はほぼ無地なので、そこを映すと背景が消えて見える。
+         SVG の viewBox は CSS で切り替えられないので JS で差し替える。
+         実測：1000-1520 に縦バー束・斜線の交差・明→暗の境目が入る（_shot/fx.png） */
+      (function () {
+        var el = document.getElementById('fxsvg');
+        if (!el) return;
+        var wins = [
+          { mq: window.matchMedia('(max-width:600px)'), vb: '1010 0 520 941' },
+          { mq: window.matchMedia('(max-width:900px)'), vb: '860 0 812 941'  }
+        ];
+        var cur = '';
+        var set = function () {
+          var vb = '0 0 1672 941';
+          for (var i = 0; i < wins.length; i++) {
+            if (wins[i].mq.matches) { vb = wins[i].vb; break; }
+          }
+          if (vb === cur) return;           /* iOSのアドレスバー伸縮で毎回書かない */
+          cur = vb;
+          el.setAttribute('viewBox', vb);
+        };
+        set();
+        wins.forEach(function (w) {
+          (w.mq.addEventListener ? w.mq.addEventListener.bind(w.mq, 'change')
+                                 : w.mq.addListener.bind(w.mq))(set);
+        });
+        /* 端末回転・ウィンドウ幅変更の保険（matchMediaのchangeが飛ばない環境がある） */
+        window.addEventListener('resize', set, { passive: true });
+        window.addEventListener('orientationchange', set);
+      })();
+    </script>
   </div>
 
   <div class="copy">
-    <div class="wrap">
-      <p class="eyebrow">AIと手動のハイブリッドで、見えないリスクを見抜く。</p>
+    <div class="wrap hero__grid">
 
-      <h1 class="h1">最高の脆弱性診断を、<br>最適な価格で。</h1>
+      <div class="hero__left">
+        <h1 class="h1">最高の脆弱性診断を、<br>最適な価格で。</h1>
 
-      <p class="lead">
-        AIと手動のハイブリッド診断で、<br class="brp">
-        他社が見逃すシステム固有のリスクまで突き止めます。
-      </p>
+        <p class="lead">
+          AIと手動のハイブリッド診断で、<br class="brp">
+          他社が見逃すシステム固有のリスクまで突き止めます。
+        </p>
 
-      <a class="cta" href="#contact">
-        <svg class="cta__ico" viewBox="0 0 27 22" aria-hidden="true">
-          <rect x=".9" y=".9" width="25.2" height="20.2"/>
-          <path d="M.9 .9 13.5 12.6 26.1 .9"/>
-        </svg>
-        <span class="cta__txt">まずは相談する</span>
-        <svg class="cta__arw" viewBox="0 0 18 13" aria-hidden="true">
-          <path d="M0 6.5h16.4M11.2 1.3l5.4 5.2-5.4 5.2"/>
-        </svg>
-      </a>
-      <div class="pillars">
-        <div class="prow">
-
-      <div class="pillar pillar--1">
-        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg);aspect-ratio:1"></i>
-        <div><h3>見積時にヒアリングシート不要</h3></div>
+        <div class="pillars">
+          <div class="prow">
+          <div class="pillar pillar--1">
+            <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg);aspect-ratio:1"></i>
+            <div><h3>見積時にヒアリングシート不要</h3></div>
+          </div>
+          <div class="pillar pillar--2">
+            <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg);aspect-ratio:1"></i>
+            <div><h3>大手の50%程度の納得のプライシング</h3></div>
+          </div>
+          <div class="pillar pillar--3">
+            <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/aicheck.svg);mask-image:url(img/ic/aicheck.svg);aspect-ratio:1"></i>
+            <div><h3>AI＋手動で高品質なハイブリッド診断</h3></div>
+          </div>
+          </div>
+        </div>
       </div>
 
-      <div class="pillar pillar--2">
-        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg);aspect-ratio:1"></i>
-        <div><h3>大手の50%程度の納得のプライシング</h3></div>
-      </div>
+      <form class="hform" id="hero-form" action="" method="post">
+        <p class="hform__ttl">まずは相談する <svg viewBox="0 0 18 13" aria-hidden="true"><path d="M0 6.5h16.4M11.2 1.3l5.4 5.2-5.4 5.2"/></svg></p>
+        <input type="text"  name="hname"    required placeholder="お名前（必須）" autocomplete="name">
+        <input type="text"  name="hcompany" required placeholder="会社名（必須）" autocomplete="organization">
+        <input type="email" name="hemail"   required placeholder="メールアドレス（必須）" autocomplete="email">
+        <input type="tel"   name="htel"     required placeholder="電話番号（必須）" autocomplete="tel">
+        <textarea name="hbody" required placeholder="ご相談内容（必須）"></textarea>
+        <label class="hform__agree">
+          <input type="checkbox" name="hagree" required>
+          <span><a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>に同意のうえ送信ください。</span>
+        </label>
+        <button class="hform__submit" type="submit">送信する</button>
+      </form>
 
-      <div class="pillar pillar--3">
-        <i class="pillar__ico pillar__ico--m" style="-webkit-mask-image:url(img/ic/aicheck.svg);mask-image:url(img/ic/aicheck.svg);aspect-ratio:1"></i>
-        <div><h3>AI＋手動で高品質なハイブリッド診断</h3></div>
-      </div>
-
-    </div>
-      </div>
     </div>
   </div>
 
@@ -2552,6 +3007,11 @@ section:not(.hero),footer{position:relative; z-index:1}
           </figure>
           <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
           <figure>
+            <span class="dot"><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/server.svg);mask-image:url(img/ic/server.svg)"></i></span>
+            <figcaption>テスト環境を<br>ご提出</figcaption>
+          </figure>
+          <svg class="ar" viewBox="0 0 22 14" aria-hidden="true"><path d="M0 7h19M14 2l5 5-5 5"/></svg>
+          <figure>
             <span class="dot dot--cross"><i style="width:54%;aspect-ratio:1;-webkit-mask-image:url(img/ic/sheet.svg);mask-image:url(img/ic/sheet.svg)"></i></span>
             <figcaption>ヒアリングシート<br>不要</figcaption>
           </figure>
@@ -2574,11 +3034,12 @@ section:not(.hero),footer{position:relative; z-index:1}
       </div>
       <div class="s-chart">
         <div class="bars">
-          <div class="bar bar--a"><span>大手診断会社</span></div>
+          <div class="bar bar--a"><span>大手診断会社</span>
+            <svg class="bar__link" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 0 L100 100"/>
+            </svg>
+          </div>
           <div class="bar bar--b"><span>SHARE Security</span></div>
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M27 0 L40 42.4" stroke="#5a6376" stroke-width="1" stroke-dasharray="3 3" fill="none" vector-effect="non-scaling-stroke"/>
-          </svg>
         </div>
         <div class="badge">
           価格は<br>大手診断会社の
@@ -2594,7 +3055,7 @@ section:not(.hero),footer{position:relative; z-index:1}
         <div>
           <h3>AI＋手動のハイブリッド診断＆固定の精鋭担当者がフルコミット</h3>
           <p>脆弱性には2つの層があります。XSSやSQLインジェクションのような既知パターンの層と、そのシステム固有の設計思想から生まれる層です。前者はAIエージェントで網羅的に検出できますが、後者は仕様書にもチェックリストにも現れません。ユーザーは正しい順序で操作するはず、この画面には管理者しか来ないはずといった設計者の無意識の前提は、そのシステムにしか存在しないためです。</p>
-          <p>攻撃者が本当に突くのは、この後者であることが多く、SHARE SecurityではCTO経験者と国際ホワイトハッカーの固定2名が全案件に直接対応し、実際にシステムを触りながら設計の隙を確認します。工数をAIで削減し、人でなければ見つけられない領域に集中投下しています。</p>
+          <p>攻撃者が本当に突くのは、後者であることが多く、SHARE SecurityではCTO経験者と国際ホワイトハッカーの固定2名が全案件に直接対応し、実際にシステムを触りながら設計の隙を確認します。工数をAIで削減し、人でなければ見つけられない領域に集中投下しています。</p>
         </div>
       </div>
       <ol class="f5">
@@ -2631,13 +3092,13 @@ section:not(.hero),footer{position:relative; z-index:1}
         <div>
           <h3>ローカルLLMで安心の診断＆ファインチューニングで定期アップデート</h3>
           <p>診断で扱うのは、まだ修正されていない攻撃可能な脆弱性の詳細です。この情報を外部のクラウドAIサービスに送信すれば、自社の管理外に出ることになります。SHARE Securityが診断にフロンティアAIを使用しないのは、このためです。</p>
-          <p>自社内に12台のワークステーションを設置し、すべての診断処理をローカル環境で完結させているため、診断対象の情報が外部へ送信されることはありません。さらに、この環境で稼働するモデルには診断業務に合わせたファインチューニングを継続的に実施しています。汎用モデルをそのまま利用するのではなく、脆弱性診断という用途に最適化した状態で運用しています。</p>
+          <p>貴社のネットワーク環境に12台のワークステーションを設置し、すべての診断処理をローカル環境で完結させているため、診断対象の情報が外部へ送信されることはありません。さらに、この環境で稼働するモデルには診断業務に合わせたファインチューニングを継続的に実施しています。汎用モデルをそのまま利用するのではなく、脆弱性診断という用途に最適化した状態で運用しています。</p>
         </div>
       </div>
 
       <figure class="s-photo">
-        <img src="img/str/units.jpg?v=1" alt="自社内に設置した診断用ワークステーション" loading="lazy" decoding="async">
-        <figcaption>自社内に設置した診断用ワークステーション</figcaption>
+        <img src="img/str/units.jpg?v=1" alt="貴社のネットワーク環境に設置した診断用ワークステーション" loading="lazy" decoding="async">
+        <figcaption>貴社のネットワーク環境に設置した診断用ワークステーション</figcaption>
       </figure>
 
       <div class="d4">
@@ -2654,7 +3115,7 @@ section:not(.hero),footer{position:relative; z-index:1}
 
         <div class="d4__local">
           <span class="d4__tab">
-            ローカル環境（社内ネットワーク内）
+            ローカル環境（貴社のネットワーク環境内）
             <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg>
           </span>
           <div class="d4__proc" aria-hidden="true"><span>ローカル処理</span></div>
@@ -2669,13 +3130,12 @@ section:not(.hero),footer{position:relative; z-index:1}
               <b>ローカルLLM</b><span>診断業務に合わせて<br>ファインチューニング</span>
             </div>
           </div>
-          <p class="d4__notes">・情報は外部に送信しない　　・すべてローカルで処理・保管</p>
+          <p class="d4__notes"><span>・情報は外部に送信しない</span><span>・すべてローカルで処理・保管</span></p>
         </div>
-
-        <span class="d4__x" aria-hidden="true">✕</span>
 
         <div class="d4__out">
           <div class="d4__cloud">
+            <span class="d4__x" aria-hidden="true">✕</span>
             <i style="-webkit-mask-image:url(img/ic/cloud.svg);mask-image:url(img/ic/cloud.svg)"></i>
             <span>外部クラウドAI</span>
           </div>
@@ -2793,7 +3253,32 @@ section:not(.hero),footer{position:relative; z-index:1}
 
     <!-- ⚠ 写真は生成画像。本番は本人の写真に差し替える -->
     <div class="exp__row">
-      <figure class="exp__photo"><img src="img/exp/p1.png?v=2" alt="宮田 晋次" loading="lazy" decoding="async"></figure>
+      <figure class="exp__photo"><svg class="exp__net" viewBox="0 0 633 319" preserveAspectRatio="none" aria-hidden="true">
+        <g class="en-far">
+          <path d="M-20 70 L200 40 L420 95 L660 55"/>
+          <path d="M-20 292 L180 268 L400 305 L660 275"/>
+        </g>
+        <g class="en-lines">
+          <path d="M-20 250 L120 205 L250 245 L390 175 L520 200 L660 150"/>
+          <path d="M120 205 L165 110 L300 140 L390 175"/>
+          <path d="M250 245 L285 300 L430 285 L520 200"/>
+        </g>
+        <g class="en-pulse">
+          <path class="el1" d="M-20 250 L120 205 L250 245 L390 175 L520 200 L660 150"/>
+          <path class="el2" d="M120 205 L165 110 L300 140 L390 175"/>
+          <path class="el3" d="M250 245 L285 300 L430 285 L520 200"/>
+        </g>
+        <g class="en-nodes">
+          <circle class="ep1" cx="120" cy="205" r="3.4"/><circle class="ep2" cx="250" cy="245" r="3"/>
+          <circle class="ep3" cx="390" cy="175" r="3.4"/><circle class="ep4" cx="165" cy="110" r="3"/>
+          <circle class="ep5" cx="520" cy="200" r="3"/><circle class="ep6" cx="300" cy="140" r="2.6"/>
+        </g>
+        <g class="en-rings">
+          <circle class="er1" cx="390" cy="175" r="3.4"/>
+          <circle class="er2" cx="165" cy="110" r="3"/>
+        </g>
+      </svg>
+      <img src="img/exp/p1.png?v=2" alt="宮田 晋次" loading="lazy" decoding="async"></figure>
       <div class="exp__main">
         <div class="exp__top">
           <span class="exp__no">01</span>
@@ -2831,7 +3316,32 @@ section:not(.hero),footer{position:relative; z-index:1}
         </p>
         <hr class="exp__hr">
       </div>
-      <figure class="exp__photo"><img src="img/exp/p2.png?v=2" alt="オプレア エイドリアン" loading="lazy" decoding="async"></figure>
+      <figure class="exp__photo"><svg class="exp__net" viewBox="0 0 633 319" preserveAspectRatio="none" aria-hidden="true">
+        <g class="en-far">
+          <path d="M-20 70 L200 40 L420 95 L660 55"/>
+          <path d="M-20 292 L180 268 L400 305 L660 275"/>
+        </g>
+        <g class="en-lines">
+          <path d="M-20 250 L120 205 L250 245 L390 175 L520 200 L660 150"/>
+          <path d="M120 205 L165 110 L300 140 L390 175"/>
+          <path d="M250 245 L285 300 L430 285 L520 200"/>
+        </g>
+        <g class="en-pulse">
+          <path class="el1" d="M-20 250 L120 205 L250 245 L390 175 L520 200 L660 150"/>
+          <path class="el2" d="M120 205 L165 110 L300 140 L390 175"/>
+          <path class="el3" d="M250 245 L285 300 L430 285 L520 200"/>
+        </g>
+        <g class="en-nodes">
+          <circle class="ep1" cx="120" cy="205" r="3.4"/><circle class="ep2" cx="250" cy="245" r="3"/>
+          <circle class="ep3" cx="390" cy="175" r="3.4"/><circle class="ep4" cx="165" cy="110" r="3"/>
+          <circle class="ep5" cx="520" cy="200" r="3"/><circle class="ep6" cx="300" cy="140" r="2.6"/>
+        </g>
+        <g class="en-rings">
+          <circle class="er1" cx="390" cy="175" r="3.4"/>
+          <circle class="er2" cx="165" cy="110" r="3"/>
+        </g>
+      </svg>
+      <img src="img/exp/p2.png?v=2" alt="オプレア エイドリアン" loading="lazy" decoding="async"></figure>
     </div>
   </div>
 </section>
@@ -2841,12 +3351,35 @@ section:not(.hero),footer{position:relative; z-index:1}
   <div class="book__visual" aria-hidden="true">
     <span class="book__quote book__quote--a">&ldquo;</span>
     <svg class="book__net" viewBox="0 0 800 900" preserveAspectRatio="none">
-      <path d="M-40 700 L120 640 L250 700 L420 560 L600 610 L760 500 L900 540"/>
-      <path d="M120 640 L180 470 L420 560"/>
-      <path d="M600 610 L640 760 L820 800"/>
-      <circle cx="120" cy="640" r="6"/><circle cx="250" cy="700" r="5"/>
-      <circle cx="420" cy="560" r="6"/><circle cx="600" cy="610" r="5"/>
-      <circle cx="180" cy="470" r="5"/><circle cx="760" cy="500" r="6"/>
+      <!-- 奥の細い線。ゆっくり左右に流れるだけの地の層 -->
+      <g class="bn-far">
+        <path d="M-60 250 L260 300 L520 210 L900 280"/>
+        <path d="M-60 830 L200 790 L480 860 L900 800"/>
+        <path d="M-60 430 L340 400 L900 460"/>
+      </g>
+      <!-- 主線。網の形は常に出したままにして、その上を明るい区間が流れ続ける。
+           1本の線で dasharray を動かすと網ごと消えるので、静止版と流れる版を重ねる -->
+      <g class="bn-lines">
+        <path d="M-40 700 L120 640 L250 700 L420 560 L600 610 L760 500 L900 540"/>
+        <path d="M120 640 L180 470 L420 560"/>
+        <path d="M600 610 L640 760 L820 800"/>
+      </g>
+      <g class="bn-pulse">
+        <path class="bl1" d="M-40 700 L120 640 L250 700 L420 560 L600 610 L760 500 L900 540"/>
+        <path class="bl2" d="M120 640 L180 470 L420 560"/>
+        <path class="bl3" d="M600 610 L640 760 L820 800"/>
+      </g>
+      <!-- 節点。呼吸するのと、外側に広がる輪 -->
+      <g class="bn-nodes">
+        <circle class="bp1" cx="120" cy="640" r="6"/><circle class="bp2" cx="250" cy="700" r="5"/>
+        <circle class="bp3" cx="420" cy="560" r="6"/><circle class="bp4" cx="600" cy="610" r="5"/>
+        <circle class="bp5" cx="180" cy="470" r="5"/><circle class="bp6" cx="760" cy="500" r="6"/>
+      </g>
+      <g class="bn-rings">
+        <circle class="br1" cx="420" cy="560" r="6"/>
+        <circle class="br2" cx="180" cy="470" r="5"/>
+        <circle class="br3" cx="760" cy="500" r="6"/>
+      </g>
     </svg>
     <div class="book__cover"><img loading="lazy" decoding="async" src="img/book/cover.jpg" alt=""></div>
     <span class="book__quote book__quote--b">&rdquo;</span>
@@ -3031,7 +3564,7 @@ section:not(.hero),footer{position:relative; z-index:1}
 
       <div class="q-or" aria-hidden="true"><span>or</span></div>
 
-      <div class="q-col">
+      <div class="q-col q-col--sub">
         <div class="q-head">
           <span class="q-num">02</span>
           <h3>ヒアリングシートによる見積もり</h3>
@@ -3114,13 +3647,22 @@ section:not(.hero),footer{position:relative; z-index:1}
       </div>
     </div>
 
+    <!-- STEP3 → STEP4 の折り返し。3列目の下から左へ回して1列目の上へ落とす -->
+    <div class="fturn" aria-hidden="true">
+      <i class="fturn__down"></i>
+      <i class="fturn__bar"></i>
+    </div>
+
     <div class="flow__row">
       <div class="fcaps" aria-hidden="true">
+        <i class="fturn__mid"></i>
         <div class="fcap fcap--plain"><b>報告</b></div>
         <div class="fcap fcap--plain"><b>最終調整</b></div>
         <div class="fcap fcap--plain"><b>運用</b></div>
       </div>
       <div class="fsteps">
+        <i class="fturn__enter" aria-hidden="true"></i>
+        <svg class="fturn__head" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
         <article class="fstep">
           <span class="fstep__tag">報告</span>
           <p class="fstep__no"><span>STEP</span><b>4</b></p>
@@ -3224,7 +3766,7 @@ section:not(.hero),footer{position:relative; z-index:1}
     </div>
 
     <div class="faq__list">
-      <details class="faq__item" open>
+      <details class="faq__item">
         <summary>
           <span class="faq__q">Q.</span>
           <span class="faq__t">見積もりに費用はかかりますか？</span>
@@ -3362,12 +3904,9 @@ section:not(.hero),footer{position:relative; z-index:1}
 <section class="ct is-dark" id="contact">
   <div class="wrap">
     <div class="ct__panel">
-      <div class="ct__left">
-        <p class="ct__eyebrow"><span>無料相談・お問い合わせ</span></p>
+      <div class="ct__head">
         <h2 class="ct__title">今すぐ無料相談</h2>
         <p class="ct__lead">いただいた内容を確認のうえ、通常3営業日以内にご連絡いたします。</p>
-        <div class="ct__rule" aria-hidden="true"></div>
-        <a class="ct__cta" href="#contact-form">まずは相談する <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></a>
       </div>
 
       <form class="ct__form" id="contact-form" action="" method="post">
@@ -3393,6 +3932,7 @@ section:not(.hero),footer{position:relative; z-index:1}
           <span><a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>に同意する</span>
           <span class="ct__req">必須</span>
         </label>
+        <button class="ct__submit" type="submit">まずは相談する <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></button>
         <p class="ct__fnote">
           ご入力いただいた個人情報は、お問い合わせへの回答およびご連絡のみに<br class="brp">
           利用し、その他の目的で利用することはありません。
@@ -3503,6 +4043,48 @@ section:not(.hero),footer{position:relative; z-index:1}
     var c  = document.getElementById('cf-count');
     if (!ta || !c) return;
     ta.addEventListener('input', function () { c.textContent = ta.value.length + ' / 500'; });
+  })();
+
+  /* ---- FAQ：details は素で開くと一瞬で開く。details 自身の高さを送って滑らかにする ---- */
+  (function () {
+    var items = document.querySelectorAll('.faq__item');
+    if (!items.length || !items[0].animate) return;          /* WAAPI が無ければ素の挙動のまま */
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var OPEN  = { duration: 300, easing: 'cubic-bezier(.22,.68,.3,1)' };
+    var CLOSE = { duration: 230, easing: 'cubic-bezier(.4,.02,.7,.3)' };
+
+    Array.prototype.forEach.call(items, function (d) {
+      var sum = d.querySelector('summary');
+      if (!sum) return;
+      var anim = null;
+      var h = function () { return d.getBoundingClientRect().height + 'px'; };
+
+      sum.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        /* 閉じアニメの途中は open がまだ true。素直に !d.open で判定すると
+           連打したとき「開く」ではなく2回続けて閉じてしまう */
+        var closing = d.classList.contains('is-closing');
+        var toOpen  = closing || !d.open;
+
+        var from = h();                          /* cancel 前に今の高さを取る（途中から反転させる） */
+        if (anim) { anim.cancel(); anim = null; }
+
+        var to;
+        if (toOpen) {
+          d.classList.remove('is-closing');
+          d.open = true;  to = h();              /* 開いた後の自然高を測る */
+          anim = d.animate([{ height: from }, { height: to }], OPEN);
+          anim.onfinish = function () { anim = null; };
+        } else {
+          d.classList.add('is-closing');         /* アイコンを先に＋へ戻す */
+          d.open = false; to = h(); d.open = true; /* 閉じた高さだけ借りて、見た目は開いたまま */
+          anim = d.animate([{ height: from }, { height: to }], CLOSE);
+          anim.onfinish = function () { d.open = false; d.classList.remove('is-closing'); anim = null; };
+        }
+      });
+    });
   })();
 </script>
 
