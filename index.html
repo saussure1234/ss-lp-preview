@@ -590,6 +590,7 @@ a{text-decoration:none; color:inherit}
   --dc2:calc(100% - var(--dcol) / 2);
 }
 .d4__fork i{position:absolute; background:#7c8698}
+.d4__rail{display:none}
 .d4__stem{left:50%; top:0; width:1.4px; height:46%; transform:translateX(-50%)}
 .d4__bar{left:var(--dc1); right:calc(var(--dcol) / 2); top:calc(46% - .7px); height:1.4px}
 .d4__leg{top:46%; bottom:11px; width:1.4px}
@@ -725,14 +726,44 @@ a{text-decoration:none; color:inherit}
   .f5 .ar{display:none}
   /* スマホは2列に並べられないので、上から順に積む。
      分岐の線は「1本の下向き矢印」に畳む */
-  .d4__cases{grid-template-columns:minmax(0,1fr)}
+  /* 🚨 スマホで分岐の片側（bar / leg--2 / tip--2）を消していたため、
+     「診断対象 → 一般的な構成 → SHAREの構成」という3ステップの流れに読めていた。
+     本当は2択の対比なので、左にレールを通して両方へ分岐させる。
+     線の座標は焼き込まず、グリッドの桁（--drail）から出す */
+  .d4{--drail:26px}
+  .d4__cases{
+    grid-template-columns:var(--drail) minmax(0,1fr);
+    row-gap:calc(var(--dgap) + 10px); position:relative;
+  }
+  .d4__arm{--armY:28px}
+  .d4__case{grid-column:2}
+  /* 左のレール。上端と下端は JS で「入口の矢印」の座標から出す。
+     🚨 % や実測値を焼き込むと、ケースの高さが変わった瞬間に別の場所を指す */
+  .d4__rail{
+    display:block; position:absolute;
+    left:calc(var(--drail) / 2); width:1.4px; background:#7c8698;
+    transform:translateX(-50%);
+  }
+  /* 各ケースへ入る横棒と矢じり */
+  .d4__case::before{
+    content:""; position:absolute;
+    left:calc(-1 * var(--drail) / 2); top:28px;
+    width:calc(var(--drail) / 2); height:1.4px; background:#7c8698;
+  }
+  .d4__case::after{
+    content:""; position:absolute; left:-3px; top:24px;
+    width:7px; height:7px;
+    border-top:1.4px solid #7c8698; border-right:1.4px solid #7c8698;
+    transform:rotate(45deg);
+  }
   .d4__case{padding:20px 14px 16px}
   .d4__case--std .d4__cloud{width:min(100%,200px)}
-  .d4__fork{height:30px}
-  .d4__bar,.d4__leg--2,.d4__tip--2{display:none}
-  .d4__stem{left:50%; height:60%}
-  .d4__leg--1{left:50%; top:60%; bottom:11px}
-  .d4__tip--1{left:50%}
+  .d4__fork{height:34px}
+  .d4__tip--1,.d4__tip--2,.d4__leg--2{display:none}
+  .d4__stem{left:50%; top:0; height:14px}                       /* 診断対象の下から降りる */
+  .d4__bar{left:calc(var(--drail) / 2); right:auto; width:calc(50% - var(--drail) / 2);
+    top:14px; height:1.4px}                                     /* 左のレールへ寄せる */
+  .d4__leg--1{left:calc(var(--drail) / 2); top:14px; bottom:0; transform:translateX(-50%)}
   .d4__tab{white-space:normal; text-align:center; max-width:calc(100% - 20px); font-size:11px}
   .d4__local{padding-top:34px}
   .d4__proc{display:none}          /* 縦積みでは意味を成さないので出さない */
@@ -873,8 +904,10 @@ a{text-decoration:none; color:inherit}
      3列のまま横スクロールさせ、1列目（項目）は sticky で残す */
   .cmp-scroll{
     overflow-x:auto; -webkit-overflow-scrolling:touch;
-    margin-inline:calc(-1 * clamp(24px,6vw,110px));   /* .wrap の左右パディングを打ち消す */
-    padding-inline:clamp(24px,6vw,110px);
+    margin-left:calc(-1 * clamp(24px,6vw,110px));
+    margin-right:calc(-1 * var(--pad));   /* 🚨 .wrap は左右で値が違う。片側の値で両側を消すと右が溢れる */   /* .wrap の左右パディングを打ち消す */
+    padding-left:clamp(24px,6vw,110px);
+    padding-right:var(--pad);
     scrollbar-width:thin;
   }
   /* 項目名（診断品質/検出率）が1〜2行に収まる幅を確保する。84pxだと「レポ／ート」と割れた */
@@ -1474,8 +1507,10 @@ a{text-decoration:none; color:inherit}
      1列目（項目）は sticky で残す */
   .pq-scroll{
     overflow-x:auto; -webkit-overflow-scrolling:touch;
-    margin-inline:calc(-1 * clamp(24px,6vw,110px));
-    padding-inline:clamp(24px,6vw,110px);
+    margin-left:calc(-1 * clamp(24px,6vw,110px));
+    margin-right:calc(-1 * var(--pad));   /* 🚨 .wrap は左右で値が違う。片側の値で両側を消すと右が溢れる */
+    padding-left:clamp(24px,6vw,110px);
+    padding-right:var(--pad);
     scrollbar-width:thin;
   }
   .pq{grid-template-columns:124px 164px 164px; min-width:452px}
@@ -3210,6 +3245,7 @@ a.art__cta[class] i{background:var(--navy)}
         </div>
 
         <div class="d4__cases">
+          <i class="d4__rail" aria-hidden="true"></i>
           <div class="d4__case d4__case--std">
             <span class="d4__cap">一般的な構成</span>
             <!-- ここは「実際に送信されている」流れなので ✕ は付けない -->
@@ -4195,6 +4231,31 @@ a.art__cta[class] i{background:var(--navy)}
       });
     });
   })();
+
+/* 04の構成図：スマホのとき、診断対象から2つの構成へ分岐するレールを引く。
+   上端＝1つ目の入口、下端＝2つ目の入口。どちらも要素の実座標から取る。
+   ケースの高さが変わっても追従する（実測値は焼き込まない）。 */
+(function () {
+  var cases = document.querySelector('.d4__cases');
+  var rail = document.querySelector('.d4__rail');
+  if (!cases || !rail) return;
+  var ARM = 28;                                  /* CSS の .d4__case::before の top と合わせる */
+  var draw = function () {
+    if (!matchMedia('(max-width:900px)').matches) { rail.style.height = ''; return; }
+    var cs = cases.querySelectorAll('.d4__case');
+    if (cs.length < 2) return;
+    var base = cases.getBoundingClientRect().top;
+    var a = cs[0].getBoundingClientRect().top - base + ARM;
+    var b = cs[cs.length - 1].getBoundingClientRect().top - base + ARM;
+    rail.style.top = (a - 14) + 'px';            /* 上はフォークの脚に少し重ねる */
+    rail.style.height = (b - a + 14) + 'px';
+  };
+  draw();
+  addEventListener('resize', draw, { passive: true });
+  addEventListener('orientationchange', draw);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  addEventListener('load', draw);
+})();
 </script>
 
 </body>
