@@ -1379,31 +1379,6 @@ a{text-decoration:none; color:inherit}
 .case__more svg{flex:0 0 auto; width:clamp(16px,1.5vw,22px); height:auto; stroke:var(--cNavy); fill:none; stroke-width:1.4}
 
 /* ---- 相談帯 ---- */
-.cases__foot{
-  margin-top:clamp(24px,3.2vw,46px); background:#e4e6eb;
-}
-.cases__foot .wrap{
-  display:flex; align-items:center; gap:clamp(16px,2.6vw,38px);
-  padding-block:clamp(22px,3vw,44px);
-}
-.cases__mail{
-  flex:0 0 auto; width:clamp(34px,3.8vw,56px); aspect-ratio:56/42;
-  stroke:var(--cNavy); fill:none; stroke-width:1.5;
-}
-.cases__foot div{flex:1 1 auto; min-width:0}
-.cases__foot b{display:block; font-size:clamp(13px,1.25vw,18px); font-weight:700; letter-spacing:.01em}
-.cases__foot p{
-  margin-top:clamp(5px,.7vw,10px);
-  font-size:clamp(11px,1.02vw,15px); line-height:1.7; color:#3f4653;
-}
-.cases__cta{
-  flex:0 0 auto;
-  display:flex; align-items:center; justify-content:center; gap:clamp(14px,2.2vw,32px);
-  width:clamp(230px,26.6vw,383px); height:var(--btn-h);
-  background:var(--cNavy); color:#fff; border-radius:2px;
-  font-size:clamp(12px,1.09vw,16px); font-weight:700; letter-spacing:.02em;
-  transition:background .18s ease;
-}
 .cases__cta:hover{background:#0a3a74}
 .cases__cta svg{flex:0 0 auto; width:clamp(16px,1.5vw,22px); height:auto; stroke:#fff; fill:none; stroke-width:1.5}
 
@@ -1416,9 +1391,7 @@ a{text-decoration:none; color:inherit}
   .case__brand b{margin-top:0; font-size:14px}
   .case__body h3{font-size:15.5px}
   .case__more{align-self:flex-start; min-height:44px; padding-block:10px 8px}
-  .cases__foot .wrap{flex-wrap:wrap; padding-block:26px}
   .cases__mail{width:32px}
-  .cases__cta{width:100%; height:54px}
 }
 
 /* ================================================================
@@ -3636,18 +3609,7 @@ a.art__cta[class] i{background:var(--navy)}
     </div>
   </div>
 
-  <div class="cases__foot">
-    <div class="wrap">
-      <svg class="cases__mail" viewBox="0 0 56 42" aria-hidden="true">
-        <rect x="1" y="1" width="54" height="40"/>
-        <path d="M1 1 28 22 55 1"/>
-      </svg>
-      <div>
-        <b>脆弱性診断はお任せください</b>
-        <p>CTO経験者と国際的ホワイトハッカーが全案件にフルコミット。API数に比例しない実働ベースの見積もりで、フェアな料金を実現。</p>
-      </div>
-      <a class="cases__cta" href="#contact">無料で相談する <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
-    </div>
+  
   </div>
 </section>
 
@@ -4221,7 +4183,7 @@ a.art__cta[class] i{background:var(--navy)}
       '.why__head, .cmp-t, .why__foot',
       '.exp__head, .exp__row',
       '.book__visual, .book__body',
-      '.cases__eyebrow, .cases__title, .cases__lead, .case, .cases__foot',
+      '.cases__eyebrow, .cases__title, .case',
       '.price__head, .pq, .price__foot',
       '.quote__eyebrow, .quote__title, .quote__lead, .q-col, .quote__foot',
       '.flow__eyebrow, .flow__title, .flow__lead, .flow__row, .flow__note',
