@@ -632,7 +632,12 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(9.5px,.9vw,13px); font-weight:700; white-space:nowrap;
   display:flex; align-items:center; gap:.5em;
 }
-.d4__tab svg{width:1em; height:auto; fill:#fff}
+/* 鍵は括弧と同じ塊（.nb）の中にある。flex の子ではなくなったので gap が効かない。
+   余白と縦位置は自前で持つ。
+   縦位置は -.14em。middle だと 2.1px 下がり、行の高さも増える。この値なら
+   PC版は元の flex 中央揃えとズレ 0.02px・高さ +0.16px で一致する（実測） */
+.d4__tab svg{width:1em; height:auto; fill:#fff;
+             vertical-align:-.14em; margin-left:.5em}
 .d4__mid{display:flex; align-items:center; justify-content:center; gap:clamp(8px,1.2vw,18px)}
 /* ワークステーション→ローカルLLM の上に渡す破線。両端に下向きの矢印 */
 .d4__proc{
@@ -721,7 +726,9 @@ a{text-decoration:none; color:inherit}
   .f3 .ar{width:12px; margin-top:-16px}
   .s-chart{flex-direction:column; align-items:center; gap:18px}
   .s-card{padding:22px 16px 26px}
-  .f5{flex-wrap:wrap; justify-content:flex-start; gap:14px 0}
+  /* 🚨 5個が3+2に折り返す。1段目は33.33%x3でちょうど埋まるので center でも動かず、
+     2段目（66.66%）だけが中央に寄る */
+  .f5{flex-wrap:wrap; justify-content:center; gap:14px 0}
   .f5 figure{width:33.33%}
   .f5 .ar{display:none}
   /* スマホは2列に並べられないので、上から順に積む。
@@ -733,6 +740,10 @@ a{text-decoration:none; color:inherit}
   .d4{--drail:26px}
   .d4__cases{
     grid-template-columns:var(--drail) minmax(0,1fr);
+    /* 🚨 列の gap を 0 に戻す。横棒の長さは --drail/2 ＝「桁と桁が接している」前提で
+       書いてあるので、gap が残っているとレールと横棒が gap のぶんだけ離れて線が切れる
+       （実測：レール中心 x53 に対して横棒の左端が x67／14px の切れ目） */
+    column-gap:0;
     row-gap:calc(var(--dgap) + 10px); position:relative;
   }
   .d4__arm{--armY:28px}
@@ -756,7 +767,7 @@ a{text-decoration:none; color:inherit}
     border-top:1.4px solid #7c8698; border-right:1.4px solid #7c8698;
     transform:rotate(45deg);
   }
-  .d4__case{padding:20px 14px 16px}
+  .d4__case{padding:26px 14px 16px}  /* ラベルが箱の縁に乗るぶんの逃げ */
   .d4__case--std .d4__cloud{width:min(100%,200px)}
   .d4__fork{height:34px}
   .d4__tip--1,.d4__tip--2,.d4__leg--2{display:none}
@@ -764,8 +775,19 @@ a{text-decoration:none; color:inherit}
   .d4__bar{left:calc(var(--drail) / 2); right:auto; width:calc(50% - var(--drail) / 2);
     top:14px; height:1.4px}                                     /* 左のレールへ寄せる */
   .d4__leg--1{left:calc(var(--drail) / 2); top:14px; bottom:0; transform:translateX(-50%)}
-  .d4__tab{white-space:normal; text-align:center; max-width:calc(100% - 20px); font-size:11px}
-  .d4__local{padding-top:34px}
+  /* 🚨 left:50% だけを指定した絶対配置は「左端から親の右端まで」しか幅に使えない。
+     229pxの箱の中で 113px に潰れて3行になり、鍵アイコンまで 3px に圧縮されていた。
+     width:max-content で先に自然幅を取り、max-width で親に収める */
+  /* 🚨 flex のままだと、折り返した文字列が「項目」として横に並び、行が食い違う。
+     2行に折り返すのだから、モバイルでは素直にブロックへ戻す */
+  /* 🚨 320px では箱が188px。左右の余白と max-width を詰めないと、括弧の中まで
+     割れて4行になる（括弧内=14字=154px＋余白が箱に入り切るところまで削る） */
+  .d4__tab{display:block; white-space:normal; text-align:center; width:max-content;
+           max-width:calc(100% - 8px); font-size:11px; line-height:1.5;
+           padding-left:9px; padding-right:9px}
+  .d4__tab svg{width:.95em; margin-left:.35em}
+  .d4__tab .nb{display:inline-block; overflow-wrap:anywhere}
+  .d4__local{padding-top:52px}   /* 実測：上のラベルとの間が9pxしかなかった */
   .d4__proc{display:none}          /* 縦積みでは意味を成さないので出さない */
   .d4__notes{text-align:left; font-size:11.5px}
   .f5 figcaption b{font-size:13px}
@@ -3288,8 +3310,11 @@ a.art__cta[class] i{background:var(--navy)}
             <span class="d4__cap d4__cap--ours">SHARE Security の構成</span>
             <div class="d4__local">
               <span class="d4__tab">
-                ローカル環境（貴社のネットワーク環境内）
-                <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg>
+                <!-- 括弧の中を塊にして、折り返しを「ローカル環境／（…）」の2行に固定する。
+                     🚨 逃げ道に <wbr> は使えない。Chrome では親の white-space:nowrap すら
+                     破るので、PC版まで2行になる。代わりに overflow-wrap で逃がす -->
+                ローカル環境<span class="nb">（貴社のネットワーク環境内）<svg
+                  viewBox="0 0 12 14" aria-hidden="true"><path d="M2 6V4a4 4 0 0 1 8 0v2h1v7H1V6z"/></svg></span>
               </span>
               <div class="d4__mid">
                 <figure class="d4__ws">
@@ -4319,8 +4344,10 @@ a.art__cta[class] i{background:var(--navy)}
     var base = cases.getBoundingClientRect().top;
     var a = cs[0].getBoundingClientRect().top - base + ARM;
     var b = cs[cs.length - 1].getBoundingClientRect().top - base + ARM;
-    rail.style.top = (a - 14) + 'px';            /* 上はフォークの脚に少し重ねる */
-    rail.style.height = (b - a + 14) + 'px';
+    /* 🚨 上端は 0。フォークの脚の下端＝.d4__cases の上端なので、
+       ここを 14px 下げると線が切れる（実測：脚 y5554 / レール y5568 で 14px の隙間） */
+    rail.style.top = '0px';
+    rail.style.height = b + 'px';
   };
   draw();
   addEventListener('resize', draw, { passive: true });
