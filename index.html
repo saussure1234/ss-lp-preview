@@ -823,18 +823,39 @@ a{text-decoration:none; color:inherit}
 }
 
 
-/* 比較表の下の補足4点。既存サイトにあった文。装飾は増やさず、罫と余白だけで組む */
+/* 比較表の下の4点。参考画像（2026-09-05 支給）の版面：
+   2列×2段／連番は大きく薄いグレー／ラベルは小さく紺／本文は3行前後／各項目の上に細い罫。
+   🚨 文章は既存サイトの原稿のまま。画像にある見出し（「誰が診断するかを確認する」等）は使わない */
+.why__foot-h{
+  margin:0 0 var(--g-body); text-align:center;
+  font-size:clamp(17px,1.94vw,28px); font-weight:900; line-height:1.55;
+  letter-spacing:.01em; color:var(--wInk);
+}
 .why__notes{
-  list-style:none; margin:var(--g-lead) auto 0; max-width:min(100%,860px);
-  display:grid; gap:clamp(10px,1.2vw,18px); text-align:left;
+  list-style:none; margin:0 auto; padding:0; max-width:min(100%,1000px);
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:clamp(24px,4.2vw,60px); row-gap:clamp(22px,3.3vw,48px);
+  text-align:left;
 }
-.why__notes li{
-  padding:clamp(12px,1.4vw,20px) 0 0; border-top:1px solid var(--wLine);
-  font-size:clamp(12px,1.02vw,15px); line-height:1.85; color:var(--wSub);
+.why__note{
+  display:grid; grid-template-columns:auto minmax(0,1fr);
+  gap:clamp(12px,1.6vw,23px); align-items:start;
+  padding-top:clamp(14px,1.8vw,26px); border-top:1px solid var(--wLine);
 }
-.why__notes b{
-  display:block; margin-bottom:.35em;
-  font-size:clamp(12px,1.05vw,15.5px); color:var(--wInk);
+.why__no{
+  font-size:clamp(24px,3.06vw,44px); font-weight:800; line-height:1;
+  color:#c3cad6; letter-spacing:.01em;
+}
+.why__note b{
+  display:block; margin-bottom:.45em;
+  font-size:clamp(11px,.96vw,14px); font-weight:700; color:var(--wNavy);
+}
+.why__note p{
+  margin:0; font-size:clamp(12px,1.02vw,15px); line-height:1.9; color:var(--wSub);
+}
+@media (max-width:700px){
+  .why__notes{grid-template-columns:minmax(0,1fr)}
+  .why__foot-h{text-align:left}
 }
 /* ---- 表 ---- */
 .cmp-t{
@@ -889,20 +910,14 @@ a{text-decoration:none; color:inherit}
 
 /* ---- 下の帯 ---- */
 .why__foot{
-  margin-top:clamp(20px,2.4vw,35px);
+  margin-top:clamp(28px,3.6vw,52px);
   background:#fff; border:1px solid var(--wLine); border-radius:6px;
-  padding:clamp(18px,2.2vw,32px) clamp(16px,2.2vw,32px);
-  display:flex; align-items:center; justify-content:space-between;
-  gap:clamp(16px,2.4vw,36px);
-}
-.why__foot p{
-  border-left:3px solid var(--wNavyD);
-  padding-left:clamp(12px,1.5vw,22px);
-  font-size:clamp(14px,1.45vw,21px); line-height:1.65; font-weight:700;
-  letter-spacing:.01em;
+  padding:clamp(26px,3.6vw,52px) clamp(20px,3.3vw,48px) clamp(28px,3.9vw,56px);
+  /* 🚨 もとは「1行＋ボタン」を横に並べる箱。4点を入れたので縦積みにする */
+  display:block;
 }
 .why__cta{
-  flex:0 0 auto;
+  margin:var(--g-body) auto 0; flex:0 0 auto;
   display:flex; align-items:center; justify-content:center; gap:clamp(14px,2vw,30px);
   width:clamp(240px,32vw,462px); height:var(--btn-h);
   background:var(--wNavyD); color:#fff; border-radius:4px;
@@ -935,9 +950,8 @@ a{text-decoration:none; color:inherit}
   .cmp-t__s{font-size:10.5px}
   .cmp-t__check{width:18px}
   .cmp-t__label{display:none !important}
-  .why__foot{flex-direction:column; align-items:stretch; gap:18px}
-  .why__foot p{font-size:15px}
-  .why__cta{width:100%; height:56px}
+  
+    .why__cta{width:100%; height:56px}
 }
 .cmp-t__label{display:none}
 
@@ -3386,13 +3400,37 @@ a.art__cta[class] i{background:var(--navy)}
     </div>
 
     <div class="why__foot">
-      <p>「大手＝安心」ではなく、自社に適した脆弱性診断が必要です。</p>
+      <h3 class="why__foot-h">「大手＝安心」ではなく、<br class="brp">自社に適した脆弱性診断が必要です。</h3>
       <!-- 既存サイトにあった4点の補足。表の裏づけなので落とさない -->
       <ul class="why__notes">
-        <li><b>担当者の経験値</b>現場レベルでは「誰がやるか」で検出率が劇的に変わるため、顔の見える固定体制が圧倒的に有利。</li>
-        <li><b>料金体系</b>API数による“積み上げ式”は実工数と相当な乖離があり、見積もりに納得感は得られない。</li>
-        <li><b>品質・対応力</b>新しい脆弱性やレア構成にも迅速に対応できる柔軟性が最大の強み。</li>
-        <li><b>報告書・アフターケア</b>実装に落とし込めるレベルのサポートがあるかどうかで違いが出る。</li>
+        <li class="why__note">
+          <span class="why__no">01</span>
+          <div>
+            <b>担当者の経験値</b>
+            <p>現場レベルでは「誰がやるか」で検出率が劇的に変わるため、顔の見える固定体制が圧倒的に有利。</p>
+          </div>
+        </li>
+        <li class="why__note">
+          <span class="why__no">02</span>
+          <div>
+            <b>料金体系</b>
+            <p>API数による“積み上げ式”は実工数と相当な乖離があり、見積もりに納得感は得られない。</p>
+          </div>
+        </li>
+        <li class="why__note">
+          <span class="why__no">03</span>
+          <div>
+            <b>品質・対応力</b>
+            <p>新しい脆弱性やレア構成にも迅速に対応できる柔軟性が最大の強み。</p>
+          </div>
+        </li>
+        <li class="why__note">
+          <span class="why__no">04</span>
+          <div>
+            <b>報告書・アフターケア</b>
+            <p>実装に落とし込めるレベルのサポートがあるかどうかで違いが出る。</p>
+          </div>
+        </li>
       </ul>
       <a class="why__cta" href="#contact">
         無料で相談する
