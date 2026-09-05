@@ -822,6 +822,20 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(12px,1.02vw,15px); line-height:1.8; color:var(--wSub);
 }
 
+
+/* 比較表の下の補足4点。既存サイトにあった文。装飾は増やさず、罫と余白だけで組む */
+.why__notes{
+  list-style:none; margin:var(--g-lead) auto 0; max-width:min(100%,860px);
+  display:grid; gap:clamp(10px,1.2vw,18px); text-align:left;
+}
+.why__notes li{
+  padding:clamp(12px,1.4vw,20px) 0 0; border-top:1px solid var(--wLine);
+  font-size:clamp(12px,1.02vw,15px); line-height:1.85; color:var(--wSub);
+}
+.why__notes b{
+  display:block; margin-bottom:.35em;
+  font-size:clamp(12px,1.05vw,15.5px); color:var(--wInk);
+}
 /* ---- 表 ---- */
 .cmp-t{
   margin-top:var(--g-body);
@@ -1084,6 +1098,19 @@ a{text-decoration:none; color:inherit}
   margin-top:clamp(14px,1.9vw,28px);
   font-size:clamp(11px,1.02vw,15px); line-height:1.9; color:var(--eSub);
 }
+
+/* 実績・受賞。既存サイトにあった箇条書き。装飾は増やさない */
+.exp__facts{margin-top:clamp(14px,1.8vw,26px)}
+.exp__facts-h{
+  margin:0 0 .5em; font-size:clamp(11px,.96vw,14px); font-weight:700; color:var(--eInk,#0d1117);
+}
+.exp__facts-h + ul + .exp__facts-h{margin-top:clamp(12px,1.5vw,22px)}
+.exp__facts ul{list-style:none; margin:0; padding:0; display:grid; gap:.4em}
+.exp__facts li{
+  position:relative; padding-left:1em;
+  font-size:clamp(11px,.96vw,14px); line-height:1.75; color:var(--eSub,#5c626d);
+}
+.exp__facts li::before{content:"-"; position:absolute; left:0}
 .exp__hr{
   margin-top:clamp(14px,1.9vw,28px); width:clamp(40px,4.2vw,60px);
   height:1px; background:var(--eLine); border:0;
@@ -1427,6 +1454,20 @@ a{text-decoration:none; color:inherit}
   font-size:clamp(12px,1.18vw,17px); line-height:1.88; color:var(--pLead);
 }
 
+
+/* 比較表の下の補足4点。既存サイトにあった文。装飾は増やさず、罫と余白だけで組む */
+.why__notes{
+  list-style:none; margin:var(--g-lead) auto 0; max-width:min(100%,860px);
+  display:grid; gap:clamp(10px,1.2vw,18px); text-align:left;
+}
+.why__notes li{
+  padding:clamp(12px,1.4vw,20px) 0 0; border-top:1px solid var(--wLine);
+  font-size:clamp(12px,1.02vw,15px); line-height:1.85; color:var(--wSub);
+}
+.why__notes b{
+  display:block; margin-bottom:.35em;
+  font-size:clamp(12px,1.05vw,15.5px); color:var(--wInk);
+}
 /* ---- 表 ---- */
 .pq{
   margin-top:var(--g-body);            /* 実測 リード下端→表の上端 45px */
@@ -3289,7 +3330,9 @@ a.art__cta[class] i{background:var(--navy)}
     <div class="why__head">
       <p class="why__eyebrow">WHY SHARE SECURITY</p>
       <h2 class="why__title">なぜSHARE Securityが選ばれるのか？</h2>
-      <p class="why__lead">大手診断会社との違いを、5つの視点でわかりやすく比較。</p>
+      <p class="why__lead">セキュリティ診断を依頼する際、多くの企業は「大手に頼めば安心」と考えがちです。<br>
+        しかし、実は診断現場での実働や、最終的な検出精度、コストパフォーマンス、フォロー体制には大きな違いがあります。<br>
+        ここでは、SHARE Securityがどのように大手診断会社と異なるのかをご説明します。</p>
     </div>
 
     <div class="cmp-scroll">
@@ -3315,7 +3358,7 @@ a.art__cta[class] i{background:var(--navy)}
         </div>
         <div class="cmp-t__cell">
           <i class="cmp-t__ico" style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg)"></i>
-          <span class="cmp-t__name">料金</span>
+          <span class="cmp-t__name">料金帯</span>
         </div>
         </div>
       </div>
@@ -3324,23 +3367,23 @@ a.art__cta[class] i{background:var(--navy)}
         <div class="cmp-t__body">
         <div class="cmp-t__cell"><div>
           <span class="cmp-t__label">レポート</span>
-          <p class="cmp-t__t">定型レポート</p><p class="cmp-t__s">補足は最小限</p>
+          <p class="cmp-t__t">再現のキャプチャ無し</p>
         </div></div>
         <div class="cmp-t__cell"><div>
           <span class="cmp-t__label">診断担当者</span>
-          <p class="cmp-t__t">分業体制</p><p class="cmp-t__s">窓口が変わりやすい</p>
+          <p class="cmp-t__t">毎回異なる担当・外部委託や派遣も多い</p><p class="cmp-t__s">顔が見えない／経験値にバラツキあり</p>
         </div></div>
         <div class="cmp-t__cell"><div>
           <span class="cmp-t__label">診断品質 / 検出率</span>
-          <p class="cmp-t__t">標準化された診断</p><p class="cmp-t__s">手順ベース</p>
+          <p class="cmp-t__t">テンプレート・ツール診断中心。</p><p class="cmp-t__s">ペネトレーションテストはコスト見合い。</p>
         </div></div>
         <div class="cmp-t__cell"><div>
           <span class="cmp-t__label">見積算出方法</span>
-          <p class="cmp-t__t">項目ベース見積</p><p class="cmp-t__s">実態とズレやすい</p>
+          <p class="cmp-t__t">API数や画面数ごとの積み上げ式</p><p class="cmp-t__s">ヒアリングシートベースのため、社内エンジニア工数がかかる。</p>
         </div></div>
         <div class="cmp-t__cell"><div>
-          <span class="cmp-t__label">料金</span>
-          <p class="cmp-t__t">費用が高くなりやすい</p><p class="cmp-t__s">一律で割高になりがち</p>
+          <span class="cmp-t__label">料金帯</span>
+          <p class="cmp-t__t">100万円～数千万円</p><p class="cmp-t__s">（規模依存・最低料金高め）</p>
         </div></div>
         </div>
       </div>
@@ -3349,23 +3392,23 @@ a.art__cta[class] i{background:var(--navy)}
         <div class="cmp-t__body">
         <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
           <span class="cmp-t__label">レポート</span>
-          <p class="cmp-t__t">再現キャプチャ付き</p><p class="cmp-t__s">誰でも理解しやすい</p>
+          <p class="cmp-t__t">再現のキャプチャを必ず付与。</p><p class="cmp-t__s">開発チームでの理解・修正コストを大幅に下げられます。</p>
         </div></div>
         <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
           <span class="cmp-t__label">診断担当者</span>
-          <p class="cmp-t__t">固定エンジニアが対応</p><p class="cmp-t__s">専門担当と直接やり取り</p>
+          <p class="cmp-t__t">固定2名（CTO経験者＋国際ホワイトハッカー）が全案件に直接対応</p>
         </div></div>
         <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
           <span class="cmp-t__label">診断品質 / 検出率</span>
-          <p class="cmp-t__t">AI＋手動診断</p><p class="cmp-t__s">ローカルLLMによるAI診断とのハイブリッド</p>
+          <p class="cmp-t__t">90%以上手動診断。</p><p class="cmp-t__s">ペネトレーションテストによる実攻撃再現・LLMの脆弱性にも対応</p>
         </div></div>
         <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
           <span class="cmp-t__label">見積算出方法</span>
-          <p class="cmp-t__t">実システムを確認</p><p class="cmp-t__s">納得感のある見積</p>
+          <p class="cmp-t__t">テスト環境をご提供いただくだけで、あとは弊社側で実工数をお見積もり。</p><p class="cmp-t__s">お客様の工数は最低限。</p>
         </div></div>
         <div class="cmp-t__cell"><span class="cmp-t__check"><svg viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 6.2 6 10.5 14.5 1.6"/></svg></span><div>
-          <span class="cmp-t__label">料金</span>
-          <p class="cmp-t__t">合理的な価格</p><p class="cmp-t__s">品質と費用のバランス</p>
+          <span class="cmp-t__label">料金帯</span>
+          <p class="cmp-t__t">大手比約50%</p>
         </div></div>
         </div>
       </div>
@@ -3373,9 +3416,16 @@ a.art__cta[class] i{background:var(--navy)}
     </div>
 
     <div class="why__foot">
-      <p>大手だから安心、ではなく、<br>自社に合った診断会社を選ぶことが重要</p>
+      <p>「大手＝安心」ではなく、自社に適した脆弱性診断が必要です。</p>
+      <!-- 既存サイトにあった4点の補足。表の裏づけなので落とさない -->
+      <ul class="why__notes">
+        <li><b>担当者の経験値</b>現場レベルでは「誰がやるか」で検出率が劇的に変わるため、顔の見える固定体制が圧倒的に有利。</li>
+        <li><b>料金体系</b>API数による“積み上げ式”は実工数と相当な乖離があり、見積もりに納得感は得られない。</li>
+        <li><b>品質・対応力</b>新しい脆弱性やレア構成にも迅速に対応できる柔軟性が最大の強み。</li>
+        <li><b>報告書・アフターケア</b>実装に落とし込めるレベルのサポートがあるかどうかで違いが出る。</li>
+      </ul>
       <a class="why__cta" href="#contact">
-        自社に合った診断を相談する
+        無料で相談する
         <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 6h17M12.5 1.2 17.3 6l-4.8 4.8"/></svg>
       </a>
     </div>
@@ -3384,11 +3434,7 @@ a.art__cta[class] i{background:var(--navy)}
 
 <section class="exp" id="experts">
   <div class="wrap">
-    <h2 class="exp__title">トップエンジニア2名が、<br>直接診断を担当します。</h2>
-    <p class="exp__lead">
-      SHARE Securityの診断は、AI・セキュリティの第一線で<br>
-      実績を持つエンジニア2名が直接担当します。
-    </p>
+    <h2 class="exp__title">トップエンジニア 2 名の紹介</h2>
 
     <!-- ⚠ 写真は生成画像。本番は本人の写真に差し替える -->
     <div class="exp__row">
@@ -3424,16 +3470,22 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="exp__slash" aria-hidden="true"></span>
           <div>
             <p class="exp__name"><b>宮田 晋次</b></p>
-            <p class="exp__role">代表取締役 / セキュリティエンジニア</p>
-            <p>元CTO、LLM・生成AIセキュリティ研究者</p>
+            <p class="exp__role">代表取締役　セキュリティエンジニア</p>
+            <p>元 エムスリーデジタルCTO／LLM（生成AI）セキュリティ研究者。</p>
           </div>
         </div>
         <p class="exp__bio">
-          大手Web企業でCTOを歴任後、独立。<br>
-          AI/LLM領域のセキュリティ研究とプロダクト開発に従事し、<br>
-          数多くの脆弱性発見と防御技術の実装をリード。
+          1976年生まれ・東京都出身<br>
+          2013年エムスリーデジタルコミュニケーションにてCTOとして5年で売上10億・営業利益2億の企業へ。以後ベンチャーを中心にCTOとして活動しエンジニア組織を率いる。現在はSHARE Securityの代表として生成AIやWEBアプリケーションの脆弱性研究に注力。
         </p>
         <hr class="exp__hr">
+        <div class="exp__facts">
+          <p class="exp__facts-h">■ 主な実績・研究・出版</p>
+          <ul>
+            <li>『騙されるAI』（2025年8月）講談社</li>
+            <li>LLM（生成AI)の脆弱性／セキュリティ研究家<br>→生成AIを中心にしたセキュリティブログの執筆</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -3445,15 +3497,24 @@ a.art__cta[class] i{background:var(--navy)}
           <div>
             <p class="exp__name"><b>オプレア エイドリアン</b></p>
             <p class="exp__role">リードバグバウンティハンター</p>
-            <p>国際ホワイトハッカー / 生成AIレッドチーム専門</p>
+            <p>国際ホワイトハッカー／生成AIレッドチーム専門。</p>
           </div>
         </div>
         <p class="exp__bio">
-          世界有数のバグバウンティハンターとして活躍。<br>
-          AI/LLMのレッドチーミングや脆弱性発見を専門とし、<br>
-          グローバルプラットフォームで数々の実践経験を持つ。
+          日本国内在住。数千人規模のグローバル生成AIセキュリティコンペで常連世界ランカー。CVE報告・ハッキングコンペ多数。現場型の攻撃再現とPoC開発を担当。グローバルトップハッカーとして複雑なマニュアルの攻撃を担当。ツールでは検出できないリアルな脆弱性を再現。
         </p>
         <hr class="exp__hr">
+        <div class="exp__facts">
+          <p class="exp__facts-h">■ 主な診断実績</p>
+          <ul><li>SaaS／医療／上場準備など多数</li></ul>
+          <p class="exp__facts-h">■ 主な受賞・認定</p>
+          <ul>
+            <li>GraySwanArena（OpenAI主催）第15位（2025）</li>
+            <li>CVE-2024-37031 登録済</li>
+            <li>MyLLM Doctor 世界第6位</li>
+            <li>Certified Ethical Hacker（CEH）認定取得</li>
+          </ul>
+        </div>
       </div>
       <figure class="exp__photo"><svg class="exp__net" viewBox="0 0 633 319" preserveAspectRatio="none" aria-hidden="true">
         <g class="en-far">
@@ -3530,11 +3591,11 @@ a.art__cta[class] i{background:var(--navy)}
       <p class="book__meta">著者：宮田晋次<br>講談社＋α新書</p>
       <hr class="book__hr">
       <p class="book__desc">
-        SHARE Security代表・宮田晋次による、AIとセキュリティの本質を解き明かす一冊。<br>
-        AI時代を生き抜くための、実践的な視点と洞察を提供します。
+        AIの弱点や「騙されやすさ」を具体例とともに解説。<br>
+        セキュリティ視点から読むべき一冊です。
       </p>
       <a class="book__cta" href="https://www.share-security.com/news/news-title-00" target="_blank" rel="noopener">
-        書籍詳細を見る
+        詳しくは Amazonのページを見る
         <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.5 1.2 20.3 6l-4.8 4.8"/></svg>
       </a>
     </div>
@@ -3544,7 +3605,6 @@ a.art__cta[class] i{background:var(--navy)}
 <section class="cases" id="cases">
   <div class="wrap">
     <h2 class="cases__title">導入事例</h2>
-    <p class="cases__lead">さまざまな業界・用途で、確かな成果につながっています。</p>
 
     <div class="cases__list">
       <article class="case">
@@ -3554,10 +3614,9 @@ a.art__cta[class] i{background:var(--navy)}
         </div>
         <div class="case__rule" aria-hidden="true"></div>
         <div class="case__body">
-          <h3>大手診断会社よりも負担を抑えながら、<br>高品質な脆弱性診断を実施</h3>
+          <h3>医療DXの最前線で「信頼」を守る脆弱性診断</h3>
           <p>
-            コストとリソースの最適化を実現しつつ、網羅性と精度の高い診断で、<br>
-            安心してサービス提供を継続できる体制を構築。
+            1,000万円を超える大手診断会社見積の 約50％の金額 で、B4Aエンジニアチームで過去に経験のない負担の低さかつ高品質の脆弱性診断を実現。医療業界での信頼獲得に成功。
           </p>
           <a class="case__more" href="https://www.share-security.com/case/project-b4a" target="_blank" rel="noopener">事例詳細を見る <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
         </div>
@@ -3570,10 +3629,9 @@ a.art__cta[class] i{background:var(--navy)}
         </div>
         <div class="case__rule" aria-hidden="true"></div>
         <div class="case__body">
-          <h3>他社ですでに診断済みだった環境を再診断し、<br>それまで見つかっていなかった重大な脆弱性を発見</h3>
+          <h3>「安心だったはずの環境で、思いがけない気づき」</h3>
           <p>
-            既存の診断結果に安心せず、より深い観点での診断を実施。<br>
-            見落としリスクを排除し、真に安全な環境づくりに貢献。
+            SHARE Securityによる再診断で、他社の診断で検出しなかった 重大脆弱性 (RCE) を追加検出。専門性の高さに驚いています。
           </p>
           <a class="case__more" href="https://www.share-security.com/case/project-anyflow" target="_blank" rel="noopener">事例詳細を見る <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
         </div>
@@ -3588,10 +3646,10 @@ a.art__cta[class] i{background:var(--navy)}
         <path d="M1 1 28 22 55 1"/>
       </svg>
       <div>
-        <b>まずはお気軽にご相談ください</b>
-        <p>お客様の環境やご要望に合わせて、最適な診断プランをご提案します。</p>
+        <b>脆弱性診断はお任せください</b>
+        <p>CTO経験者と国際的ホワイトハッカーが全案件にフルコミット。API数に比例しない実働ベースの見積もりで、フェアな料金を実現。</p>
       </div>
-      <a class="cases__cta" href="#contact">相談・お問い合わせはこちら <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
+      <a class="cases__cta" href="#contact">無料で相談する <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg></a>
     </div>
   </div>
 </section>
@@ -3599,10 +3657,12 @@ a.art__cta[class] i{background:var(--navy)}
 <section class="price" id="price">
   <div class="wrap">
     <div class="price__head">
-      <h2 class="price__title">高品質な診断を、納得感のある価格で。</h2>
+      <h2 class="price__title">価格／お見積もり</h2>
       <p class="price__lead">
-        SHARE Securityは、大手診断会社と比べて高品質な診断をバランスの取れた価格でご提供します。<br class="brp">
-        充実した診断内容と丁寧な手動診断、分かりやすいお見積もりで、安心してご利用いただけます。
+        当社はツール診断だけでなく、手動によるフルスペック診断を標準としています。<br class="brp">
+        大手診断会社にくらべて、同一の診断内容であれば“約50%”程度のお見積りになるケースが多くなっています。<br>
+        まずは無料でお見積もりをご依頼いただき、<br class="brp">
+        他社と「診断内容」「価格」の両方をじっくり比べてみてください。
       </p>
     </div>
 
@@ -3617,10 +3677,10 @@ a.art__cta[class] i{background:var(--navy)}
       <div class="pq__row">
         <div class="pq__c pq__c--item">
           <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/yen.svg);mask-image:url(img/ic/yen.svg)"></i></span>
-          <span class="pq__name">料金</span>
+          <span class="pq__name">料金の目安</span>
         </div>
-        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>高品質な診断を、バランスの取れた<br class="brp">納得感のある価格でご提供します。</p></div>
-        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>個別見積もりが多く、<br class="brp">価格が高くなる傾向があります。</p></div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>フルスペック診断でも大手比約50%</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>ツール診断：100万円～<br class="brp">フルスペック：API数や画面数に比例</p></div>
       </div>
 
       <div class="pq__row">
@@ -3628,28 +3688,20 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/clipboard.svg);mask-image:url(img/ic/clipboard.svg)"></i></span>
           <span class="pq__name">診断内容</span>
         </div>
-        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>主要な脆弱性を網羅し、ビジネスに必要な<br class="brp">診断を十分な品質でご提供します。</p></div>
-        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>診断範囲が広い一方で、必要以上に<br class="brp">複雑になる場合があります。</p></div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>手動×ツール併用のフルスペック診断<br class="brp">（ペネトレーション含）</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>ツール診断のみのパターンあり</p></div>
       </div>
 
       <div class="pq__row">
         <div class="pq__c pq__c--item">
           <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/search.svg);mask-image:url(img/ic/search.svg)"></i></span>
-          <span class="pq__name">手動診断</span>
+          <span class="pq__name">手動診断比率</span>
         </div>
-        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>経験豊富なエンジニアが丁寧に手動診断を実施し、<br class="brp">見逃しの少ない精度の高い診断を行います。</p></div>
-        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>手動診断を実施するものの、<br class="brp">体制や工程が不透明な場合があります。</p></div>
+        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>90%以上（全件エンジニア担当）</p></div>
+        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>金額により大きく上下</p></div>
       </div>
 
-      <div class="pq__row">
-        <div class="pq__c pq__c--item">
-          <span class="pq__ico"><i style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i></span>
-          <span class="pq__name">見積もり方法</span>
-        </div>
-        <div class="pq__c pq__c--share"><p><span class="pq__tag">SHARE Security</span>無料でスムーズにお見積もり。<br class="brp">内容を分かりやすくご説明します。</p></div>
-        <div class="pq__c pq__c--other"><p><span class="pq__tag">大手診断会社</span>ヒアリングや手続きが多く、<br class="brp">見積もりに時間がかかることがあります。</p></div>
-      </div>
-    </div>
+          </div>
     </div>
 
     <div class="price__foot">
@@ -3659,11 +3711,10 @@ a.art__cta[class] i{background:var(--navy)}
           <path d="M1 1 24.5 20.5 48 1"/>
         </svg>
         <a class="price__cta" href="#contact">
-          無料見積もりを依頼する
+          無料でお見積もりを依頼する
           <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg>
         </a>
       </div>
-      <p class="price__note">診断対象やご要望に応じてご案内します</p>
     </div>
   </div>
 </section>
@@ -3672,33 +3723,28 @@ a.art__cta[class] i{background:var(--navy)}
   <div class="wrap">
     <h2 class="quote__title">お見積もり方法</h2>
     <p class="quote__lead">
-      お客様のご状況に合わせて、2つの方法からお選びいただけます。<br class="brp">
-      特に、テスト環境をご用意いただく方法は、手間なくスピーディーに見積もりが可能です。
+      お見積もり方法は2通り。<br class="brp">
+      おすすめは「テスト環境をご用意いただく方法」です。
     </p>
 
     <div class="q-cols">
       <div class="q-col q-col--main">
         <div class="q-head">
           <span class="q-num">01</span>
-          <h3>テスト環境をご用意いただく方法</h3>
-          <span class="q-badge">推奨</span>
+          <h3>テスト環境でのお見積もり</h3>
+          <span class="q-badge">【推奨】</span>
         </div>
         <p class="q-desc">
-          テスト環境を提供いただくだけで、実際のシステムを確認し、<br class="brp">
-          精度の高いお見積もりを行う方法です。
+          → ほとんどの企業様がこちらを選択されています
         </p>
         <div class="q-feat">
           <div class="q-item">
             <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/clock.svg);mask-image:url(img/ic/clock.svg)"></i></span>
-            <div><b>手間が最小限</b><p>ヒアリングシートや資料作成はほぼ不要です。</p></div>
+            <div><b>貴社でテスト環境をご用意いただくだけでOK</b><p>貴社エンジニアの工数を使うヒアリングや資料作成は不要</p></div>
           </div>
           <div class="q-item">
             <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/target.svg);mask-image:url(img/ic/target.svg)"></i></span>
-            <div><b>精度の高いお見積もり</b><p>実際のシステムを確認するため、より正確な見積もりが可能です。</p></div>
-          </div>
-          <div class="q-item">
-            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/calendar.svg);mask-image:url(img/ic/calendar.svg)"></i></span>
-            <div><b>スピーディーに対応</b><p>必要な情報が揃うため、見積もりまでがスムーズです。</p></div>
+            <div><b>最短1週間程度で実働ベースの正確な見積もりをご提示</b><p>お客様の手間が大幅に省けます。</p></div>
           </div>
         </div>
       </div>
@@ -3708,24 +3754,19 @@ a.art__cta[class] i{background:var(--navy)}
       <div class="q-col q-col--sub">
         <div class="q-head">
           <span class="q-num">02</span>
-          <h3>ヒアリングシートによる見積もり</h3>
+          <h3>ヒアリングシートによるお見積もり</h3>
         </div>
         <p class="q-desc">
-          一般的なヒアリングシートにご回答いただき、<br class="brp">
-          その内容をもとにお見積もりを行う方法です。
+          お急ぎの場合は①をおすすめします
         </p>
         <div class="q-feat">
           <div class="q-item">
             <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/document.svg);mask-image:url(img/ic/document.svg)"></i></span>
-            <div><b>シートへのご回答が必要</b><p>ヒアリングシートへのご回答と資料のご準備をお願いします。</p></div>
-          </div>
-          <div class="q-item">
-            <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/search.svg);mask-image:url(img/ic/search.svg)"></i></span>
-            <div><b>内容の確認・調整が発生</b><p>ご回答内容に基づき、確認事項や調整が発生する場合があります。</p></div>
+            <div><b>一般的なヒアリングシートをお送りします</b><p>貴社エンジニアチームの工数が必要となります</p></div>
           </div>
           <div class="q-item">
             <span class="q-ico"><i style="-webkit-mask-image:url(img/ic/clock.svg);mask-image:url(img/ic/clock.svg)"></i></span>
-            <div><b>見積もりまでにお時間を要する場合があります</b><p>情報の収集・確認により、見積もりまでに時間がかかることがあります。</p></div>
+            <div><b>ご回答後の見積もりになるため、見積もり期間はやや長くなります</b></div>
           </div>
         </div>
       </div>
@@ -3736,12 +3777,9 @@ a.art__cta[class] i{background:var(--navy)}
         <rect x="1" y="1" width="46" height="34"/>
         <path d="M1 1 24 19 47 1"/>
       </svg>
-      <div class="quote__txt">
-        <b>お見積もりのご相談・お問い合わせはこちら</b>
-        <p>お客様の状況に合わせて、最適な方法をご案内いたします。</p>
-      </div>
+      
       <a class="quote__cta" href="#contact">
-        相談・お問い合わせはこちら
+        見積もりを依頼する
         <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M0 6h19M14.4 1.2 19.2 6l-4.8 4.8"/></svg>
       </a>
     </div>
@@ -3751,7 +3789,6 @@ a.art__cta[class] i{background:var(--navy)}
 <section class="flow" id="flow">
   <div class="wrap">
     <h2 class="flow__title">サービスフロー</h2>
-    <p class="flow__lead">ご相談から再診断まで、診断の流れを6つのSTEPでご案内します。</p>
 
     <div class="flow__row">
       <div class="fcaps" aria-hidden="true">
@@ -3774,16 +3811,16 @@ a.art__cta[class] i{background:var(--navy)}
           <div class="fstep__rule" aria-hidden="true"></div>
           <p class="fstep__when">7営業日</p>
           <h3>コピー環境構築 &amp; 見積もり</h3>
-          <p class="fstep__desc">コピー環境をもとに、実働ベースで見積もり。</p>
+          <p class="fstep__desc">コピー環境をご提供いただくだけで、即・実働ベースでフェアな見積もりが可能。面倒なヒアリングや資料作成の手間はほぼありません。</p>
           <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
         </article>
         <article class="fstep">
           <span class="fstep__tag">診断</span>
           <p class="fstep__no"><span>STEP</span><b>3</b></p>
           <div class="fstep__rule" aria-hidden="true"></div>
-          <p class="fstep__when">最短5〜14日</p>
+          <p class="fstep__when">最短 5–14日（内容で変動）</p>
           <h3>診断実施</h3>
-          <p class="fstep__desc">本番運用を想定したセキュリティ診断を実施。</p>
+          <p class="fstep__desc">本番運用を想定したセキュリティ診断を実施します。</p>
         </article>
       </div>
     </div>
@@ -3810,7 +3847,7 @@ a.art__cta[class] i{background:var(--navy)}
           <div class="fstep__rule" aria-hidden="true"></div>
           <p class="fstep__when">—</p>
           <h3>速報レポート</h3>
-          <p class="fstep__desc">検出した項目を速報として共有。</p>
+          <p class="fstep__desc">毎日速報で検出した項目を共有します。</p>
           <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
         </article>
         <article class="fstep">
@@ -3819,7 +3856,7 @@ a.art__cta[class] i{background:var(--navy)}
           <div class="fstep__rule" aria-hidden="true"></div>
           <p class="fstep__when">—</p>
           <h3>最終報告書 &amp; 質疑対応</h3>
-          <p class="fstep__desc">最終報告書を提出し、質疑に対応。</p>
+          <p class="fstep__desc">納得いくまで繰り返し実施。</p>
           <svg class="fstep__arrow" viewBox="0 0 26 18" aria-hidden="true"><path d="M0 9h22M17.5 3.5 23 9l-5.5 5.5"/></svg>
         </article>
         <article class="fstep">
@@ -3832,8 +3869,6 @@ a.art__cta[class] i{background:var(--navy)}
         </article>
       </div>
     </div>
-
-    <p class="flow__note">※スケジュールは目安です。対象システムの規模や状況により変動する場合があります。</p>
   </div>
 </section>
 
@@ -3861,8 +3896,8 @@ a.art__cta[class] i{background:var(--navy)}
   <div class="wrap">
     <h2 class="art__title">生成AI 脆弱性レポート集</h2>
     <p class="art__lead">
-      SHARE Securityは、生成AIやLLMに関するセキュリティの研究を継続し、<br class="brp">
-      脆弱性に関する知見や技術記事を発信しています。
+      生成AIやLLMの脆弱性に関する最新研究や技術的知見をわかりやすく解説。<br class="brp">
+      セキュリティ担当者やエンジニアに役立つ情報を発信しています。
     </p>
 
     <div class="art__list">
@@ -3870,7 +3905,7 @@ a.art__cta[class] i{background:var(--navy)}
         <img class="acard__img" src="img/art/a1.jpg?v=2" alt="記事「AIの「建前」と「本音」が見える？」のサムネイル" loading="lazy">
         <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.07.09</span></p>
         <h3>AIの「建前」と「本音」が見える？<br class="brp">Anthropicが公開した“心の中を覗く”ツールで遊んでみた</h3>
-        <p class="acard__desc">Anthropicが公開した可視化ツールで、<br class="brp">モデルが答えを選ぶ過程を実際にのぞいてみました。</p>
+        
         <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
         <span class="acard__rule" aria-hidden="true"></span>
       </a>
@@ -3878,7 +3913,7 @@ a.art__cta[class] i{background:var(--navy)}
         <img class="acard__img" src="img/art/a2.jpg?v=2" alt="記事「Claude Codeが攻撃者の拠点になる」のサムネイル" loading="lazy">
         <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.05.29</span></p>
         <h3>Claude Codeが攻撃者の拠点になる<br class="brp">— 正規ツールを乗っ取る新たな潜伏手口</h3>
-        <p class="acard__desc">ウイルスを持ち込まずに正規のAIツールを<br class="brp">攻撃インフラへ転用する手口を解説します。</p>
+        
         <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
         <span class="acard__rule" aria-hidden="true"></span>
       </a>
@@ -3886,7 +3921,6 @@ a.art__cta[class] i{background:var(--navy)}
         <img class="acard__img" src="img/art/a3.jpg?v=2" alt="記事「Vercel社が侵害される」のサムネイル" loading="lazy">
         <p class="acard__meta"><span class="acard__cat">生成AIセキュリティブログ</span><i></i><span class="acard__date">2026.04.20</span></p>
         <h3>Vercel社が侵害される<br class="brp">— 入口となったのは社員が使う「AIツール」</h3>
-        <p class="acard__desc">侵入の入口となったのは、社員が業務で<br class="brp">利用していた外部のAIツールでした。</p>
         <span class="acard__more"><svg viewBox="0 0 20 15" aria-hidden="true"><path d="M0 7.5h17M12.6 3.1 17 7.5l-4.4 4.4"/></svg></span>
         <span class="acard__rule" aria-hidden="true"></span>
       </a>
@@ -3903,7 +3937,6 @@ a.art__cta[class] i{background:var(--navy)}
   <div class="wrap">
     <div class="faq__head">
       <h2 class="faq__title">よくあるご質問</h2>
-      <p class="faq__lead">サービスに関するよくあるご質問をまとめました。</p>
     </div>
 
     <div class="faq__list">
@@ -3913,7 +3946,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">見積もりに費用はかかりますか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>ご相談・お見積もりは無料です。<br class="brp">診断対象や実施条件をヒアリングのうえ、内容に応じて個別にご案内します。</p></div>
+        <div class="faq__a"><p>いいえ、見積もり・事前相談はすべて無料です。ご相談だけでも歓迎しております。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3921,7 +3954,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">コピー環境だけで見積もりできますか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>テスト環境をご用意いただければ、ヒアリングシートや資料のご準備はほぼ不要です。<br class="brp">実際のシステムを確認したうえで、精度の高いお見積もりをご提示します。</p></div>
+        <div class="faq__a"><p>はい。システムのコピー環境をご提供いただくだけで、面倒なヒアリングや資料作成は不要です。すぐに実働ベースでフェアな見積もりをお出しします。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3929,7 +3962,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">価格はどのくらいですか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>診断対象の範囲や実施条件によって変わるため、個別にお見積もりします。<br class="brp">大手診断会社と比べて、高品質な診断をバランスの取れた価格でご提供します。</p></div>
+        <div class="faq__a"><p>フルスペック診断で大手の約50％の価格になるケースが多いです。まずは無料でお見積りをご依頼ください。他社と診断内容・価格を比べてご検討いただけます。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3937,7 +3970,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">大手診断会社との違いは？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>固定のエンジニアが最後まで担当し、AIの網羅性と手動診断を組み合わせて実施します。<br class="brp">レポートは再現キャプチャ付きで、開発チームがそのまま対応に移せる内容です。</p></div>
+        <div class="faq__a"><p>固定メンバー2名（CTO経験者＋ホワイトハッカー）が必ず担当し、手動×ツール併用のフルスペック診断が標準。見積もりも実働ベースでのご提案です。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3945,7 +3978,15 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">急ぎで診断実施もできますか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>診断の実施期間は最短5〜14日です。<br class="brp">ご相談から診断開始までは、ヒアリング＆NDAに1営業日、コピー環境構築と見積もりに7営業日を目安としています。</p></div>
+        <div class="faq__a"><p>できる限りご希望の日程に合わせて対応します。納期やリリース時期が迫っている場合もご相談ください。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">どんな診断をすればいいのかわかりません…</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>ご安心ください。初回相談時にヒアリングを行い、システム内容や運用状況に応じた最適な診断プランをご提案します。おまかせでも問題ありません。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3953,7 +3994,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">報告書の内容・品質はどのようなものですか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>検出した項目は速報レポートで先に共有し、そのうえで最終報告書を提出します。<br class="brp">再現手順のキャプチャを添えているため、誰が読んでも状況を把握できます。</p></div>
+        <div class="faq__a"><p>検出脆弱性の説明・リスクレベル評価・再現手順（画面キャプチャ付き）・推奨対応策まで記載しご提出します。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3961,7 +4002,31 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">診断実施後のサポートはありますか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>最終報告書の提出後、質疑に対応します。<br class="brp">初回報告から3カ月以内であれば、改善後の効果を確かめる再診断を実施します。</p></div>
+        <div class="faq__a"><p>はい、報告後も追加の質疑や再診断（1回無料）に対応します。リリースやパッチ適用までしっかりフォローします。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">どんな企業・業界の診断が得意ですか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>業種・業態問わず幅広く対応していますが、特に実績が多いのは 上場準備会社、SaaS型サービス、医療、不動産、金融、メーカー、ECサイト、宿泊業界です。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">OWASP TOP10などグローバル基準に準拠した診断は実施していますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>はい、OWASP TOP10をはじめとした国際基準の脆弱性診断をカバーしつつ、独自項目による追加診断も実施しています。</p></div>
+      </details>
+      <details class="faq__item">
+        <summary>
+          <span class="faq__q">Q.</span>
+          <span class="faq__t">本番環境の診断もできますか？</span>
+          <i class="faq__ico" aria-hidden="true"></i>
+        </summary>
+        <div class="faq__a"><p>ステージング環境やコピー環境での診断が推奨ですが、本番環境での診断にも対応可能です。ご相談ください。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3969,7 +4034,7 @@ a.art__cta[class] i{background:var(--navy)}
           <span class="faq__t">生成AIの診断とは具体的にどんなことをしますか？</span>
           <i class="faq__ico" aria-hidden="true"></i>
         </summary>
-        <div class="faq__a"><p>プロンプトインジェクションやRAG構成での情報漏洩など、生成AI特有のリスクを対象に診断します。<br class="brp">研究で得た知見は、レポートや技術記事として継続的に公開しています。</p></div>
+        <div class="faq__a"><p>Prompt Injectionを中心とした、生成AIアプリ特有の脆弱性を手動で検証し、生成AIならではのリスクを検証します。</p></div>
       </details>
       <details class="faq__item">
         <summary>
@@ -3988,10 +4053,6 @@ a.art__cta[class] i{background:var(--navy)}
     <div class="news__top">
       <div>
         <div class="news__ttl"><h2>お知らせ</h2></div>
-        <p class="news__lead">
-          イベント登壇、メディア掲載、書籍関連など、<br class="brp">
-          SHARE Securityの最新情報をお届けします。
-        </p>
       </div>
       <a class="news__all" href="https://www.share-security.com/news" target="_blank" rel="noopener">すべてのお知らせを見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></a>
     </div>
@@ -4045,8 +4106,20 @@ a.art__cta[class] i{background:var(--navy)}
         </div>
         <span class="nitem__more">詳細を見る <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></span>
       </a>
+      <a class="nitem" href="https://www.share-security.com/news/news-title-00" target="_blank" rel="noopener">
+        <img class="nitem__img" src="img/news/n4.jpg?v=2" alt="『騙されるAI』発刊のお知らせ" loading="lazy">
+        <div>
+          <p class="nitem__meta">
+            <span class="nitem__date">2025.09.04</span>
+            <i class="nitem__bar" aria-hidden="true"></i>
+            <span class="nitem__tag">新刊のお知らせ</span>
+          </p>
+          <h3>『騙されるAI ―「不可解なパートナー」<br class="brp">人工知能との付き合い方』（講談社+α新書）を発刊しました</h3>
+        </div>
+        <span class="nitem__more">詳細を見る </span>
+      </a>
     </div>
-    <p class="news__note">※掲載内容はリリース時点の情報です。</p>
+    <p class="news__note"></p>
   </div>
 </section>
 
@@ -4055,7 +4128,7 @@ a.art__cta[class] i{background:var(--navy)}
     <div class="ct__panel">
       <div class="ct__head">
         <h2 class="ct__title">今すぐ無料相談</h2>
-        <p class="ct__lead">いただいた内容を確認のうえ、通常3営業日以内にご連絡いたします。</p>
+        <p class="ct__lead">専門エンジニアが 3 営業日以内にご連絡します。</p>
       </div>
 
       <form class="ct__form" id="contact-form" action="" method="post">
@@ -4071,21 +4144,21 @@ a.art__cta[class] i{background:var(--navy)}
           <label for="cf-mail">メールアドレス<span class="ct__req">必須</span></label>
           <input id="cf-mail" name="email" type="email" required placeholder="例）taro.yamada@example.com">
         </div>
+        <div class="ct__f">
+          <label for="cf-tel">電話番号<span class="ct__req">必須</span></label>
+          <input id="cf-tel" name="tel" type="tel" required placeholder="例）03-1234-5678" autocomplete="tel">
+        </div>
         <div class="ct__f ct__ta">
-          <label for="cf-body">お問い合わせ内容<span class="ct__req">必須</span></label>
+          <label for="cf-body">ご相談内容<span class="ct__req">必須</span></label>
           <textarea id="cf-body" name="body" required maxlength="500" placeholder="例）現状の課題やご相談内容をご記入ください"></textarea>
           <span class="ct__count" id="cf-count">0 / 500</span>
         </div>
         <label class="ct__agree">
           <input type="checkbox" name="agree" required>
-          <span><a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>に同意する</span>
+          <span><a href="https://www.share-security.com/privacy-policy" target="_blank" rel="noopener">プライバシーポリシー</a>に同意のうえ送信ください。</span>
           <span class="ct__req">必須</span>
         </label>
         <button class="ct__submit" type="submit">まずは相談する <svg viewBox="0 0 23 12" aria-hidden="true"><path d="M0 6h20M15.4 1.2 20.2 6l-4.8 4.8"/></svg></button>
-        <p class="ct__fnote">
-          ご入力いただいた個人情報は、お問い合わせへの回答およびご連絡のみに<br class="brp">
-          利用し、その他の目的で利用することはありません。
-        </p>
       </form>
     </div>
   </div>
